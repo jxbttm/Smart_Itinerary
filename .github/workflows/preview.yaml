@@ -8,7 +8,7 @@ name: Smart Itinerary Preview Deployment
 on:
     push:
         branches:
-            - setup-actions
+            - develop
     pull_request:
         branches:
             - develop
@@ -33,7 +33,7 @@ jobs:
 
           - name: Cypress run
             uses: cypress-io/github-action@v6
-            
+
           - run: npm run test:e2e
 
     # TODO add SAST code scan:
