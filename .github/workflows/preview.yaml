@@ -8,7 +8,7 @@ name: Smart Itinerary Preview Deployment
 on:
     push:
         branches:
-            - develop
+            - setup-actions
     pull_request:
         branches:
             - develop
