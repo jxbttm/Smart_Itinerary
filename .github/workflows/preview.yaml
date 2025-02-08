@@ -17,7 +17,6 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
-  
         - uses: actions/setup-node@v4
           with:
             node-version: 20.x
@@ -30,14 +29,10 @@ jobs:
         needs: [Build]
         runs-on: ubuntu-latest
         steps:
-
             - uses: actions/checkout@v4
-
-            - uses: actions/setup-node@v4
-              with:
-                node-version: 20.x
-
-            - run: npm run test:prod
+            - name: Cypress run
+            - uses: cypress-io/github-action@v6
+            - run: npm run test:e2e
 
     # TODO add SAST code scan:
     # SAST:
