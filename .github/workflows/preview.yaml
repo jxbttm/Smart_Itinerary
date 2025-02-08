@@ -29,10 +29,10 @@ jobs:
         needs: [Build]
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - name: Cypress run
-            - uses: cypress-io/github-action@v6
-            - run: npm run test:e2e
+          - uses: actions/checkout@v4
+          - name: Cypress run
+          - uses: cypress-io/github-action@v6
+          - run: npm run test:e2e
 
     # TODO add SAST code scan:
     # SAST:
