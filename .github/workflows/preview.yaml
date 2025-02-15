@@ -1,29 +1,33 @@
 name: Smart Itinerary Preview Deployment
 
-# TODO setup later:
-# env:
-#     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-#     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+env:
+    AIKIDO_CI_KEY: ${{ secrets.AIKIDO_SECRET_KEY }}
+    GH_KEY: ${{ secrets.GH_SMART_TOKEN }}
+    VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+    VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
 on:
     push:
         branches:
             - develop
+        paths-ignore:
+            - 'README.md'
     pull_request:
         branches:
             - develop
 jobs:
     Build:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 20.x
-  
-        - run: npm ci
-  
-        - run: npm run build
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20.x
+    
+          - run: npm ci
+    
+          - run: npm run build
 
     Test:
         needs: [Build]
@@ -36,24 +40,41 @@ jobs:
 
           - run: npm run test:e2e
 
-    # TODO add SAST code scan:
-    # SAST:
+    SAST:
+        needs: [Test]
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-    # TODO setup later if using vercel:
-    # Deploy-Preview:
-    #     needs: [Test]
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #         - uses: actions/checkout@v4
+        - name: Detect new vulnerabilities
+          uses: AikidoSec/github-actions-workflow@v1.0.13
+          with:
+              secret-key: ${{ env.AIKIDO_CI_KEY }}
+              fail-on-timeout: true
+              fail-on-dependency-scan: true
+              fail-on-sast-scan: false
+              fail-on-iac-scan: false
+              minimum-severity: 'CRITICAL'
+              timeout-seconds: 180
+              post-scan-status-comment: 'off'
+              post-sast-review-comments: 'off'
+              github-token: ${{ env.GH_KEY }}
 
-    #         - name: Install Vercel CLI
-    #           run: npm install --global vercel
+    Deploy-Preview:
+        needs: [SAST]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
 
-    #         - name: Pull Vercel Environment Information
-    #           run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+            - name: Install Vercel CLI
+              run: npm install --global vercel
 
-    #         - name: Build Project Artifacts
-    #           run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+            - name: Pull Vercel Environment Information
+              run: vercel pull --yes --environment=preview --token=${{ env.VERCEL_TOKEN }}
 
-    #         - name: Deploy Project Artifacts
-    #           run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+            - name: Build Project Artifacts
+              run: vercel build --token=${{ env.VERCEL_TOKEN }}
+
+            - name: Deploy Project Artifacts
+              run: vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }}
