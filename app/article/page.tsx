@@ -1,4 +1,5 @@
 "use client";
+import ArticleItem from "@/components/ArticleItem";
 import { useArticles } from "@/hooks/useArticles";
 import { useEffect } from "react";
 
@@ -7,13 +8,14 @@ export default function Articles() {
 
   useEffect(() => {
     getArticles();
-  });
+  }, []);
 
   return (
-    <div>
-      <ul>
+    <div className="container mx-auto">
+      <ul className="grid gap-4">
         {articles.map((article: any, key: number) => (
-          <li key={key}>{article.title}</li>
+          //   <li className="" key={key}>{article.title}</li>
+          <ArticleItem key={key} article={article} />
         ))}
       </ul>
     </div>
