@@ -1,10 +1,15 @@
 "use client";
 import ArticleItem from "@/components/ArticleItem";
 import { useArticles } from "@/hooks/useArticles";
+import useRealTimeVotes from "@/hooks/useRealTimeVotes";
 import { useEffect } from "react";
 
 export default function Articles() {
   const { articles, getArticles } = useArticles();
+  const votes = useRealTimeVotes();
+  useEffect(() => {
+    getArticles();
+  }, [votes]);
 
   useEffect(() => {
     getArticles();

@@ -5,31 +5,57 @@ export const useArticles = () => {
   const [articles, setArticles] = useState<any[]>([]);
 
   const getArticles = async () => {
-    const { data: articles, error: articlesError } = await supabase
+    const { data, error } = await supabase
       .from("articles")
-      .select("*,votes(*)");
-
-    if (articles) {
-      console.log(articles);
-      setArticles(articles);
+      .select(`*, votes(vote_count)`);
+    if (data) {
+      setArticles(data);
     }
   };
 
   const newVote = async (article_id: number, remove: boolean = false) => {
-    if (remove) {
-      const { data, error } = await supabase
+    try {
+      const { data: existingArticle, error: fetchError } = await supabase
         .from("votes")
-        .delete()
-        .eq("article_id", article_id);
-      return data;
-    }
-    const { data, error } = await supabase
-      .from("votes")
-      .insert({ article_id: article_id })
-      .select()
-      .single();
+        .select("*")
+        .eq("article_id", article_id)
+        .single();
 
-    if (data) console.log(data);
+      if (remove && !existingArticle) {
+        const { data, error } = await supabase
+          .from("votes")
+          .insert([{ article_id, vote_count: 0 }]);
+        return data;
+      } else if (remove && existingArticle) {
+        const updated_count =
+          existingArticle.vote_count == 0 ? 0 : existingArticle.vote_count - 1;
+        const { data, error } = await supabase
+          .from("votes")
+          .update({
+            vote_count: updated_count,
+          })
+          .eq("id", existingArticle.id);
+        return data;
+      }
+
+      if (!existingArticle) {
+        const { data, error } = await supabase
+          .from("votes")
+          .insert([{ article_id, vote_count: 1 }]);
+      } else {
+        const voteCount = existingArticle.vote_count + 1;
+
+        const { data, error } = await supabase
+          .from("votes")
+          .update({
+            vote_count: voteCount,
+          })
+          .eq("id", existingArticle.id)
+          .select();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return {
