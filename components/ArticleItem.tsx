@@ -22,7 +22,7 @@ export default function ArticleItem({
     article_votes = votes[0].vote_count;
   }
   return (
-    <div className="border flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-900">
+    <div className="border flex items-center justify-between px-4 py-3 cursor-pointer">
       <h2>{title}</h2>
       <div className="grid text-center ">
         <span onClick={() => newVote(id)} className="flex justify-center">
