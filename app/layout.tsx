@@ -39,10 +39,7 @@ export default function RootLayout({children}) {
       setUser(session?.user || null);
     });
 
-    // Clean up the auth listener when the component unmounts
-    return () => {
-      authListener?.unsubscribe();
-    };
+    
   }, []);
 
   // Sign out function
