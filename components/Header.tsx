@@ -1,6 +1,7 @@
 // components/Header.tsx
 import { FC } from 'react'
 import Image from 'next/image'
+import AuthForm from '@/components/forms/AuthForm'
 
 interface HeaderProps {
   user: any
@@ -17,9 +18,7 @@ export const Header = ({ user, onLogout }: { user: any; onLogout: () => void }) 
           {/* Conditionally render login button or avatar */}
           {!user ? (
             // If user is not authenticated, show a login button
-            <div tabIndex={0} role="button" className="btn btn-primary">
-              <a href="/auth">Login</a>
-            </div>
+            <AuthForm />
           ) : (
             // If user is authenticated, show avatar with dropdown options
             <div className="dropdown dropdown-end">

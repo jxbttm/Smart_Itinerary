@@ -13,9 +13,9 @@ const AuthForm = () => {
         <img
         src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
         alt="Google Logo"
-        className="w-5 h-5"
+        className="w-5 h-5 mb-1"
         />
-        <span>Sign in with Google</span>
+        <span className="mb-1">Sign in with Google</span>
     </button>
     </form>
 
