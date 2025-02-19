@@ -85,14 +85,6 @@ export default function Home() {
 
   return (
     <div>
-      {/* Display user profile info */}
-      <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center h-screen gap-4">
-        
-        <Link className="btn" href="/create">
-          Create Post
-        </Link>
-      </div>
-
       {/* Plan Your Trip Section (Always visible) */}
       <main className="flex flex-col justify-center items-center min-h-screen">
         <h1 className="text-3xl font-bold text-center mb-4 ring-4 ring-white">Plan Your Dream Trip</h1>
@@ -101,6 +93,9 @@ export default function Home() {
         <div className="flex gap-4">
           <button className="btn btn-primary py-2 px-6 text-white">Plan a Trip</button>
           <button className="btn btn-neutral py-2 px-6 text-white">Buy us Coffee</button>
+          <Link className="btn" href="/create">
+              Create Post
+          </Link>
         </div>
       </main>
     </div>
