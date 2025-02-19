@@ -87,27 +87,7 @@ export default function Home() {
     <div>
       {/* Display user profile info */}
       <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center h-screen gap-4">
-        {avatar_url && (
-          <Image
-            src={avatar_url}
-            alt={name}
-            width={200}
-            height={200}
-            className="rounded-full"
-            quality={100}
-          />
-        )}
-        <h1 className="text-4xl font-bold">{name}</h1>
-        <p className="text-xl">User Name: {name}</p>
-        <p className="text-xl">Email: {email}</p>
-        <p className="text-xl">Created with: {app_metadata.provider}</p>
-
-        <form onSubmit={signOut}>
-          <button className="btn" type="submit">
-            Sign Out
-          </button>
-        </form>
-
+        
         <Link className="btn" href="/create">
           Create Post
         </Link>
