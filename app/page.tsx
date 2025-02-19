@@ -1,3 +1,4 @@
+import Link from 'next/link';
 
 
 export default function Home() {
@@ -8,7 +9,9 @@ export default function Home() {
         <p className="text-center text-lg mb-6">Get started by exploring destinations and planning your next adventure.</p>
 
         <div className="flex gap-4">
-          <button className="btn btn-primary py-2 px-6 text-white">Plan a Trip</button>
+          <Link href="/plan-itinerary">
+            <button className="btn btn-primary py-2 px-6 text-white">Plan a Trip</button>
+          </Link>
           <button className="btn btn-neutral py-2 px-6 text-white">Buy us Coffee</button>
         </div>
       </main>
