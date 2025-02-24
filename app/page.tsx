@@ -1,10 +1,8 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { signOut } from '@/lib/actions'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function Home() {
 
