@@ -1,6 +1,5 @@
 'use client'
 
-import { supabase } from "@/lib/supabase";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from '@/lib/actions'
 import { useEffect, useState } from 'react'
@@ -9,6 +8,7 @@ import Image from 'next/image'
 
 export default function Profile(){
     const [user, setUser] = useState<any>(null)
+    let user_record: any
 
     useEffect(() => {
         const setProfile = async () => {
@@ -16,7 +16,13 @@ export default function Profile(){
             const session = await supabase.auth.getUser()
             console.log('session', session)
             if (session.data.user) {
-                setUser(session.data.user)
+                user_record = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', session.data.user.id)
+                .single()
+                console.log('user', user_record)
+                setUser(user_record.data)
             }
         };
         setProfile();
@@ -27,8 +33,7 @@ export default function Profile(){
         return <div>Loading...</div>;
     }
 
-    const { user_metadata, app_metadata } = user
-    const { name, email, avatar_url } = user_metadata || {}
+    const { name, email, avatar_url, travel_group, min_budget, max_budget } = user
 
     return (
         <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center h-screen gap-4">
@@ -48,7 +53,9 @@ export default function Profile(){
             <h1 className="text-4xl font-bold">{name}</h1>
             <p className="text-xl">User Name: {name}</p>
             <p className="text-xl">Email: {email}</p>
-            <p className="text-xl">Created with: {app_metadata?.provider}</p>
+            <p className="text-xl">Travel Type: {travel_group} </p>
+            <p className="text-xl">Budget: ${min_budget} - ${max_budget}</p>
+            
 
             <form onSubmit={signOut}>
                 <button className="btn" type="submit">
