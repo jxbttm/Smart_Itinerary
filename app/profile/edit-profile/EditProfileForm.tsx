@@ -17,6 +17,9 @@ export default function ItineraryForm({ travelType }: ItineraryFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<any>(null)
+    const [minBudget, setMinBudget] = useState<number | undefined>(undefined);
+    const [maxBudget, setMaxBudget] = useState<number | undefined>(undefined);
+    const [travelGroup, setTravelGroup] = useState<string | undefined>(undefined);
     const router = useRouter();  // Initialise the useRouter hook
 
     useEffect(() => {
@@ -25,6 +28,24 @@ export default function ItineraryForm({ travelType }: ItineraryFormProps) {
                 console.log('session', session)
                 if (session.data.user) {
                     setUser(session.data.user)
+
+                    // Fetch user data from the 'users' table to prefill the form
+                    const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', session.data.user.id)
+                    .single();
+
+                    if (error) {
+                        console.error('Error fetching user data:', error.message);
+                        return;
+                    }
+
+                    if (data) {
+                        setMinBudget(data.min_budget);
+                        setMaxBudget(data.max_budget);
+                        setTravelGroup(data.travel_group);
+                    }
                 }
             };
             setProfile();
@@ -83,11 +104,11 @@ export default function ItineraryForm({ travelType }: ItineraryFormProps) {
                     </label>
                     <div className="flex w-full">
                         <div className="flex-grow place-items-center">
-                            <input name="min_budget" type="number" placeholder="Min Budget" className="input input-bordered text-black" required min={0} />
+                            <input name="min_budget" type="number" placeholder="Min Budget" className="input input-bordered text-black" required min={0} value={minBudget || ''} onChange={(e) => setMinBudget(Number(e.target.value))}/>
                         </div>
                         <div className="divider divider-horizontal">-----</div>
                         <div className="flex-grow place-items-center">
-                            <input name="max_budget" type="number" placeholder="Max Budget" className="input input-bordered text-black" required min={0} />
+                            <input name="max_budget" type="number" placeholder="Max Budget" className="input input-bordered text-black" required min={0} value={maxBudget || ''} onChange={(e) => setMaxBudget(Number(e.target.value))}/>
                         </div>
                     </div>
                 </div>
@@ -104,6 +125,8 @@ export default function ItineraryForm({ travelType }: ItineraryFormProps) {
                                     type="radio"
                                     name="travel_group"
                                     value={travel.type_name}
+                                    checked={travelGroup === travel.type_name}
+                                    onChange={() => setTravelGroup(travel.type_name)}
                                     className="radio radio-accent"
                                 />
                             </label>
