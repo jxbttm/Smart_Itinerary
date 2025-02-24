@@ -31,7 +31,9 @@ export default function RootLayout({children} : RootLayoutProps) {
 
     // Fetch user session on mount
     const fetchUser = async () => {
-      const { data: session } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
+      const session = data?.session;
+      // Safely access the session's user
       setUser(session?.user || null);
     };
 

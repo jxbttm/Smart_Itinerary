@@ -28,7 +28,7 @@ export default function Home() {
         .eq('email', email)
 
         // If user does not exist in the users table, insert user data
-        if (data.length === 0) {
+        if (data && data.length === 0) {
           const { error: insertError } = await supabase.from('users').insert([
             {
               id,
