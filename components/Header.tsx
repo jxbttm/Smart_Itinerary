@@ -47,9 +47,6 @@ export const Header = ({ user, onLogout }: { user: any; onLogout: () => void }) 
                   </Link>
                 </li>
                 <li>
-                  <a>Settings</a>
-                </li>
-                <li>
                   <a onClick={onLogout}>Logout</a>
                 </li>
               </ul>
