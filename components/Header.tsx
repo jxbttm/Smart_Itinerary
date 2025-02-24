@@ -1,7 +1,7 @@
 // components/Header.tsx
-import { FC } from 'react'
 import Image from 'next/image'
 import AuthForm from '@/components/forms/AuthForm'
+import Link from 'next/link'
 
 interface HeaderProps {
   user: any
@@ -12,7 +12,7 @@ export const Header = ({ user, onLogout }: { user: any; onLogout: () => void }) 
     return (
       <div className="navbar bg-base-100">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl" href="/">SmartVoyage</a>
+          <Link className="btn btn-ghost text-xl" href="/">SmartVoyage</Link>
         </div>
         <div className="flex-none gap-2">
           {/* Conditionally render login button or avatar */}
@@ -42,10 +42,9 @@ export const Header = ({ user, onLogout }: { user: any; onLogout: () => void }) 
               </div>
               <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
                 <li>
-                  <a className="justify-between" href="/profile">Profile</a>
-                </li>
-                <li>
-                  <a>Settings</a>
+                  <Link href="/profile">
+                    Profile
+                  </Link>
                 </li>
                 <li>
                   <a onClick={onLogout}>Logout</a>

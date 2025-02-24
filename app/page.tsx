@@ -1,10 +1,8 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { signOut } from '@/lib/actions'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function Home() {
 
@@ -30,7 +28,7 @@ export default function Home() {
         .eq('email', email)
 
         // If user does not exist in the users table, insert user data
-        if (data.length === 0) {
+        if (data && data.length === 0) {
           const { error: insertError } = await supabase.from('users').insert([
             {
               id,

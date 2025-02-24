@@ -3,7 +3,10 @@
 import { createClientForServer } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-const signInWith = provider => async () => {
+enum OAuthProvider {
+  Google = 'google'
+}
+const signInWith = (provider: OAuthProvider) => async () => {
   const supabase = await createClientForServer()
 
   const auth_callback_url = `${process.env.SITE_URL}/auth/callback`
@@ -20,10 +23,15 @@ const signInWith = provider => async () => {
   if (error) {
     console.log(error)
   }
-  redirect(data.url)
+  if (data?.url){
+    redirect(data.url)
+  } else {
+    console.log('No data.url')
+  }
+  
 }
 
-const signinWithGoogle = signInWith('google')
+const signinWithGoogle = signInWith(OAuthProvider.Google)
 
 const signOut = async () => {
   const supabase = await createClientForServer()
