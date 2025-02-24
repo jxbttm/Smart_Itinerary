@@ -42,6 +42,9 @@ export default function Profile(){
                     quality={100}
                 />
             )}
+            <Link href="/profile/edit-profile">
+                <button className="btn btn-neutral py-2 px-6 text-white">Edit Profile</button>
+            </Link>
             <h1 className="text-4xl font-bold">{name}</h1>
             <p className="text-xl">User Name: {name}</p>
             <p className="text-xl">Email: {email}</p>
