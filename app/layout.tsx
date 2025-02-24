@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Geist, Geist_Mono } from "next/font/google";
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,8 +17,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+interface RootLayoutProps {
+  children: ReactNode;
+}
 
-export default function RootLayout({children}) {
+export default function RootLayout({children} : RootLayoutProps) {
 
   const [user, setUser] = useState<any>(null);
 
