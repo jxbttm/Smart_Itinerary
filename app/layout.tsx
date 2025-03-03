@@ -55,16 +55,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
   };
 
   return (
-    <html lang="en" className="h-screen overflow-auto">
+    <html lang="en" className="h-full">
       <head>
         <title>Smart Voyage</title>
       </head>
-      <body className="h-full flex flex-col">
+      <body className="flex flex-col min-h-screen">
         <div>
           <Header user={user} onLogout={signOut} />
         </div>
-        <div className="flex-1">
-          <main className="h-full">{children}</main>
+        <div className="flex-1 overflow-auto">
+          <main>{children}</main>
         </div>
         <div>
           <Footer />

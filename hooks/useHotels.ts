@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-const token = `Xn67Am6mCp6rsk6KOCt4ARGXUG1G`;
 export const useHotels = () => {
   const [hotels, useHotels] = useState<any[]>([]);
 
@@ -10,16 +9,17 @@ export const useHotels = () => {
     const options = {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_AMADEUS_TOKEN}`,
       },
     };
 
     try {
       const data = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/v1/reference-data/locations/hotel?keyword=${keyword}&subType=HOTEL_LEISURE`,
+        `${process.env.NEXT_PUBLIC_AMADEUS_GLOBAL_URL}/v1/reference-data/locations/hotel?keyword=${keyword}&subType=HOTEL_LEISURE`,
         options
       );
-      console.log(data);
+      const json = await data.json();      
+      console.log(json);
     } catch (error) {
       console.log(error);
     }

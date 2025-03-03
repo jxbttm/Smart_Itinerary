@@ -1,17 +1,38 @@
 "use client";
 
+import { useHotels } from "@/hooks/useHotels";
 import {
   BuildingLibraryIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function Hotels() {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const { getHotelNameAutoComplete } = useHotels();
+  useEffect(() => {
+
+    // This debounce function is to delay the search until the user finish typing 
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTerm !== "") {
+        getHotelNameAutoComplete(searchTerm);
+      }
+    }, 1000);
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+
   return (
     <div className="w-full h-full flex justify-center py-10">
       <div className="w-11/12 flex flex-col gap-8">
-        <label className="input input-bordered flex items-center gap-2 w-full h-full">
-          <input type="text" className="grow" placeholder="Search" />
+        <label className="input input-bordered flex items-center gap-2 w-full">
+          <input
+            type="text"
+            autoComplete="on"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="grow"
+            placeholder="Search"
+          />
           <MagnifyingGlassIcon className="h-5 w-5" />
         </label>
 
