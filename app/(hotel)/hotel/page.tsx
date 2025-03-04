@@ -37,9 +37,7 @@ export default function Hotels() {
       <div className="w-11/12 flex flex-col gap-8">
         <div className="relative">
           <label
-            tabIndex={0}
             className="input input-bordered flex items-center gap-2 w-full"
-            popoverTarget="popover-1"
           >
             <input
               type="text"
