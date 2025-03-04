@@ -19,7 +19,7 @@ export const useHotels = () => {
         options
       );
       const json = await data.json();      
-      console.log(json);
+      return json
     } catch (error) {
       console.log(error);
     }
