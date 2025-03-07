@@ -20,7 +20,7 @@ export default function ItineraryForm({
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     SubmitForm(
-      "Form Submitted",
+      searchCountry,
       startDate,
       endDate,
       minBudget,
@@ -30,6 +30,14 @@ export default function ItineraryForm({
     );
     logFormData(event);
   }
+
+  //#region Country
+  const [searchCountry, setSearchCountry] = useState<string>("");
+  const handleSearchTermChange = (term: string) => {
+    setSearchCountry(term); // Update the searchTerm in the parent component
+  };
+
+  //#endregion
 
   //#region Trip duration Input
   const [startDate, setStartDate] = useState<string>(
@@ -64,7 +72,10 @@ export default function ItineraryForm({
     <div className="card bg-base-100 w-full max-w-2xl shrink-0 shadow-2xl items-center">
       <form className="card-body" onSubmit={onSubmit}>
         {countries && countries.length > 0 && (
-          <CountrySearch countries={countries} />
+          <CountrySearch
+            countries={countries}
+            onSearchTermChange={handleSearchTermChange}
+          />
         )}
         <div className="form-control mt-6">
           <label className="label">
