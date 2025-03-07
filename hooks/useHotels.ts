@@ -5,6 +5,10 @@ import { useState } from "react";
 export const useHotels = () => {
   const [hotels, useHotels] = useState<any[]>([]);
 
+  /// I need to first list down a list of hotel objects
+  /// Next I need to call another api to get each hotel objects and link the pricing and offer together
+  /// this is the main thing to do
+
   const getHotelNameAutoComplete = async (keyword: string) => {
     const options = {
       method: "GET",
@@ -18,8 +22,9 @@ export const useHotels = () => {
         `${process.env.NEXT_PUBLIC_AMADEUS_GLOBAL_URL}/v1/reference-data/locations/hotel?keyword=${keyword}&subType=HOTEL_LEISURE`,
         options
       );
-      const json = await data.json();      
-      return json
+      const json = await data.json();
+      console.log(json);
+      return json;
     } catch (error) {
       console.log(error);
     }

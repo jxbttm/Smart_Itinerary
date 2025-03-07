@@ -63,8 +63,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <div>
           <Header user={user} onLogout={signOut} />
         </div>
-        <div className="flex-1 overflow-auto">
-          <main>{children}</main>
+        <div className="flex-1 overflow-auto flex flex-col">
+          <main className="h-full flex-1 flex flex-col">{children}</main>
         </div>
         <div>
           <Footer />
