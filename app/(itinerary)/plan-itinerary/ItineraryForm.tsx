@@ -4,67 +4,44 @@ import { FormEvent, useState } from "react";
 import { Country } from "@/types/Country";
 import { TravelType } from "@/types/TravelType";
 import CountrySearch from "@/app/(itinerary)/plan-itinerary/CountrySearch";
-
-import SubmitForm from "./SubmitForm";
-import ViewItinerary from "../itinerary/ViewItinerary";
+import { useRouter } from "next/navigation";
 
 interface ItineraryFormProps {
   countries: Country[];
   travelType: TravelType[];
 }
-
-export default function ItineraryForm({
-  countries,
-  travelType,
-}: ItineraryFormProps) {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [itinerary, setItinerary] = useState<any>(null);
-
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
-    try {
-      const res = await SubmitForm(
-        searchCountry,
-        startDate,
-        endDate,
-        minBudget,
-        maxBudget,
-        preferences,
-        travelGroup
-      );
-      setItinerary(res);
-    } catch (error) {
-      throw new Error("Error submitting form data");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  //#region Country
+export default function ItineraryForm({ countries, travelType }: ItineraryFormProps) {
+  const router = useRouter()
   const [searchCountry, setSearchCountry] = useState<string>("");
-  const handleSearchTermChange = (term: string) => {
-    setSearchCountry(term); // Update the searchTerm in the parent component
-  };
-
-  //#endregion
-
-  //#region Trip duration Input
   const [startDate, setStartDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
   const [endDate, setEndDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
-  //#endregion
-
-  //#region Budget Input
   const [minBudget, setMinBudget] = useState<number>(0);
   const [maxBudget, setMaxBudget] = useState<number>(0);
-  //#endregion
-
-  //#region Preferences Input
   const [preferences, setPreferences] = useState<string[]>([]);
+  const [travelGroup, setTravelGroup] = useState<string>("");
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = {
+      country: searchCountry,
+      startDate: startDate,
+      endDate: endDate,
+      minBudget: minBudget,
+      maxBudget: maxBudget,
+      preferences: preferences,
+      travelGroup: travelGroup
+    }
+    const serializedData = encodeURIComponent(JSON.stringify(formData));
+    router.push(`/itinerary?data=${serializedData}`);
+  }
+
+  const handleSearchTermChange = (term: string) => {
+    setSearchCountry(term); // Update the searchTerm in the parent component
+  };
 
   const handlCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -72,22 +49,13 @@ export default function ItineraryForm({
       checked ? [...prev, value] : prev.filter((item) => item !== value)
     );
   };
-  //#endregion
-
-  //#region Travel Group Input
-  const [travelGroup, setTravelGroup] = useState<string>("");
-  //#endregion
 
   return (
-    <div className="col">
-      <div className="card bg-base-100 w-full max-w-2xl shrink-0 shadow-2xl items-center pb-2">
-        {loading && (
-          <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-10">
-            <span className="loading loading-spinner text-white text-2xl"></span>
-          </div>
-        )}
-        <form className="card-body relative" onSubmit={onSubmit}>
-          <fieldset disabled={loading} className="w-full">
+    <>
+      <div className="w-full max-w-2xl items-center p-4 sm:p-6 md:p-8 min-h-screen">
+        <div className="divider divider-neutral font-bold">Destination & Duration</div>
+        <form onSubmit={onSubmit}>
+          <fieldset className="w-full">
             {countries && countries.length > 0 && (
               <CountrySearch
                 countries={countries}
@@ -99,6 +67,9 @@ export default function ItineraryForm({
                 <span className="label-text font-bold">
                   How long is your Trip?
                 </span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clipRule="evenodd" />
+                </svg>
               </label>
               <div className="flex w-full">
                 <input
@@ -123,50 +94,73 @@ export default function ItineraryForm({
               </div>
             </div>
 
+            <div className="divider divider-neutral font-bold">Additional Information</div>
+
+            <div className="form-control mt-6">
+              <label className="label">
+                <span className="label-text font-bold">
+                  Use your preferences?
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                  <path fillRule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 0 0-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 0 0-2.282.819l-.922 1.597a1.875 1.875 0 0 0 .432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 0 0 0 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 0 0-.432 2.385l.922 1.597a1.875 1.875 0 0 0 2.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 0 0 2.28-.819l.923-1.597a1.875 1.875 0 0 0-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 0 0 0-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 0 0-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 0 0-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 0 0-1.85-1.567h-1.843ZM12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" clipRule="evenodd" />
+                </svg>
+              </label>
+              <label className="label cursor-pointer">
+                <span className="label-text">My preference <span className="text-yellow-700">(Note: Override the fields below based on your preference in profile)</span > </span>
+                <input
+                  name="my_preference"
+                  value="My Preference"
+                  type="checkbox"
+                  className="checkbox"
+                />
+              </label>
+            </div>
+
             <div className="form-control mt-6">
               <label className="label">
                 <span className="label-text font-bold">
                   What is your Budget limit?
                 </span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                  <path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
+                  <path fillRule="evenodd" d="M22.5 9.75h-21v7.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3v-7.5Zm-18 3.75a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clipRule="evenodd" />
+                </svg>
+
               </label>
               <div className="flex w-full">
-                <div className="flex-grow place-items-center">
-                  <input
-                    name="min_budget"
-                    type="number"
-                    placeholder="Min Budget"
-                    className="input input-bordered text-black"
-                    required
-                    step="0.01"
-                    min={0}
-                    value={minBudget}
-                    onChange={(e) => {
-                      const inputValue = Number(e.target.value);
-                      if (!isNaN(inputValue)) {
-                        setMinBudget(parseFloat(inputValue.toFixed(2)));
-                      }
-                    }}
-                  />
-                </div>
+                <input
+                  name="min_budget"
+                  type="number"
+                  placeholder="Min Budget"
+                  className="input input-bordered flex-grow text-black"
+                  required
+                  step="0.01"
+                  min={0}
+                  value={minBudget}
+                  onChange={(e) => {
+                    const inputValue = Number(e.target.value);
+                    if (!isNaN(inputValue)) {
+                      setMinBudget(parseFloat(inputValue.toFixed(2)));
+                    }
+                  }}
+                />
                 <div className="divider divider-horizontal">-----</div>
-                <div className="flex-grow place-items-center">
-                  <input
-                    name="max_budget"
-                    type="number"
-                    placeholder="Max Budget"
-                    className="input input-bordered text-black"
-                    required
-                    step="0.01"
-                    min={0}
-                    value={maxBudget}
-                    onChange={(e) => {
-                      const inputValue = Number(e.target.value);
-                      if (!isNaN(inputValue)) {
-                        setMaxBudget(parseFloat(inputValue.toFixed(2)));
-                      }
-                    }}
-                  />
-                </div>
+                <input
+                  name="max_budget"
+                  type="number"
+                  placeholder="Max Budget"
+                  className="input input-bordered flex-grow text-black"
+                  required
+                  step="0.01"
+                  min={0}
+                  value={maxBudget}
+                  onChange={(e) => {
+                    const inputValue = Number(e.target.value);
+                    if (!isNaN(inputValue)) {
+                      setMaxBudget(parseFloat(inputValue.toFixed(2)));
+                    }
+                  }}
+                />
               </div>
             </div>
 
@@ -175,6 +169,11 @@ export default function ItineraryForm({
                 <span className="label-text font-bold">
                   What do you like to see more?
                 </span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                  <path d="M5.223 2.25c-.497 0-.974.198-1.325.55l-1.3 1.298A3.75 3.75 0 0 0 7.5 9.75c.627.47 1.406.75 2.25.75.844 0 1.624-.28 2.25-.75.626.47 1.406.75 2.25.75.844 0 1.623-.28 2.25-.75a3.75 3.75 0 0 0 4.902-5.652l-1.3-1.299a1.875 1.875 0 0 0-1.325-.549H5.223Z" />
+                  <path fillRule="evenodd" d="M3 20.25v-8.755c1.42.674 3.08.673 4.5 0A5.234 5.234 0 0 0 9.75 12c.804 0 1.568-.182 2.25-.506a5.234 5.234 0 0 0 2.25.506c.804 0 1.567-.182 2.25-.506 1.42.674 3.08.675 4.5.001v8.755h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3Zm3-6a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-.75.75h-3a.75.75 0 0 1-.75-.75v-3Zm8.25-.75a.75.75 0 0 0-.75.75v5.25c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75v-5.25a.75.75 0 0 0-.75-.75h-3Z" clipRule="evenodd" />
+                </svg>
+
               </label>
               <label className="label cursor-pointer">
                 <span className="label-text">More attractions</span>
@@ -213,6 +212,9 @@ export default function ItineraryForm({
                 <span className="label-text font-bold">
                   Who are you traveling with?
                 </span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                  <path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
+                </svg>
               </label>
               <div className="grid grid-cols-2 gap-4">
                 {travelType &&
@@ -237,29 +239,15 @@ export default function ItineraryForm({
             </div>
             <div className="form-control mt-6">
               <button
-                className="btn btn-primary"
+                className="btn btn-outline"
                 type="submit"
-                disabled={loading}
               >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="loading loading-spinner"></span>{" "}
-                    Generating...
-                  </span>
-                ) : (
-                  "Generate"
-                )}
+                Generate
               </button>
             </div>
           </fieldset>
         </form>
       </div>
-
-      {itinerary && (
-        <div className="card bg-base-100 w-full max-w-2xl shrink-0 shadow-2xl p-4 mt-4">
-          <ViewItinerary itinerary={itinerary} />
-        </div>
-      )}
-    </div>
+    </>
   );
 }

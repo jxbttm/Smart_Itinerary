@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import HomeCarousel from './HomeCarousel'
 
 export default function Home() {
 
@@ -86,19 +87,17 @@ export default function Home() {
   return (
     <div>
       {/* Plan Your Trip Section (Always visible) */}
-      <main className="flex flex-col justify-center items-center min-h-screen">
-        <h1 className="text-3xl font-bold text-center mb-4 ring-4 ring-white">Plan Your Dream Trip</h1>
-        <p className="text-center text-lg mb-6 ring-4 ring-white">Get started by exploring destinations and planning your next adventure.</p>
+      <main className="flex flex-col justify-center items-center min-h-screen"> 
+        <h1 className="text-6xl font-bold text-center mb-4 ring-4 ring-white">Plan Your Dream Trip</h1>
+        <p className="text-center text-2xl mb-6 ring-4 ring-white">Get started by exploring destinations and planning your next adventure.</p>
 
         <div className="flex gap-4">
           <Link href="/plan-itinerary">
             <button className="btn btn-primary py-2 px-6 text-white">Plan a Trip</button>
           </Link>
           <button className="btn btn-neutral py-2 px-6 text-white">Buy us Coffee</button>
-          <Link className="btn" href="/create">
-              Create Post
-          </Link>
         </div>
+        <HomeCarousel></HomeCarousel>
       </main>
     </div>
 

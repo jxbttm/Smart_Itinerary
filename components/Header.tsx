@@ -10,7 +10,7 @@ interface HeaderProps {
 
 export const Header = ({ user, onLogout }: { user: any; onLogout: () => void }) => {
     return (
-      <div className="navbar bg-base-100">
+      <div className="navbar bg-base-100 border-b border-gray-300">
         <div className="flex-1">
           <Link className="btn btn-ghost text-xl" href="/">SmartVoyage</Link>
         </div>
