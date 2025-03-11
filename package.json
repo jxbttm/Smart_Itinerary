@@ -22,13 +22,9 @@
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-<<<<<<< HEAD
     "start-server-and-test": "^2.0.10",
-    "zustand": "^5.0.3"
-=======
-    "react-markdown": "^10.0.1",
-    "start-server-and-test": "^2.0.10"
->>>>>>> origin/develop
+    "zustand": "^5.0.3",
+    "react-markdown": "^10.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
