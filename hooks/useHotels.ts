@@ -1,34 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { Hotel } from "@/interfaces/Hotel";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const useHotels = () => {
-  const [hotels, useHotels] = useState<any[]>([]);
+  const apiKey: string | undefined = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-  /// I need to first list down a list of hotel objects
-  /// Next I need to call another api to get each hotel objects and link the pricing and offer together
-  /// this is the main thing to do
+  if (!apiKey) {
+    throw new Error("Missing GEMINI_API_KEY in environment variables");
+  }
 
-  const getHotelNameAutoComplete = async (keyword: string) => {
-    const options = {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_AMADEUS_TOKEN}`,
-      },
-    };
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+  const extractJsonFromText = (text: string) => {
+    const regex = /```json([\s\S]*?)```/;
+    const match = text.match(regex);
+    if (match && match[1]) {
+      const jsonString = match[1].trim();
+      const finalData = JSON.stringify(jsonString);
+      try {
+        return JSON.parse(finalData);
+      } catch (error) {
+        console.error("Invalid JSON:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+  const getHotelQueryResult = async (query: string) => {
+    const prompt =
+      "I am creating a search bar for hotels, and I would like you to suggest hotels based on my search query. " +
+      "Can you include hotel details suchs as ratings, price, description, image address of any image you can " +
+      "get on the website itself. Please give me the result in json parsable format. " +
+      `The result should be standardised in this format:"
+      address: string;
+      description: string;
+      image_url: string;
+      name: string;
+      price: string;
+      rating: number;"` +
+      `The query is "${query}"`;
 
     try {
-      const data = await fetch(
-        `${process.env.NEXT_PUBLIC_AMADEUS_GLOBAL_URL}/v1/reference-data/locations/hotel?keyword=${keyword}&subType=HOTEL_LEISURE`,
-        options
-      );
-      const json = await data.json();
-      console.log(json);
-      return json;
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      let isSampleData = false;
+
+      // Data is not real and image urls are fake so don't use them
+      if (
+        text.includes(
+          `I can't directly access and scrape real-time data from hotel websites, including images and pricing.`
+        )
+      ) {
+        isSampleData = true;
+      }
+      const extractedJson = extractJsonFromText(text);
+      return { data: JSON.parse(extractedJson) as Hotel[], isSampleData };
     } catch (error) {
-      console.log(error);
+      console.error("Error getting hotel results: ", error);
+      return null;
     }
   };
 
-  return { hotels, getHotelNameAutoComplete };
+  return { getHotelQueryResult };
 };

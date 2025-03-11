@@ -1,11 +1,8 @@
 export interface Hotel {
-  address: { cityName: string; countryCode: string };
-  geoCode: { latitude: number; longitude: number };
-  hotelIds: string[];
-  iataCode: string;
-  id: number;
+  address: string;
+  description: string;
+  image_url: string;
   name: string;
-  relevance: number;
-  subType: string;
-  type: string;
+  price: string;
+  rating: number;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useHotels } from "@/hooks/useHotels";
+import { Hotel } from "@/interfaces/Hotel";
 import useHotelStore from "@/store/hotelStore";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
@@ -11,8 +12,9 @@ export default function Hotels() {
   // USESTATES
   const [query, setQuery] = useState<string>("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const { getHotelNameAutoComplete } = useHotels();
+  const { getHotelQueryResult } = useHotels();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // FUNCTIONS AND VARIABLES
@@ -21,22 +23,28 @@ export default function Hotels() {
 
   // USEEFFECTS
   useEffect(() => {
-    // This debounce function is to delay the search until the user finish typing
-    const delayDebounceFn = setTimeout(async () => {
-      if (query !== "") {
-        // data return is in an array of 20 items
-        const getHotels = await getHotelNameAutoComplete(query);
-        if (getHotels?.data?.length > 0) {
-          setHotelSearchData([...getHotels.data]);
-          setDebouncedQuery(query);
+    try {
+      // This debounce function is to delay the search until the user finish typing
+      const delayDebounceFn = setTimeout(async () => {
+        if (query !== "") {
+          setIsLoading(true);
           setIsOpen(true);
+          setDebouncedQuery(query);
+          // data return is in an array of 20 items
+          const getHotelData = await getHotelQueryResult(query);
+          if (getHotelData && getHotelData.data.length > 0) {
+            setIsLoading(false);
+            setHotelSearchData(getHotelData.data, getHotelData.isSampleData);
+          }
+        } else {
+          setIsOpen(false);
+          setHotelSearchData([], false);
         }
-      } else {
-        setIsOpen(false);
-        setHotelSearchData([]);
-      }
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   }, [query]);
 
   useEffect(() => {
@@ -71,7 +79,12 @@ export default function Hotels() {
           {isOpen && debouncedQuery && (
             <ul className="absolute z-50 mt-2 bg-base-300 rounded p-2 w-full max-h-48 overflow-y-auto">
               <div className="py-2 rounded">
-                {hotelSearchData.length > 0 ? (
+                {isLoading && (
+                  <div className="w-full flex flex-col justify-center items-center">
+                    <span className="loading loading-spinner loading-xl"></span>
+                  </div>
+                )}
+                {!isLoading && hotelSearchData && hotelSearchData.length > 0 ? (
                   hotelSearchData.map((hotel, index) => (
                     <li
                       className="hover:bg-gray-400 rounded p-2 cursor-pointer "
