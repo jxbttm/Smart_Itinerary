@@ -32,13 +32,13 @@ export default function Hotels() {
           setDebouncedQuery(query);
           // data return is in an array of 20 items
           const getHotelData = await getHotelQueryResult(query);
-          if (getHotelData && getHotelData.data.length > 0) {
+          if (getHotelData && getHotelData.length > 0) {
             setIsLoading(false);
-            setHotelSearchData(getHotelData.data, getHotelData.isSampleData);
+            setHotelSearchData(getHotelData);
           }
         } else {
           setIsOpen(false);
-          setHotelSearchData([], false);
+          setHotelSearchData([]);
         }
       }, 500);
       return () => clearTimeout(delayDebounceFn);

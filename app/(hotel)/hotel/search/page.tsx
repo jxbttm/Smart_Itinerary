@@ -41,7 +41,7 @@ export default function HotelSearch() {
                       </div>
                       <div className="flex justify-center">
                         <button className="btn bg-base-300 w-3/4 hover:bg-gray-400 hover:text-white">
-                          Hurry! Select
+                          Add to Itinerary!
                         </button>
                       </div>
                     </div>

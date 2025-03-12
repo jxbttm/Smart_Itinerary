@@ -4,8 +4,7 @@ import { persist } from "zustand/middleware";
 
 interface HotelStoreState {
   hotelSearchData: Hotel[];
-  isSampleData: boolean;
-  setHotelSearchData: (hotelSearchData: Hotel[], isSampleData: boolean) => void;
+  setHotelSearchData: (hotelSearchData: Hotel[]) => void;
   clearHotelSearchData: () => void;
 }
 
@@ -17,10 +16,9 @@ const useHotelStore = create<
     (set) => ({
       hotelSearchData: [],
       isSampleData: false,
-      setHotelSearchData: (hotelSearchData: Hotel[], isSampleData: boolean) =>
-        set({ hotelSearchData: hotelSearchData, isSampleData: isSampleData }),
-      clearHotelSearchData: () =>
-        set({ hotelSearchData: [], isSampleData: false }),
+      setHotelSearchData: (hotelSearchData: Hotel[]) =>
+        set({ hotelSearchData: hotelSearchData }),
+      clearHotelSearchData: () => set({ hotelSearchData: [] }),
     }),
     {
       name: "hotel-storage",
