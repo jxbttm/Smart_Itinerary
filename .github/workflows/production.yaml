@@ -1,0 +1,85 @@
+name: Smart Itinerary Production Deployment
+
+env:
+    AIKIDO_CI_KEY: ${{ secrets.AIKIDO_SECRET_KEY }}
+    GH_KEY: ${{ secrets.GH_SMART_TOKEN }}
+    VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+    VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+    NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
+
+on:
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - 'README.md'
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20.x
+    
+          - run: npm ci
+    
+          - run: npm run build
+
+    Test:
+        needs: [Build]
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: Cypress run
+            uses: cypress-io/github-action@v6
+
+          - run: npm run test:e2e
+
+    SAST:
+        needs: [Test]
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Detect new vulnerabilities
+          uses: AikidoSec/github-actions-workflow@v1.0.13
+          with:
+              secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
+              fail-on-timeout: true
+              fail-on-dependency-scan: true
+              fail-on-sast-scan: false
+              fail-on-iac-scan: false
+              minimum-severity: 'CRITICAL'
+              timeout-seconds: 180
+              post-scan-status-comment: 'off'
+              post-sast-review-comments: 'off'
+              github-token: ${{ secrets.GH_SMART_TOKEN }}
+
+    Deploy-Production:
+        needs: [SAST]
+        runs-on: ubuntu-latest
+        steps:
+
+            - uses:  actions/checkout@v4
+
+            - name: Install Vercel CLI
+              run: npm install --global vercel
+
+            - name: Pull Vercel Environment Information
+              run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Build Project Artifacts
+              run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Deploy Project Artifacts
+              run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
