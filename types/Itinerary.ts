@@ -13,4 +13,5 @@ export interface Itinerary {
     itineraryDays: ItineraryDay[];
     estimatedTotalCost: number;
     importantNotes: string[];
+    travelerType?: string;
 }

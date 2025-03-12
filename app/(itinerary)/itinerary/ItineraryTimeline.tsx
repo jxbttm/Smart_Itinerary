@@ -41,6 +41,8 @@ export default function ItineraryTimeline({ itinerary }: ItineraryTimelineProps)
 
           {itinerary.demographics.travelerType ? (
             <p>({itinerary.demographics.travelerType})</p>
+          ) : itinerary.travelerType ? (
+            <p>({itinerary.travelerType})</p>
           ) : (
             <p>Traveler Type not available</p>
           )}
@@ -105,7 +107,7 @@ export default function ItineraryTimeline({ itinerary }: ItineraryTimelineProps)
 
           {/* Important Notes */}
           {itinerary.importantNotes && itinerary.importantNotes.length > 0 ? (
-            <div>
+            <div className="flex flex-col items-center justify-center text-center">
               <h3 className="text-lg font-black">Important Notes:</h3>
               <ul>
                 {itinerary.importantNotes.map((note, index) => (
@@ -114,21 +116,9 @@ export default function ItineraryTimeline({ itinerary }: ItineraryTimelineProps)
               </ul>
             </div>
           ) : (
-            <p>No important notes available</p>
+            <p className="text-center">No important notes available</p>
           )}
-          <div className="mt-6">
-            <button className="btn btn-outline" onClick={() => SaveItinerary()} disabled={loading}>
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="loading loading-spinner"></span>{" "}
-                  Saving...
-                </span>
-              ) : (
-                "Save Itinerary"
-              )}
-
-            </button>
-          </div>
+          
         </>
       ) : (
         <p>No itinerary available</p>
