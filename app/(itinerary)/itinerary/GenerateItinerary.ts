@@ -22,7 +22,7 @@ const genAI = new GoogleGenerativeAI(apiKey);
 async function GenerateItinerary(itinerary: ItineraryProps) {
   const prompt = ` I am planning a trip to ${itinerary.country} from ${itinerary.startDate} to ${itinerary.endDate} with a budget between ${itinerary.minBudget} and ${itinerary.maxBudget}. 
                   The purpose of my trip is ${itinerary.preferences}, and I will be traveling with ${itinerary.travelGroup}. 
-                  Based on these details, suggest an itinerary with recommended places to visit, activities to do with google map url to location, and estimated costs within my budget.`;
+                  Based on these details, suggest an itinerary with recommended places to visit, activities to do with public accessible images urls, location, "timings": "9:00 AM - 6:00 PM" and estimated costs within my budget.`;
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" , generationConfig});
     const result = await model.generateContent(prompt);

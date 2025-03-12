@@ -1,86 +1,62 @@
 export const ItinerarySchema = {
-    type: "OBJECT",
+    type: "object",
     properties: {
-        start_date: { type: "STRING" },
-        end_date: { type: "STRING" },
-        destination: { type: "STRING" },
-        dates: { type: "STRING" },
-        budget: {
-            type: "OBJECT",
+        startDate: { type: "string" },
+        endDate: { type: "string" },
+        destination: { type: "string" },
+        demographics: {
+            type: "object",
             properties: {
-                currency: { type: "STRING", nullable: true },
-                min: { type: "NUMBER" },
-                max: { type: "NUMBER" }
+                currency: { type: "string" },
+                budgetMin: { type: "number" },
+                budgetMax: { type: "number" },
+                travelerType: { type: "string" },
+                purpose: { type: "string" },
             },
-            required: ["min", "max"]
+            required: ["currency", "budgetMin", "budgetMax", "travelerType", "purpose"]
         },
-        travelerType: { type: "STRING" },
-        purpose: { type: "STRING" },
-        itinerary: {
-            type: "ARRAY",
+        accommodation: {
+            type: "object",
+            properties: {
+                name: { type: "string" },
+                estimatedCost: { type: "number" },
+                imageUrl: { type: "string" }
+            },
+            required: ["name", "estimatedCost", "imageUrl"]
+        },
+        itineraryDays: {
+            type: "array",
             items: {
-                type: "OBJECT",
+                type: "object",
                 properties: {
-                    date: { type: "STRING" },
-                    location: { type: "STRING" },
-                    description: { type: "STRING" },
+                    date: { type: "string" },
+                    location: { type: "string" },
+                    description: { type: "string" },
                     activities: {
-                        type: "ARRAY",
+                        type: "array",
                         items: {
-                            type: "OBJECT",
+                            type: "object",
                             properties: {
-                                name: { type: "STRING" },
-                                details: { type: "STRING" },
-                                estimatedCost: {
-                                    type: "OBJECT",
-                                    properties: {
-                                        currency: { type: "STRING" },
-                                        amount: { type: "NUMBER" }
-                                    },
-                                    required: ["currency", "amount"]
-                                },
-                                googleMapsURL: { type: "STRING" }
+                                name: { type: "string" },
+                                details: { type: "string" },
+                                estimatedCost: { type: "number" },
+                                imageUrl: { type: "string" },
+                                timing: { type: "string" }
                             },
-                            required: ["name", "details", "estimatedCost", "googleMapsURL"]
+                            required: ["name", "details", "estimatedCost", "imageUrl"]
                         }
                     },
-                    accommodation: {
-                        type: "OBJECT",
-                        properties: {
-                            type: { type: "STRING" },
-                            estimatedCost: {
-                                type: "OBJECT",
-                                properties: {
-                                    currency: { type: "STRING" },
-                                    amount: { type: "NUMBER" }
-                                },
-                                required: ["currency", "amount"]
-                            }
-                        },
-                        required: ["type", "estimatedCost"]
-                    }
                 },
-                required: ["date", "location", "description", "activities", "accommodation"]
+                required: ["date", "location", "description", "activities"]
             }
         },
-        estimatedTotalCost: {
-            type: "OBJECT",
-            properties: {
-                currency: { type: "STRING" },
-                amount: { type: "NUMBER" },
-                notes: { type: "STRING" }
-            },
-            required: ["currency", "amount", "notes"]
-        },
+        estimatedTotalCost: { type: "number" },
         importantNotes: {
-            type: "ARRAY",
-            items: {
-                type: "STRING"
-            }
+            type: "array",
+            items: { type: "string" }
         }
     },
     required: [
-        "start_date", "end_date", "destination", "dates", "budget",
-        "travelerType", "purpose", "itinerary", "estimatedTotalCost", "importantNotes"
+        "startDate", "endDate", "destination", "demographics", "accommodation", "itineraryDays", "estimatedTotalCost", "importantNotes"
     ]
 };

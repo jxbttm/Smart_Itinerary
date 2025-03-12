@@ -1,24 +1,16 @@
 import { ItineraryDay } from './ItineraryDay';
+import { ItineraryDemographics } from './ItineraryDemographics';
+import { ItineraryAccommodation } from './ItineraryAccommodation';
 
 export interface Itinerary {
     id?: string | null;
-    user_id?: string | null;
-    start_date: string;
-    end_date: string;
+    userId?: string | null;
+    startDate: string;
+    endDate: string;
     destination: string;
-    dates: string;
-    budget: {
-        currency?: string | null;
-        min: number;
-        max: number;
-    };
-    travelerType: string;
-    purpose: string;
-    itinerary: ItineraryDay[],
-    estimatedTotalCost: {
-        currency: string;
-        amount: number;
-        notes: string;
-    };
+    demographics: ItineraryDemographics;
+    accommodation: ItineraryAccommodation;
+    itineraryDays: ItineraryDay[];
+    estimatedTotalCost: number;
     importantNotes: string[];
-};
+}

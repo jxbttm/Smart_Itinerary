@@ -1,7 +1,5 @@
 export interface ItineraryAccommodation {
-  type: string;
-  estimatedCost: {
-    currency: string;
-    amount: number;
-  };
+  name: string;
+  estimatedCost: number;
+  imageUrl:string;
 }
