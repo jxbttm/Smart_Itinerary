@@ -1,9 +1,7 @@
 export interface ItineraryActivity {
     name: string;
     details: string;
-    estimatedCost: {
-      currency: string;
-      amount: number;
-    };
-    googleMapsURL: string;
+    timing: string;
+    estimatedCost: number;
+    imageUrl: string;
   }
