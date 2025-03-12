@@ -1,39 +1,36 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { use } from 'react'
 import GenerateItinerary from "./GenerateItinerary";
 import ItineraryTimeline from "./ItineraryTimeline";
 import { Itinerary } from '@/types/Itinerary';
 
-export default function ItineraryPage() {
+export default function ItineraryPage({
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string }>
+}) {
   const [loading, setLoading] = useState<boolean>(false);
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
-  const searchParams = useSearchParams();
-  const data = searchParams.get("data");
-  let parsedData: any;
-
-  if (!data) return <div>Loading...</div>;
-
-  try {
-    parsedData = JSON.parse(decodeURIComponent(data)); // Parsing the URL-encoded data
-  } catch (error) {
-    return <div>Error parsing data. Please check the URL.</div>;
-  }
-
+  const { data } = use(searchParams)
 
   useEffect(() => {
-    if (!parsedData || itinerary) {
+    if (!data || itinerary) {
       return;
     }
     const fetchItinerary = async () => {
       setLoading(true);
       try {
-        const result = await GenerateItinerary(parsedData);
-        if(result){
-          const itineraryData: Itinerary = JSON.parse(result);
-          setItinerary(itineraryData);
-        } else {
-          setItinerary(null);
+        if (data) {
+          const parsedData = JSON.parse(decodeURIComponent(data));
+          const result = await GenerateItinerary(parsedData);
+          if (result) {
+            const itineraryData: Itinerary = JSON.parse(result);
+            setItinerary(itineraryData);
+          } else {
+            setItinerary(null);
+          }
         }
       } catch (error) {
         console.error("Error generating itinerary:", error);
