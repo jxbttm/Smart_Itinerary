@@ -8,6 +8,7 @@ env:
     VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
     NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+    NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
 
 on:
     push:
@@ -56,7 +57,7 @@ jobs:
               secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
               fail-on-timeout: true
               fail-on-dependency-scan: true
-              fail-on-sast-scan: false
+              fail-on-sast-scan: true
               fail-on-iac-scan: false
               minimum-severity: 'CRITICAL'
               timeout-seconds: 180
