@@ -5,11 +5,13 @@ import { Country } from "@/types/Country";
 import { TravelType } from "@/types/TravelType";
 import CountrySearch from "@/app/(itinerary)/plan-itinerary/CountrySearch";
 import { useRouter } from "next/navigation";
+import { createClient } from '@/lib/supabase/client'
 
 interface ItineraryFormProps {
   countries: Country[];
   travelType: TravelType[];
 }
+
 export default function ItineraryForm({ countries, travelType }: ItineraryFormProps) {
   const router = useRouter()
   const [searchCountry, setSearchCountry] = useState<string>("");
@@ -23,6 +25,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
   const [maxBudget, setMaxBudget] = useState<number>(0);
   const [preferences, setPreferences] = useState<string[]>([]);
   const [travelGroup, setTravelGroup] = useState<string>("");
+  const [prefChecked, setPrefChecked] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,6 +51,27 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
     setPreferences((prev) =>
       checked ? [...prev, value] : prev.filter((item) => item !== value)
     );
+  };
+
+  const handlePrefCheckboxChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked;
+    setPrefChecked(event.target.checked);
+    if (checked) {
+      // Get the user session
+      const supabase = await createClient();
+      const session = await supabase.auth.getUser();
+      if (session.data.user) {
+        const { id } = session.data.user
+        const { data, error } = await supabase.from('users').select('min_budget,max_budget,travel_group').eq('id', id).single();
+        if (data && !error) {
+          setMinBudget(data.min_budget)
+          setMaxBudget(data.max_budget)
+          setTravelGroup(data.travel_group)
+        }
+      }
+    } else {
+      setPrefChecked(false);
+    }
   };
 
   return (
@@ -112,6 +136,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="My Preference"
                   type="checkbox"
                   className="checkbox"
+                  onChange={handlePrefCheckboxChange}
                 />
               </label>
             </div>
@@ -137,6 +162,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   step="0.01"
                   min={0}
                   value={minBudget}
+                  disabled={prefChecked}
                   onChange={(e) => {
                     const inputValue = Number(e.target.value);
                     if (!isNaN(inputValue)) {
@@ -154,6 +180,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   step="0.01"
                   min={0}
                   value={maxBudget}
+                  disabled={prefChecked}
                   onChange={(e) => {
                     const inputValue = Number(e.target.value);
                     if (!isNaN(inputValue)) {
@@ -230,7 +257,9 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                         type="radio"
                         name="travel-group"
                         value={travel.type_name}
+                        disabled={prefChecked}
                         className="radio radio-accent"
+                        checked={travelGroup === travel.type_name}
                         onChange={(e) => setTravelGroup(e.target.value)}
                       />
                     </label>
