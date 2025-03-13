@@ -7,23 +7,24 @@ interface HotelStoreState {
   setHotelSearchData: (hotelSearchData: Hotel[]) => void;
   clearHotelSearchData: () => void;
 }
+export default function hotelStore() {
+  const useHotelStore = create<
+    HotelStoreState,
+    [["zustand/persist", HotelStoreState]]
+  >(
+    persist(
+      (set) => ({
+        hotelSearchData: [],
+        isSampleData: false,
+        setHotelSearchData: (hotelSearchData: Hotel[]) =>
+          set({ hotelSearchData: hotelSearchData }),
+        clearHotelSearchData: () => set({ hotelSearchData: [] }),
+      }),
+      {
+        name: "hotel-storage",
+      }
+    )
+  );
 
-const useHotelStore = create<
-  HotelStoreState,
-  [["zustand/persist", HotelStoreState]]
->(
-  persist(
-    (set) => ({
-      hotelSearchData: [],
-      isSampleData: false,
-      setHotelSearchData: (hotelSearchData: Hotel[]) =>
-        set({ hotelSearchData: hotelSearchData }),
-      clearHotelSearchData: () => set({ hotelSearchData: [] }),
-    }),
-    {
-      name: "hotel-storage",
-    }
-  )
-);
-
-export default useHotelStore;
+  return { useHotelStore };
+}
