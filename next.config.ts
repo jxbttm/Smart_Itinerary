@@ -5,21 +5,22 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
       },
       {
-        protocol: 'https',
-        hostname: 'img.daisyui.com',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "img.daisyui.com",
+        pathname: "/**",
       },
       {
-        protocol: 'https',
-        hostname: 'upload.wikimedia.org',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        pathname: "/**",
       },
     ],
+    domains: ["example.com"],
   },
 };
 
