@@ -27,6 +27,7 @@ export default function ItineraryPage({
           const result = await GenerateItinerary(parsedData);
           if (result) {
             const itineraryData: Itinerary = JSON.parse(result);
+            console.log('itineraryData', itineraryData);
             setItinerary(itineraryData);
           } else {
             setItinerary(null);

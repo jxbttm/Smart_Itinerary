@@ -46,7 +46,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
     setSearchCountry(term); // Update the searchTerm in the parent component
   };
 
-  const handlCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     setPreferences((prev) =>
       checked ? [...prev, value] : prev.filter((item) => item !== value)
@@ -55,7 +55,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
 
   const handlePrefCheckboxChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.target.checked;
-    setPrefChecked(event.target.checked);
+    setPrefChecked(checked);
     if (checked) {
       // Get the user session
       const supabase = await createClient();
@@ -63,11 +63,17 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
       if (session.data.user) {
         const { id } = session.data.user
         const { data, error } = await supabase.from('users').select('min_budget,max_budget,travel_group').eq('id', id).single();
-        if (data && !error) {
+        console.log('data', data);
+        if (data?.min_budget && data?.max_budget && data?.travel_group && !error) {
           setMinBudget(data.min_budget)
           setMaxBudget(data.max_budget)
           setTravelGroup(data.travel_group)
         }
+        else {
+          setPrefChecked(false);
+          alert('No valid preferences found. Please update your information.');
+        }
+        
       }
     } else {
       setPrefChecked(false);
@@ -136,6 +142,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="My Preference"
                   type="checkbox"
                   className="checkbox"
+                  checked={prefChecked}
                   onChange={handlePrefCheckboxChange}
                 />
               </label>
@@ -209,7 +216,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="More Attractions"
                   type="checkbox"
                   className="checkbox"
-                  onChange={handlCheckBoxChange}
+                  onChange={handleCheckBoxChange}
                 />
               </label>
               <label className="label cursor-pointer">
@@ -219,7 +226,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="More Scenery"
                   type="checkbox"
                   className="checkbox"
-                  onChange={handlCheckBoxChange}
+                  onChange={handleCheckBoxChange}
                 />
               </label>
               <label className="label cursor-pointer">
@@ -229,7 +236,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="More Restaurants"
                   type="checkbox"
                   className="checkbox"
-                  onChange={handlCheckBoxChange}
+                  onChange={handleCheckBoxChange}
                 />
               </label>
             </div>
