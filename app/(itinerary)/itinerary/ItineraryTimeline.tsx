@@ -17,7 +17,7 @@ export default function ItineraryTimeline({ itinerary }: ItineraryTimelineProps)
       const { id } = session.data.user
       await ItineraryService.saveItinerary(id, itinerary)
       setLoading(false)
-      router.push('/profile');
+      router.push(`/profile/${id}`);
     }
   }
 
@@ -118,7 +118,19 @@ export default function ItineraryTimeline({ itinerary }: ItineraryTimelineProps)
           ) : (
             <p className="text-center">No important notes available</p>
           )}
-          
+          <div className="mt-6">
+            <button className="btn btn-outline" onClick={() => SaveItinerary()} disabled={loading}>
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="loading loading-spinner"></span>{" "}
+                  Saving...
+                </span>
+              ) : (
+                "Save Itinerary"
+              )}
+
+            </button>
+          </div>
         </>
       ) : (
         <p>No itinerary available</p>
