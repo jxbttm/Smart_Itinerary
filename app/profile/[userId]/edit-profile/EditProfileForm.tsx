@@ -85,7 +85,7 @@ export default function ItineraryForm({ travelType }: ItineraryFormProps) {
       
             console.log("Data saved!");
             // Redirect to the profile page
-            router.push('/profile');
+            router.push(`/profile/${user.id}`);
 
           } catch (error: any) {
             setError(error.message);
