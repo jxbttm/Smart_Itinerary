@@ -55,7 +55,7 @@ export default function ItineraryPage({
       <div>
         {itinerary ? (
           <div>
-            <ItineraryTimeline itinerary={itinerary} />
+            <ItineraryTimeline itinerary={itinerary} userId="null" itineraryId="null" />
           </div>
         ) : (
           <div>Error generating itinerary. Please try again later.</div>

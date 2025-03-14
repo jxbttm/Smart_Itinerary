@@ -2,12 +2,26 @@
 import { ItineraryService } from '@/services/ItineraryService';
 import { ItineraryTimelineProps } from './ItineraryTimelineProps';
 import { createClient } from '@/lib/supabase/client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 
-export default function ItineraryTimeline({ itinerary }: ItineraryTimelineProps) {
+export default function ItineraryTimeline({ itinerary, userId, itineraryId }: ItineraryTimelineProps) {
   const [loading, setLoading] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const router = useRouter();
+
+  // Fetch the current user session to get the logged-in user ID
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = await createClient();
+      const session = await supabase.auth.getUser();
+      if (session.data.user) {
+        setCurrentUser(session.data.user.id);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
@@ -20,6 +34,9 @@ export default function ItineraryTimeline({ itinerary }: ItineraryTimelineProps)
       router.push(`/profile/${id}`);
     }
   }
+
+  // Check if the itinerary belongs to the current logged-in user
+  const isViewingOwnItinerary = userId === "not null" && itineraryId === "not null";
 
   return (
     <div className="flex flex-col items-center p-8">
@@ -118,19 +135,21 @@ export default function ItineraryTimeline({ itinerary }: ItineraryTimelineProps)
           ) : (
             <p className="text-center">No important notes available</p>
           )}
-          <div className="mt-6">
-            <button className="btn btn-outline" onClick={() => SaveItinerary()} disabled={loading}>
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="loading loading-spinner"></span>{" "}
-                  Saving...
-                </span>
-              ) : (
-                "Save Itinerary"
-              )}
-
-            </button>
-          </div>
+          {/* Conditionally render the "Save Itinerary" button */}
+          {!isViewingOwnItinerary && (
+            <div className="mt-6">
+              <button className="btn btn-outline" onClick={() => SaveItinerary()} disabled={loading}>
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="loading loading-spinner"></span>{" "}
+                    Saving...
+                  </span>
+                ) : (
+                  "Save Itinerary"
+                )}
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <p>No itinerary available</p>
