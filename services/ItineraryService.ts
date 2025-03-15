@@ -141,39 +141,69 @@ export class ItineraryService {
                   console.error('Error fetching itinerary days:', itineraryDaysError);
               }
 
-
-              // Transform start_date and end_date to startDate and endDate
-              const itineraryWithCorrectProps = {
-                  ...itineraryData,
-                  ...demographicsData,
-                  startDate: itineraryData.start_date,
-                  endDate: itineraryData.end_date,
-                  travelerType: demographicsData.travel_type,
-                  estimatedTotalCost: itineraryData.estimated_total_cost,
-                  importantNotes: itineraryData.notes ? JSON.parse(itineraryData.notes) : [], // Parse the notes string into an array
-              };
-      
-              // Fetch activities for each itinerary day (same as before)
-              if (itineraryDaysData) {
+                // Fetch activities for each itinerary day (same as before)
+                if (itineraryDaysData) {
                   for (let day of itineraryDaysData) {
                       const { data: activitiesData, error: activitiesError } = await supabase
                           .from('itinerary_activity')
                           .select('*')
                           .eq('itinerary_day_id', day.id); // Fetch activities by itinerary_day_id
-                      
+              
                       if (activitiesError) {
                           console.error('Error fetching activities for day:', activitiesError);
                       }
-      
-                      day.activities = activitiesData || []; // Add activities to each day
+              
+                      // Transform the activities data to match your JavaScript object naming conventions (camelCase)
+                      if (activitiesData) {
+                      day.activities = activitiesData.map(activity => ({
+                          id: activity.id,
+                          itineraryDayId: activity.itinerary_day_id, // Mapping `itinerary_day_id` to `itineraryDayId`
+                          name: activity.name,
+                          details: activity.details,
+                          estimatedCost: activity.estimated_cost, // Mapping `estimated_cost` to `estimatedCost`
+                          imageUrl: activity.image_url, // Mapping `image_url` to `imageUrl`
+                          timing: activity.timing,
+                      })) || []; // Add activities to each day, with new property names
+                    }
                   }
               }
-      
+
+
+              // Transform itinerary data to match your TypeScript object naming conventions (camelCase)
+              const transformedItineraryData = {
+                ... itineraryData,
+                id: itineraryData.id,
+                destination: itineraryData.destination,
+                startDate: itineraryData.start_date,
+                endDate: itineraryData.end_date,
+                estimatedTotalCost: itineraryData.estimated_total_cost,
+                importantNotes: itineraryData.notes ? JSON.parse(itineraryData.notes) : [], // Parse the notes string into an array
+            };
+
+            // Transform the demographics object and nest it under "demographics"
+            const transformedDemographicsData = {
+                currency: demographicsData.currency,
+                budgetMin: demographicsData.budget_min,
+                budgetMax: demographicsData.budget_max,
+                travelerType: demographicsData.travel_type,
+                purpose: demographicsData.purpose,
+            };
+
+            // Transform the accommodation object and nest it under "accommodation"
+            const transformedAccommodationData = {
+                  id: accommodationData.id,
+                  name: accommodationData.name,
+                  estimatedCost: accommodationData.estimated_cost,  // Mapping snake_case to camelCase
+                  imageUrl: accommodationData.image_url,            // Mapping snake_case to camelCase
+                  itineraryId: accommodationData.itinerary_id      // Mapping snake_case to camelCase
+              
+            };
+
               // Assemble and return the complete itinerary data including all related data
               return {
-                  ...itineraryWithCorrectProps,  // Use transformed itinerary data
-                  demographics: demographicsData || {},
-                  accommodation: accommodationData || {},
+                  ...transformedItineraryData,
+                  demographics: transformedDemographicsData || {},
+                  accommodation: transformedAccommodationData || {},
                   itineraryDays: itineraryDaysData || [],
               };
           } catch (error) {
