@@ -2,18 +2,12 @@ import { TravelType } from "@/types/TravelType";
 import { CommonDataFetcher } from "@/services/CommonDataFetcher";
 import { TravelTypeFetchStrategy } from "@/services/TravelTypeFetchStrategy";
 import dynamic from 'next/dynamic';
-import { notFound } from 'next/navigation'; // For handling missing userId
 
-// Dynamically import the ItineraryForm component
 const ItineraryForm = dynamic(() => import('@/app/profile/[userId]/edit-profile/EditProfileForm'));
 
-// This function gets the userId from the dynamic route and fetches necessary data
-export default async function PlanItinerary({ params }: { params: { userId: string } }) {
-  // Fetch travel data (using your custom fetcher)
+export default async function EditProfile() {
   const dataFetcher = new CommonDataFetcher(new TravelTypeFetchStrategy());
   const travelData = await dataFetcher.fetchData<TravelType[]>() || [];
-
-  // You can fetch user data if needed by userId here or handle it inside the form component
 
 
   return (
