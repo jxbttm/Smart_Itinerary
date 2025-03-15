@@ -68,6 +68,7 @@ jobs:
     Deploy-Production:
         needs: [SAST]
         runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         steps:
 
             - uses:  actions/checkout@v4
