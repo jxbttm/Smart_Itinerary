@@ -75,7 +75,7 @@ export default function Profile() {
         return <p>User not found</p>;
     }
 
-    const { name, email, avatar_url, travel_group, min_budget, max_budget } = user;
+    const { name, email, avatar_url, travel_group, min_budget, max_budget, purpose } = user;
 
     return (
         <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center min-h-screen gap-4">
@@ -97,6 +97,7 @@ export default function Profile() {
             <p className="text-xl">Email: {email}</p>
             <p className="text-xl">Travel Type: {travel_group}</p>
             <p className="text-xl">Budget: ${min_budget} - ${max_budget}</p>
+            <p className="text-xl">Purpose: {purpose}</p>
 
             {itineraries.length > 0 ? (
                 itineraries.map((itinerary: any) => (
