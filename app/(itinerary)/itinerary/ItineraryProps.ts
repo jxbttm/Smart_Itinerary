@@ -6,4 +6,5 @@ export interface ItineraryProps {
     maxBudget: number,
     preferences: string[],
     travelGroup: string
+    numberPeople: string,
 }

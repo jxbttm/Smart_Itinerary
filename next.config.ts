@@ -19,8 +19,12 @@ const nextConfig: NextConfig = {
         hostname: "upload.wikimedia.org",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "plus.unsplash.com",
+        pathname: "/**"
+      }
     ],
-    domains: ["example.com"],
   },
 };
 
