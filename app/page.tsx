@@ -4,11 +4,23 @@ import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import HomeCarousel from './HomeCarousel'
+import ImagePopup from "@/components/Modal";  // Adjust import based on your file structure
 
 export default function Home() {
 
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handleButtonClick = () => {
+    setIsPopupOpen(true); // Open the modal
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false); // Close the modal
+  };
+
 
   useEffect(() => {
     // This runs on the client-side when the component mounts
@@ -71,7 +83,15 @@ export default function Home() {
           <Link href="/plan-itinerary">
             <button className="btn btn-primary py-2 px-6 text-white">Plan a Trip</button>
           </Link>
-          <button className="btn btn-neutral py-2 px-6 text-white">Buy us Coffee</button>
+          <button className="btn btn-neutral py-2 px-6 text-white" onClick={handleButtonClick}>Buy us Coffee</button>
+          {isPopupOpen && (
+            <ImagePopup
+              imageUrl="/images/paynow.jpg"  // Image URL to show
+              onClose={handleClosePopup}  // Close button functionality
+            />
+          )}
+
+
         </div>
       </div>
     )
@@ -95,7 +115,13 @@ export default function Home() {
           <Link href="/plan-itinerary">
             <button className="btn btn-primary py-2 px-6 text-white">Plan a Trip</button>
           </Link>
-          <button className="btn btn-neutral py-2 px-6 text-white">Buy us Coffee</button>
+          <button className="btn btn-neutral py-2 px-6 text-white" onClick={handleButtonClick}>Buy us Coffee</button>
+          {isPopupOpen && (
+            <ImagePopup
+              imageUrl="/images/paynow.jpg"  // Image URL to show
+              onClose={handleClosePopup}  // Close button functionality
+            />
+          )}
         </div>
         <HomeCarousel></HomeCarousel>
       </main>

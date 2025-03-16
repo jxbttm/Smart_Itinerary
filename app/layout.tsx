@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from "@/lib/supabase/client";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Geist, Geist_Mono } from "next/font/google";
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect, ReactNode } from "react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,8 +21,7 @@ interface RootLayoutProps {
   children: ReactNode;
 }
 
-export default function RootLayout({children} : RootLayoutProps) {
-
+export default function RootLayout({ children }: RootLayoutProps) {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -40,11 +39,11 @@ export default function RootLayout({children} : RootLayoutProps) {
     fetchUser();
 
     // Listen to auth state changes and update user state
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-    });
-
-    
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
   }, []);
 
   // Sign out function
@@ -52,20 +51,24 @@ export default function RootLayout({children} : RootLayoutProps) {
     const supabase = createClient();
     await supabase.auth.signOut(); // Sign out the user
     setUser(null); // Set the user state to null
-    window.location.href='/' // Reload the window
+    window.location.href = "/"; // Reload the window
   };
 
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
         <title>Smart Voyage</title>
       </head>
-      <body>
-        <Header user={user} onLogout={signOut} />
-
-        <main>{children}</main>
-
-        <Footer />
+      <body className="flex flex-col min-h-screen">
+        <div>
+          <Header user={user} onLogout={signOut} />
+        </div>
+        <div className="flex-1 overflow-auto flex flex-col">
+          <main className="h-full flex-1 flex flex-col">{children}</main>
+        </div>
+        <div>
+          <Footer />
+        </div>
       </body>
     </html>
   );

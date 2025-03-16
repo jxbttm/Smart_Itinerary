@@ -24,7 +24,10 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
   const [minBudget, setMinBudget] = useState<number>(0);
   const [maxBudget, setMaxBudget] = useState<number>(0);
   const [preferences, setPreferences] = useState<string[]>([]);
-  const [travelGroup, setTravelGroup] = useState<string>("");
+  const [travelGroup, setTravelGroup] = useState<{ type_name: string; number_of_people: string }>({
+    type_name: "",
+    number_of_people: "1",
+  });
   const [prefChecked, setPrefChecked] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -36,7 +39,8 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
       minBudget: minBudget,
       maxBudget: maxBudget,
       preferences: preferences,
-      travelGroup: travelGroup
+      travelGroup: travelGroup.type_name,
+      numberPeople: travelGroup.number_of_people
     }
     const serializedData = encodeURIComponent(JSON.stringify(formData));
     router.push(`/itinerary?data=${serializedData}`);
@@ -46,7 +50,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
     setSearchCountry(term); // Update the searchTerm in the parent component
   };
 
-  const handlCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     setPreferences((prev) =>
       checked ? [...prev, value] : prev.filter((item) => item !== value)
@@ -55,19 +59,29 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
 
   const handlePrefCheckboxChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.target.checked;
-    setPrefChecked(event.target.checked);
+    setPrefChecked(checked);
     if (checked) {
       // Get the user session
       const supabase = await createClient();
       const session = await supabase.auth.getUser();
       if (session.data.user) {
         const { id } = session.data.user
-        const { data, error } = await supabase.from('users').select('min_budget,max_budget,travel_group').eq('id', id).single();
-        if (data && !error) {
+        const { data, error } = await supabase.from('users').select('min_budget,max_budget,travel_group,purpose,number_of_people').eq('id', id).single();
+        if (data?.min_budget && data?.max_budget && data?.travel_group && data?.purpose && !error) {
           setMinBudget(data.min_budget)
           setMaxBudget(data.max_budget)
-          setTravelGroup(data.travel_group)
+          const purpose = data.purpose.split(','); //Split string into array
+          setPreferences(purpose)
+          setTravelGroup({
+            type_name: data.travel_group,
+            number_of_people: data.number_of_people,
+          });
         }
+        else {
+          setPrefChecked(false);
+          alert('No valid preferences found. Please update your information.');
+        }
+
       }
     } else {
       setPrefChecked(false);
@@ -136,6 +150,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="My Preference"
                   type="checkbox"
                   className="checkbox"
+                  checked={prefChecked}
                   onChange={handlePrefCheckboxChange}
                 />
               </label>
@@ -209,7 +224,9 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="More Attractions"
                   type="checkbox"
                   className="checkbox"
-                  onChange={handlCheckBoxChange}
+                  disabled={prefChecked}
+                  checked={preferences.includes('More Attractions')}
+                  onChange={handleCheckBoxChange}
                 />
               </label>
               <label className="label cursor-pointer">
@@ -219,7 +236,9 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="More Scenery"
                   type="checkbox"
                   className="checkbox"
-                  onChange={handlCheckBoxChange}
+                  disabled={prefChecked}
+                  checked={preferences.includes('More Scenery')}
+                  onChange={handleCheckBoxChange}
                 />
               </label>
               <label className="label cursor-pointer">
@@ -229,7 +248,9 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                   value="More Restaurants"
                   type="checkbox"
                   className="checkbox"
-                  onChange={handlCheckBoxChange}
+                  disabled={prefChecked}
+                  checked={preferences.includes('More Restaurants')}
+                  onChange={handleCheckBoxChange}
                 />
               </label>
             </div>
@@ -251,7 +272,7 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                       className="label cursor-pointer"
                     >
                       <span className="label-text pr-4">
-                        {travel.type_name}
+                        {travel.type_name} ({travel.number_of_people} {travel.number_of_people === "1" ? 'person' : 'people'})
                       </span>
                       <input
                         type="radio"
@@ -259,8 +280,13 @@ export default function ItineraryForm({ countries, travelType }: ItineraryFormPr
                         value={travel.type_name}
                         disabled={prefChecked}
                         className="radio radio-accent"
-                        checked={travelGroup === travel.type_name}
-                        onChange={(e) => setTravelGroup(e.target.value)}
+                        checked={travelGroup.type_name === travel.type_name}
+                        onChange={() => {
+                          setTravelGroup({
+                            type_name: travel.type_name,
+                            number_of_people: travel.number_of_people,
+                          });
+                        }}
                       />
                     </label>
                   ))}

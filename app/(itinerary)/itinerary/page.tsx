@@ -27,6 +27,7 @@ export default function ItineraryPage({
           const result = await GenerateItinerary(parsedData);
           if (result) {
             const itineraryData: Itinerary = JSON.parse(result);
+            console.log('itineraryData', itineraryData);
             setItinerary(itineraryData);
           } else {
             setItinerary(null);
@@ -54,7 +55,7 @@ export default function ItineraryPage({
       <div>
         {itinerary ? (
           <div>
-            <ItineraryTimeline itinerary={itinerary} />
+            <ItineraryTimeline itinerary={itinerary} userId="null" itineraryId="null" />
           </div>
         ) : (
           <div>Error generating itinerary. Please try again later.</div>
