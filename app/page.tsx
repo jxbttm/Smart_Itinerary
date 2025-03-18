@@ -91,6 +91,9 @@ export default function Home() {
             />
           )}
 
+          <Link href="/hotel">
+            <button className="btn py-2 px-6 text-black">Find a Hotel</button>
+          </Link>
 
         </div>
       </div>
