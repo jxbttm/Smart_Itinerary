@@ -5,8 +5,9 @@ import { createClient } from '@/lib/supabase/client'
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import Image from 'next/image'
+import FlightLeg from '@/components/flights/FlightDisplayCard';
 
-export default function ItineraryTimeline({ itinerary, userId, itineraryId }: ItineraryTimelineProps) {
+export default function ItineraryTimeline({ itinerary, userId, itineraryId, flightDisplayDetails }: ItineraryTimelineProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const router = useRouter();
@@ -82,6 +83,49 @@ export default function ItineraryTimeline({ itinerary, userId, itineraryId }: It
 
             <span className='font-bold mr-2'>Estimated Price: </span> ${itinerary.accommodation.estimatedCost} {itinerary.demographics.currency}
           </div>
+
+
+          {/* Flights */}
+          <div className="divider divider-neutral font-bold">Flights Options</div>
+          {flightDisplayDetails && flightDisplayDetails.length > 0 ? (
+            <div className="w-full overflow-x-auto">
+              <div className="inline-flex gap-6 pb-4 px-4" style={{ minWidth: 'max-content' }}>
+                {flightDisplayDetails.map((flight, flightIndex) => (
+                  <div 
+                    key={flightIndex} 
+                    className="w-[400px] p-6 bg-base-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="text-sm text-gray-600 mb-4">
+                      Flight Option {flightIndex + 1}
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <FlightLeg 
+                        flightData={flight.outbound}
+                      />
+                      
+                      {flight.return && (
+                        <FlightLeg 
+                          flightData={flight.return}
+                          isReturn={true}
+                        />
+                      )}
+                    </div>
+                    
+                    <div className="mt-4 flex justify-end">
+                      <div className="text-xl font-bold text-gray-900">
+                        {flight.price.amount} {flight.price.currency}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p>No Available Flights</p>
+          )}
+          {/* Flights End */}
+
 
           <div className="divider divider-neutral font-bold">Activities</div>
 

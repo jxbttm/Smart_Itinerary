@@ -52,7 +52,7 @@ export default function ItineraryPage()
         <div>
             {itinerary ? (
             <div>
-                <ItineraryTimeline itinerary={itinerary} userId="not null" itineraryId="not null" />
+                <ItineraryTimeline itinerary={itinerary} userId="not null" itineraryId="not null" flightDisplayDetails={[]}/>
             </div>
             ) : (
             <div>Error viewing itinerary. Please try again later.</div>
