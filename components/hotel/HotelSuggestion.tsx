@@ -2,13 +2,12 @@
 
 import { useHotels } from "@/hooks/useHotels";
 import { Hotel } from "@/interfaces/Hotel";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { ItineraryService } from "@/services/ItineraryService";
 
 import { useEffect, useState } from "react";
 import HotelSearchResultCard from "@/components/hotel/HotelSearchResultCard";
 import itineraryStore from "@/store/itineraryStore";
-import { Itinerary } from "@/types/Itinerary";
 
 export default function HotelSuggestion() {
   // UseState
@@ -21,7 +20,6 @@ export default function HotelSuggestion() {
   const setItineraryData = useItineraryStore((state) => state.setItineraryData);
 
   const getUserItinerary = async () => {
-    const supabase = await createClient();
     const session = await supabase.auth.getUser();
 
     if (session.data.user) {

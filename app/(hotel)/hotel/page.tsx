@@ -6,10 +6,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import HotelSuggestion from "../../../components/hotel/HotelSuggestion";
 import hotelStore from "@/store/hotelStore";
-import itineraryStore from "@/store/itineraryStore";
-import { createClient } from "@/lib/supabase/client";
-import { ItineraryService } from "@/services/ItineraryService";
-import { Itinerary } from "@/types/Itinerary";
 
 export default function Hotels() {
   const router = useRouter();
@@ -26,7 +22,6 @@ export default function Hotels() {
   const { useHotelStore } = hotelStore();
   const setHotelSearchData = useHotelStore((state) => state.setHotelSearchData);
   const hotelSearchData = useHotelStore((state) => state.hotelSearchData);
-
 
   // USEEFFECTS
   useEffect(() => {
