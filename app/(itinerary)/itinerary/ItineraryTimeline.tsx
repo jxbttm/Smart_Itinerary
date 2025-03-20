@@ -1,7 +1,7 @@
 
 import { ItineraryService } from '@/services/ItineraryService';
 import { ItineraryTimelineProps } from './ItineraryTimelineProps';
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import Image from 'next/image'
@@ -14,7 +14,6 @@ export default function ItineraryTimeline({ itinerary, userId, itineraryId }: It
   // Fetch the current user session to get the logged-in user ID
   useEffect(() => {
     const fetchUser = async () => {
-      const supabase = await createClient();
       const session = await supabase.auth.getUser();
       if (session.data.user) {
         setCurrentUser(session.data.user.id);
@@ -26,7 +25,6 @@ export default function ItineraryTimeline({ itinerary, userId, itineraryId }: It
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
-    const supabase = await createClient();
     const session = await supabase.auth.getUser();
     if (session.data.user) {
       const { id } = session.data.user
