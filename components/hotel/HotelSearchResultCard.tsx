@@ -1,20 +1,20 @@
 import Rating from "@/components/hotel/Rating";
 import { Hotel } from "@/interfaces/Hotel";
 import { HotelService } from "@/services/HotelService";
+import useHotelStore from "@/store/hotelStore";
 import itineraryStore from "@/store/itineraryStore";
 import Image from "next/image";
 import Swal from "sweetalert2";
 
 export default function HotelSearchResultCard({
   isSuggestion = false,
-  hotelSearchData,
 }: {
   isSuggestion?: boolean;
-  hotelSearchData: Hotel[];
 }) {
   // variables
   const { useItineraryStore } = itineraryStore();
   const itinerary = useItineraryStore((state) => state.itinerary);
+  const hotelSearchData = useHotelStore((state) => state.hotelSearchData);
 
   // functions
   const addHotelToItinerary = async (
