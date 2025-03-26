@@ -7,6 +7,7 @@ export interface Itinerary {
     userId?: string | null;
     startDate: string;
     endDate: string;
+    sourceCountry: string;
     destination: string;
     demographics: ItineraryDemographics;
     accommodation: ItineraryAccommodation;

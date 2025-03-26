@@ -84,7 +84,7 @@ export default function Home() {
             </button>
           </Link>
           <Link href="/hotel">
-            <button className="btn py-2 px-6 text-white">Find a Hotel</button>
+            <button className="btn btn-secondary py-2 px-6 text-white">Find a Hotel</button>
           </Link>
           <button
             className="btn btn-neutral py-2 px-6 text-white"
@@ -128,7 +128,7 @@ export default function Home() {
             </button>
           </Link>
           <Link href="/hotel">
-            <button className="btn py-2 px-6 text-white">Find a Hotel</button>
+            <button className="btn btn-secondary py-2 px-6 text-white">Find a Hotel</button>
           </Link>
           <button
             className="btn btn-neutral py-2 px-6 text-white"

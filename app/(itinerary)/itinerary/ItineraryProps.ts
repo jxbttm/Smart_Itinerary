@@ -1,5 +1,6 @@
 export interface ItineraryProps {
-    country: string,
+    source: string,
+    destination: string,
     startDate: string,
     endDate: string,
     minBudget: number,

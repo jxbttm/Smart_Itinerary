@@ -4,6 +4,7 @@ export const ItinerarySchema = {
         startDate: { type: "string" },
         endDate: { type: "string" },
         destination: { type: "string" },
+        sourceCountry: { type: "string" },
         demographics: {
             type: "object",
             properties: {
