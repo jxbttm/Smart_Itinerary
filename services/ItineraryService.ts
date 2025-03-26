@@ -11,6 +11,7 @@ export class ItineraryService {
         .from("itinerary")
         .insert({
           user_id: userId,
+          source: itinerary.sourceCountry,
           destination: itinerary.destination,
           start_date: itinerary.startDate,
           end_date: itinerary.endDate,

@@ -6,11 +6,13 @@ import { Country } from "@/types/Country";
 interface CountrySearchProps {
   countries: Country[];
   onSearchTermChange: (term: string) => void;
+  type: string;
 }
 
 export default function CountrySearch({
   countries,
   onSearchTermChange,
+  type,
 }: CountrySearchProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCountries, setFilteredCountries] =
@@ -44,7 +46,7 @@ export default function CountrySearch({
     <div className="form-control">
       <label className="label">
         <span className="label-text font-bold">
-          Where do you want to Explore?
+          {type === 'destination' ? 'Where do you want to Explore?' : 'Where are you travelling from?'}
         </span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path d="M15.75 8.25a.75.75 0 0 1 .75.75c0 1.12-.492 2.126-1.27 2.812a.75.75 0 1 1-.992-1.124A2.243 2.243 0 0 0 15 9a.75.75 0 0 1 .75-.75Z" />
@@ -53,8 +55,8 @@ export default function CountrySearch({
       </label>
       <input
         type="text"
-        placeholder="Select a Country"
-        name="country"
+        placeholder={type === 'destination' ? 'Select a destination' : 'Select your starting point'}
+        name={type === 'destination' ? 'destination' : 'source'}
         className="input input-bordered w-full bg-base-100 text-black"
         value={searchTerm}
         onChange={handleSearch}
@@ -83,7 +85,4 @@ export default function CountrySearch({
       )}
     </div>
   );
-}
-function onSearchTermChange(value: string) {
-  throw new Error("Function not implemented.");
 }

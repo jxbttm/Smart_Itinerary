@@ -17,7 +17,8 @@ export default function ItineraryForm({
   travelType,
 }: ItineraryFormProps) {
   const router = useRouter();
-  const [searchCountry, setSearchCountry] = useState<string>("");
+  const [sourceCountry, setSourceCountry] = useState<string>("");
+  const [destinationCountry, setDestinationCountry] = useState<string>("");
   const [startDate, setStartDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
@@ -39,7 +40,8 @@ export default function ItineraryForm({
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = {
-      country: searchCountry,
+      source: sourceCountry,
+      destination: destinationCountry,
       startDate: startDate,
       endDate: endDate,
       minBudget: minBudget,
@@ -51,10 +53,6 @@ export default function ItineraryForm({
     const serializedData = encodeURIComponent(JSON.stringify(formData));
     router.push(`/itinerary?data=${serializedData}`);
   }
-
-  const handleSearchTermChange = (term: string) => {
-    setSearchCountry(term); // Update the searchTerm in the parent component
-  };
 
   const handleCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -111,10 +109,18 @@ export default function ItineraryForm({
         </div>
         <form onSubmit={onSubmit}>
           <fieldset className="w-full">
+          {countries && countries.length > 0 && (
+              <CountrySearch
+                countries={countries}
+                onSearchTermChange={(term: string) => setSourceCountry(term)}
+                type='source'
+              />
+            )}
             {countries && countries.length > 0 && (
               <CountrySearch
                 countries={countries}
-                onSearchTermChange={handleSearchTermChange}
+                onSearchTermChange={(term: string) => setDestinationCountry(term)}
+                type='destination'
               />
             )}
             <div className="form-control mt-6">
