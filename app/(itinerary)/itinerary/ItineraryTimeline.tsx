@@ -5,9 +5,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FlightLeg from "@/components/flights/FlightDisplayCard";
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
+import DailyWeatherItem from "./DailyWeatherItem";
 
 export default function ItineraryTimeline({
   itinerary,
+  weatherForecast,
   userId,
   itineraryId,
   flightDisplayDetails,
@@ -33,7 +37,8 @@ export default function ItineraryTimeline({
     const session = await supabase.auth.getUser();
     if (session.data.user) {
       const { id } = session.data.user;
-      await ItineraryService.saveItinerary(id, itinerary);
+      console.log("saving weather forecast", weatherForecast);
+      await ItineraryService.saveItinerary(id, itinerary, weatherForecast);
       setLoading(false);
       router.push(`/profile/${id}`);
     }
@@ -81,6 +86,24 @@ export default function ItineraryTimeline({
           ) : (
             <p>Traveler Type not available</p>
           )}
+
+          <div className="divider divider-neutral font-bold">Weather Forecast</div>
+          {/* Display weather forecast if available */}
+          {weatherForecast ? (
+                <div className="weather-forecast mt-4" style={{ maxHeight: '300px'}}>
+                  {/* Weather forecast container with SimpleBar */}
+                  <SimpleBar style={{ maxHeight: '100%', overflowX: 'auto' }} autoHide={true}>
+                    <div className="flex space-x-5" style={{ minWidth: '1000px' }}>
+                      {/* Map through the weather forecast and display each day's weather */}
+                      {weatherForecast.map((day: any, index: number) => (
+                        <DailyWeatherItem key={index} item={day} />
+                      ))}
+                    </div>
+                  </SimpleBar>
+                </div>
+              ) : (
+              <div>No weather forecast available.</div>
+            )}
 
           <div className="divider divider-neutral font-bold">Accommodation</div>
           <div className={`grid ${hotelCols} items-center gap-8`}>

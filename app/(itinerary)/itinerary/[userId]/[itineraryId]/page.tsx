@@ -9,6 +9,7 @@ export default function ItineraryPage()
 {
     const [loading, setLoading] = useState<boolean>(false);
     const [itinerary, setItinerary] = useState<Itinerary | null>(null);
+    const [weatherForecast, setWeatherForecast] = useState<any | null>(null); // State to store weather forecast
 
     // Use useParams to get dynamic params in Next.js 13+ App Directory
     const { userId, itineraryId } = useParams(); // Now you get both userId and itineraryId from the URL
@@ -26,6 +27,7 @@ export default function ItineraryPage()
             console.log('result', result);
             if (result) {
                 setItinerary(result);
+                setWeatherForecast(result.weather_forecast);
             } else {
                 setItinerary(null);
             }
@@ -52,7 +54,7 @@ export default function ItineraryPage()
         <div>
             {itinerary ? (
             <div>
-                <ItineraryTimeline itinerary={itinerary} userId="not null" itineraryId="not null" flightDisplayDetails={[]}/>
+                <ItineraryTimeline itinerary={itinerary} weatherForecast={weatherForecast} userId="not null" itineraryId="not null" flightDisplayDetails={[]}/>
             </div>
             ) : (
             <div>Error viewing itinerary. Please try again later.</div>
