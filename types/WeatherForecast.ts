@@ -1,6 +1,6 @@
 export interface WeatherForecast {
     date: string;
     location: string;
-    temperature: number;
+    temperature_celsius: number;
     condition: string;
     }

@@ -22,7 +22,7 @@ const DailyWeatherItem = ({ item }: { item: WeatherForecast}) => {
 
   return (
     <div
-      className="w-52 h-62 pt-6 hover:shadow-md shadow-sm transition duration-150 ease-out border border-base-300 flex-none rounded-xl mb-8"
+      className="w-54 h-64 pt-6 hover:shadow-md shadow-sm transition duration-150 ease-out border border-base-300 flex-none rounded-xl mb-8"
     >
       <div className="card h-full">
         <div className="w-16 h-16 mx-auto">
@@ -43,7 +43,7 @@ const DailyWeatherItem = ({ item }: { item: WeatherForecast}) => {
           </h2>
           <p className="mx-auto text-center">{item.condition}</p>
           <p className="font-semibold text-2xl mx-auto text-center">
-            {item.temperature}
+            {item.temperature_celsius}°C
           </p>
         </div>
       </div>
