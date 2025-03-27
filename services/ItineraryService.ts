@@ -1,12 +1,16 @@
 import { supabase } from "@/lib/supabase/client";
 import { Itinerary } from "@/types/Itinerary";
+import { WeatherForecast } from "@/types/WeatherForecast";
 
 export class ItineraryService {
   static async saveItinerary(
     userId: string,
-    itinerary: Itinerary
+    itinerary: Itinerary,
+    weatherForecast: WeatherForecast,
   ): Promise<any> {
     try {
+      console.log("Saving itinerary:", itinerary);
+      console.log("Weather forecast:", weatherForecast);
       const { data, error } = await supabase
         .from("itinerary")
         .insert({
@@ -17,6 +21,7 @@ export class ItineraryService {
           end_date: itinerary.endDate,
           estimated_total_cost: itinerary.estimatedTotalCost,
           notes: itinerary.importantNotes,
+          weather_forecast: weatherForecast, // Store the weather forecast as a JSON string
         })
         .select()
         .single();

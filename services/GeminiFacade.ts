@@ -34,4 +34,23 @@ export class GeminiFacade {
         }
     }
 
+    public async generateWeatherForecast(prompt: string) {
+        const generationConfig = {
+            temperature: 0.5,
+            topP: 0.95,
+            topK: 30,
+            maxOutputTokens: 4096,
+            responseMimeType: "application/json",
+            
+        };
+        try {
+            const model = this.genAI.getGenerativeModel({ model: this?.geminiModel, generationConfig });
+            const result = await model.generateContent(prompt);
+            return result.response.text();
+        } catch (error) {
+            console.error("Error generating content:", error);
+            return null;
+        }
+    }
+
 }

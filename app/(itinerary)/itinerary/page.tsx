@@ -6,6 +6,8 @@ import ItineraryTimeline from "./ItineraryTimeline";
 import { Itinerary } from '@/types/Itinerary';
 import { FlightsService } from '@/services/FlightsService'
 import { FlightDisplayDetails } from '@/types/FlightDisplayDetails'
+import generateWeatherForecast from "./GenerateWeatherForecast";
+import { WeatherForecast } from '@/types/WeatherForecast'
 
 
 export default function ItineraryPage({
@@ -17,6 +19,7 @@ export default function ItineraryPage({
   const [loading, setLoading] = useState<boolean>(false);
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [flightDetails, setFlightDetails] = useState<FlightDisplayDetails[] | []>([]);
+  const [weatherForecast, setWeatherForecast] = useState<any | null>(null); // State to store weather forecast
 
   const { data } = use(searchParams)
   const flightsService = new FlightsService();
@@ -45,6 +48,21 @@ export default function ItineraryPage({
             const itineraryData: Itinerary = JSON.parse(result);
             console.log('itineraryData', itineraryData);
             setItinerary(itineraryData);
+
+
+            // Get Weather Forecast once the itinerary is fetched
+            const weatherResult = await generateWeatherForecast(parsedData);
+            
+            if (weatherResult) {
+              const weatherForecastData: WeatherForecast = JSON.parse(weatherResult);
+              console.log('weatherResult', weatherResult);
+              console.log('weatherResult', weatherForecastData);
+              setWeatherForecast(Array.isArray(weatherForecastData) ? weatherForecastData : [weatherForecastData]);
+              // setWeatherForecast(weatherForecastData);
+            } else {
+              console.error("Error generating weather forecast.");
+            }
+
           } else {
             setItinerary(null);
           }
@@ -83,7 +101,7 @@ export default function ItineraryPage({
       <div>
         {itinerary ? (
           <div>
-            <ItineraryTimeline itinerary={itinerary} userId="null" itineraryId="null" flightDisplayDetails={flightDetails}/>
+            <ItineraryTimeline itinerary={itinerary} weatherForecast={weatherForecast} userId="null" itineraryId="null" flightDisplayDetails={flightDetails}/>
           </div>
         ) : (
           <div>Error generating itinerary. Please try again later.</div>
