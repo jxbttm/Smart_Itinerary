@@ -1,13 +1,13 @@
 "use client";
 
 import { useHotels } from "@/hooks/useHotels";
-import { supabase } from "@/lib/supabase/client";
 import { ItineraryService } from "@/services/ItineraryService";
 
 import { useEffect, useState } from "react";
 import HotelSearchResultCard from "@/components/hotel/HotelSearchResultCard";
 import itineraryStore from "@/store/itineraryStore";
 import useHotelStore from "@/store/hotelStore";
+import { useSearchParams } from "next/navigation";
 
 export default function HotelSuggestion() {
   // UseState
@@ -19,21 +19,23 @@ export default function HotelSuggestion() {
   const setItineraryData = useItineraryStore((state) => state.setItineraryData);
   const setHotelSearchData = useHotelStore((state) => state.setHotelSearchData);
   const hotelsearchData = useHotelStore((state) => state.hotelSearchData);
+  const searchParams = useSearchParams();
+  const itineraryId = searchParams.get("itinerary") ?? "";
 
   const getUserItinerary = async () => {
-    const session = await supabase.auth.getUser();
+    setHotelSearchData([]);
 
-    if (session.data.user) {
-      const { id } = session.data.user;
-      const userItineraryData = await ItineraryService.getUserItineraries(id);
+    if (itineraryId) {
+      const userItineraryData = await ItineraryService.getItinerary(
+        itineraryId ?? ""
+      );
 
       if (userItineraryData) {
         setItineraryData(userItineraryData);
         setIsLoading(true);
-        const destinations = userItineraryData
-          .map((item: any) => item.destination)
-          .join(",");
-        const hotelSuggestions = await getHotelQueryResult(destinations);
+        const hotelSuggestions = await getHotelQueryResult(
+          userItineraryData.destination
+        );
         if (hotelSuggestions && hotelSuggestions?.length > 0) {
           setHotelSearchData(hotelSuggestions);
         }

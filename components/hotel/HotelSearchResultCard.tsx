@@ -1,9 +1,11 @@
 import Rating from "@/components/hotel/Rating";
+import { useAuth } from "@/context/AuthContext";
 import { Hotel } from "@/interfaces/Hotel";
 import { HotelService } from "@/services/HotelService";
 import useHotelStore from "@/store/hotelStore";
 import itineraryStore from "@/store/itineraryStore";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
 export default function HotelSearchResultCard({
@@ -15,6 +17,8 @@ export default function HotelSearchResultCard({
   const { useItineraryStore } = itineraryStore();
   const itinerary = useItineraryStore((state) => state.itinerary);
   const hotelSearchData = useHotelStore((state) => state.hotelSearchData);
+  const router = useRouter();
+  const { user } = useAuth();
 
   // functions
   const addHotelToItinerary = async (
@@ -27,7 +31,10 @@ export default function HotelSearchResultCard({
         color: "#FFFFFF",
         title: "Confirmation",
         icon: "question",
-        text: "Are you sure you want to add it to your itinerary?",
+        width: "600px",
+        text: `Are you sure you want to add it to your itinerary ${
+          itinerary?.destination ? `for ${itinerary?.destination}` : ""
+        }?`,
         cancelButtonText: "No",
         showCancelButton: true,
         confirmButtonText: "Yes!",
@@ -50,11 +57,18 @@ export default function HotelSearchResultCard({
       }).then((result) => {
         if (result.isConfirmed) {
           Swal.fire({
+            timer: 3000,
             background: "#23282e",
             color: "#FFFFFF",
             title: `Success`,
-            text: "You have successfully added this hotel to your Itinerary!",
+            showConfirmButton: false,
+            text: "You have successfully added this hotel to your Itinerary! Redirecting you back to itinerary details page...",
             icon: "success",
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {
+            router.push(`/itinerary/${user.id}/${itineraryId}`);
           });
         }
       });

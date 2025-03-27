@@ -33,12 +33,16 @@ export class ItineraryService {
           itinerary_id: itineraryId,
         });
 
-        await supabase.from("itinerary_accomodation").insert({
-          name: itinerary.accommodation.name,
-          estimated_cost: itinerary.accommodation.estimatedCost,
-          image_url: itinerary.accommodation.imageUrl,
-          itinerary_id: itineraryId,
-        });
+        await supabase.from("itinerary_accomodation").insert(
+          itinerary.accommodation.map((item) => {
+            return {
+              name: item.name,
+              estimated_cost: item.estimatedCost,
+              image_url: item.imageUrl,
+              itinerary_id: itineraryId,
+            };
+          })
+        );
 
         for (const day of itinerary.itineraryDays) {
           const { data: dayData, error: dayError } = await supabase
@@ -141,8 +145,7 @@ export class ItineraryService {
         await supabase
           .from("itinerary_accomodation")
           .select("*")
-          .eq("itinerary_id", itineraryId)
-          .single(); // Assuming a 1-to-1 relationship
+          .eq("itinerary_id", itineraryId);
 
       if (accommodationError) {
         console.error("Error fetching accommodation:", accommodationError);
@@ -214,13 +217,33 @@ export class ItineraryService {
       };
 
       // Transform the accommodation object and nest it under "accommodation"
-      const transformedAccommodationData = {
-        id: accommodationData.id,
-        name: accommodationData.name,
-        estimatedCost: accommodationData.estimated_cost, // Mapping snake_case to camelCase
-        imageUrl: accommodationData.image_url, // Mapping snake_case to camelCase
-        itineraryId: accommodationData.itinerary_id, // Mapping snake_case to camelCase
-      };
+      const transformedAccommodationData = accommodationData
+        ? accommodationData.map((item) => {
+            return {
+              id: item.id,
+              name: item.name,
+              estimatedCost: item.estimated_cost, // Mapping snake_case to camelCase
+              imageUrl: item.image_url ?? "", // Mapping snake_case to camelCase
+              itineraryId: item.itinerary_id, // Mapping snake_case to camelCase
+            };
+          })
+        : [];
+      // (): any[] => {
+      //   if (accommodationData) {
+      //     const accommodationDataArr: any[] = [];
+      //     accommodationData.map((item) => {
+      //       accommodationDataArr.push({
+      //         id: item.id,
+      //         name: item.name,
+      //         estimatedCost: item.estimated_cost, // Mapping snake_case to camelCase
+      //         imageUrl: item.image_url, // Mapping snake_case to camelCase
+      //         itineraryId: item.itinerary_id, // Mapping snake_case to camelCase
+      //       });
+      //     });
+      //     return accommodationDataArr;
+      //   }
+      //   return [];
+      // };
 
       // Assemble and return the complete itinerary data including all related data
       return {
