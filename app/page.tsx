@@ -83,9 +83,6 @@ export default function Home() {
               Plan a Trip
             </button>
           </Link>
-          <Link href="/hotel">
-            <button className="btn btn-secondary py-2 px-6 text-white">Find a Hotel</button>
-          </Link>
           <button
             className="btn btn-neutral py-2 px-6 text-white"
             onClick={handleButtonClick}
@@ -126,9 +123,6 @@ export default function Home() {
             <button className="btn btn-primary py-2 px-6 text-white">
               Plan a Trip
             </button>
-          </Link>
-          <Link href="/hotel">
-            <button className="btn btn-secondary py-2 px-6 text-white">Find a Hotel</button>
           </Link>
           <button
             className="btn btn-neutral py-2 px-6 text-white"

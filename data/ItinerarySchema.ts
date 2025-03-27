@@ -17,13 +17,16 @@ export const ItinerarySchema = {
             required: ["currency", "budgetMin", "budgetMax", "travelerType", "purpose"]
         },
         accommodation: {
-            type: "object",
-            properties: {
-                name: { type: "string" },
-                estimatedCost: { type: "number" },
-                imageUrl: { type: "string" }
+            type:"array",
+            items:{
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                    estimatedCost: { type: "number" },
+                    imageUrl: { type: "string" }
+                },
+                required: ["name", "estimatedCost", "imageUrl"]
             },
-            required: ["name", "estimatedCost", "imageUrl"]
         },
         itineraryDays: {
             type: "array",
