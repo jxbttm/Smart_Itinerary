@@ -1,5 +1,7 @@
 export interface ItineraryAccommodation {
-  name: string;
-  estimatedCost: number;
-  imageUrl:string;
+  id: any;
+  name: any;
+  estimatedCost: any; // Mapping snake_case to camelCase
+  imageUrl: any; // Mapping snake_case to camelCase
+  itineraryId: any; // Mapping snake_case to camelCase
 }

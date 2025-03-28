@@ -5,9 +5,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FlightLeg from "@/components/flights/FlightDisplayCard";
-import SimpleBar from 'simplebar-react';
-import 'simplebar-react/dist/simplebar.min.css';
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 import DailyWeatherItem from "./DailyWeatherItem";
+import useHotelStore from "@/store/hotelStore";
+import { ItineraryAccommodation } from "@/types/ItineraryAccommodation";
 
 export default function ItineraryTimeline({
   itinerary,
@@ -19,6 +21,7 @@ export default function ItineraryTimeline({
   const [loading, setLoading] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const router = useRouter();
+  const setHotelDetails = useHotelStore((state) => state.setHotelDetails);
 
   // Fetch the current user session to get the logged-in user ID
   useEffect(() => {
@@ -46,6 +49,11 @@ export default function ItineraryTimeline({
 
   const redirectToHotelPage = () => {
     router.push(`/hotel?itinerary=${itinerary.id}`);
+  };
+
+  const redirectToHotelDetailPage = (accommodation: ItineraryAccommodation) => {
+    setHotelDetails(accommodation);
+    router.push(`/hotel/detail?itinerary=${itinerary.id}`);
   };
 
   // Check if the itinerary belongs to the current logged-in user
@@ -87,23 +95,31 @@ export default function ItineraryTimeline({
             <p>Traveler Type not available</p>
           )}
 
-          <div className="divider divider-neutral font-bold">Weather Forecast</div>
+          <div className="divider divider-neutral font-bold">
+            Weather Forecast
+          </div>
           {/* Display weather forecast if available */}
           {weatherForecast ? (
-                <div className="weather-forecast mt-4" style={{ maxHeight: '300px'}}>
-                  {/* Weather forecast container with SimpleBar */}
-                  <SimpleBar style={{ maxHeight: '100%', overflowX: 'auto' }} autoHide={true}>
-                    <div className="flex space-x-5" style={{ minWidth: '1000px' }}>
-                      {/* Map through the weather forecast and display each day's weather */}
-                      {weatherForecast.map((day: any, index: number) => (
-                        <DailyWeatherItem key={index} item={day} />
-                      ))}
-                    </div>
-                  </SimpleBar>
+            <div
+              className="weather-forecast mt-4"
+              style={{ maxHeight: "300px" }}
+            >
+              {/* Weather forecast container with SimpleBar */}
+              <SimpleBar
+                style={{ maxHeight: "100%", overflowX: "auto" }}
+                autoHide={true}
+              >
+                <div className="flex space-x-5" style={{ minWidth: "1000px" }}>
+                  {/* Map through the weather forecast and display each day's weather */}
+                  {weatherForecast.map((day: any, index: number) => (
+                    <DailyWeatherItem key={index} item={day} />
+                  ))}
                 </div>
-              ) : (
-              <div>No weather forecast available.</div>
-            )}
+              </SimpleBar>
+            </div>
+          ) : (
+            <div>No weather forecast available.</div>
+          )}
 
           <div className="divider divider-neutral font-bold">Accommodation</div>
           <div className={`grid ${hotelCols} items-center gap-8`}>
@@ -111,7 +127,10 @@ export default function ItineraryTimeline({
               itinerary.accommodation &&
               itinerary.accommodation.map((item, idx) => {
                 return (
-                  <div key={idx}>
+                  <div
+                    key={idx}
+                    onClick={() => redirectToHotelDetailPage(item)}
+                  >
                     <div className="text-md font-black">{item.name}</div>
                     <Image
                       width={360}

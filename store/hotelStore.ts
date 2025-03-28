@@ -1,11 +1,15 @@
 import { Hotel } from "@/interfaces/Hotel";
+import { ItineraryAccommodation } from "@/types/ItineraryAccommodation";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface HotelStoreState {
   hotelSearchData: Hotel[];
+  hotelDetails: ItineraryAccommodation | null;
   setHotelSearchData: (hotelSearchData: Hotel[]) => void;
   clearHotelSearchData: () => void;
+  setHotelDetails: (hotelDetail: ItineraryAccommodation) => void;
+  clearHotelDetailsData: () => void;
 }
 const useHotelStore = create<
   HotelStoreState,
@@ -20,6 +24,12 @@ const useHotelStore = create<
         console.log("Updating store with data"); // Log when store is updated
       },
       clearHotelSearchData: () => set({ hotelSearchData: [] }),
+      hotelDetails: null,
+      setHotelDetails: (hotelDetails: ItineraryAccommodation) => {
+        set({ hotelDetails: hotelDetails });
+        console.log("Updating store with hotel details data"); // Log when store is updated
+      },
+      clearHotelDetailsData: () => set({ hotelDetails: null }),
     }),
     {
       name: "hotel-storage",

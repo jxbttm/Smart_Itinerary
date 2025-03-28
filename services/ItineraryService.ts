@@ -6,7 +6,7 @@ export class ItineraryService {
   static async saveItinerary(
     userId: string,
     itinerary: Itinerary,
-    weatherForecast: WeatherForecast,
+    weatherForecast: WeatherForecast
   ): Promise<any> {
     try {
       console.log("Saving itinerary:", itinerary);
@@ -260,6 +260,21 @@ export class ItineraryService {
     } catch (error) {
       console.error("Error fetching itinerary:", error);
       return null;
+    }
+  }
+
+  static async deleteAccomodation(accommodationId: string): Promise<any> {
+    try {
+      const { error: deleteError } = await supabase
+        .from("itinerary_accomodation")
+        .delete()
+        .eq("id", accommodationId);
+
+      if (deleteError) {
+        console.error("Error deleting accommodation:", deleteError);
+      }
+    } catch (error) {
+      console.error("Error deleting accommodation:", error);
     }
   }
 }
