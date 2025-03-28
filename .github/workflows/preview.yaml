@@ -37,7 +37,7 @@ jobs:
           - uses: actions/checkout@v4
 
           - name: Cypress run
-            uses: cypress-io/github-action@v6
+            uses: cypress-io/github-action@a55856e0e961f64708c68ddcb38fba233d164ed8 # v6
 
           - run: npm run test:e2e
 
