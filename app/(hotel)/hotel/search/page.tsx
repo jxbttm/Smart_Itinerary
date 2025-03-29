@@ -1,13 +1,17 @@
 "use client";
 
+import HotelSearchComponent from "@/components/hotel/HotelSearchComponent";
 import HotelSearchResultCard from "@/components/hotel/HotelSearchResultCard";
-import hotelStore from "@/store/hotelStore";
 
 export default function HotelSearch() {
-  // FUNCTIONS AND VARIABLES
-
-  const { useHotelStore } = hotelStore();
-  const hotelSearchData = useHotelStore((state) => state.hotelSearchData);
-
-  return <HotelSearchResultCard hotelSearchData={hotelSearchData} />;
+  return (
+    <>
+      <div className="flex flex-row w-full justify-center items-center pt-10">
+        <div className="w-5/6">
+          <HotelSearchComponent isSearchHome={false} />
+        </div>
+      </div>
+      <HotelSearchResultCard />
+    </>
+  );
 }

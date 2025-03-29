@@ -4,6 +4,7 @@ export const ItinerarySchema = {
         startDate: { type: "string" },
         endDate: { type: "string" },
         destination: { type: "string" },
+        sourceCountry: { type: "string" },
         demographics: {
             type: "object",
             properties: {
@@ -16,13 +17,17 @@ export const ItinerarySchema = {
             required: ["currency", "budgetMin", "budgetMax", "travelerType", "purpose"]
         },
         accommodation: {
-            type: "object",
-            properties: {
-                name: { type: "string" },
-                estimatedCost: { type: "number" },
-                imageUrl: { type: "string" }
+            type:"array",
+            items:{
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                    estimatedCost: { type: "number" },
+                    imageUrl: { type: "string" },
+                    hotelDescription: {type: "string"}
+                },
+                required: ["name", "estimatedCost", "imageUrl", "hotelDescription"]
             },
-            required: ["name", "estimatedCost", "imageUrl"]
         },
         itineraryDays: {
             type: "array",

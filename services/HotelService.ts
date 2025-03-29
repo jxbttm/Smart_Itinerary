@@ -1,8 +1,8 @@
 import { Hotel } from "@/interfaces/Hotel";
-import { supabase } from "@/lib/supabase";
-
+import {supabase} from "@/lib/supabase/client";
 export class HotelService {
   static saveHoteltoItinerary = async (itineraryId: number, hotel: Hotel) => {
+
     try {
       const { data, error } = await supabase
         .from("itinerary_accomodation")
