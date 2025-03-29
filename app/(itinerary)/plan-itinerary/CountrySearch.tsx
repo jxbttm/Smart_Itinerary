@@ -43,7 +43,7 @@ export default function CountrySearch({
   }, [searchTerm, countries]);
 
   return (
-    <div className="form-control">
+    <div className="form-control mt-6">
       <label className="label">
         <span className="label-text font-bold">
           {type === 'destination' ? 'Where do you want to Explore?' : 'Where are you travelling from?'}

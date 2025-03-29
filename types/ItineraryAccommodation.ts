@@ -1,5 +1,8 @@
 export interface ItineraryAccommodation {
-  name: string;
-  estimatedCost: number;
-  imageUrl:string;
+  id: any;
+  name: any;
+  estimatedCost: any; 
+  imageUrl: any; 
+  itineraryId: any; 
+  hotelDescription: any;
 }
