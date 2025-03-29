@@ -45,6 +45,7 @@ export class ItineraryService {
               estimated_cost: item.estimatedCost,
               image_url: item.imageUrl,
               itinerary_id: itineraryId,
+              hotel_description: item.hotelDescription
             };
           })
         );
@@ -224,31 +225,16 @@ export class ItineraryService {
       // Transform the accommodation object and nest it under "accommodation"
       const transformedAccommodationData = accommodationData
         ? accommodationData.map((item) => {
-            return {
-              id: item.id,
-              name: item.name,
-              estimatedCost: item.estimated_cost, // Mapping snake_case to camelCase
-              imageUrl: item.image_url ?? "", // Mapping snake_case to camelCase
-              itineraryId: item.itinerary_id, // Mapping snake_case to camelCase
-            };
-          })
+          return {
+            id: item.id,
+            name: item.name,
+            estimatedCost: item.estimated_cost, // Mapping snake_case to camelCase
+            imageUrl: item.image_url ?? "", // Mapping snake_case to camelCase
+            itineraryId: item.itinerary_id, // Mapping snake_case to camelCase
+            hotelDescription: item.hotel_description ?? ""
+          };
+        })
         : [];
-      // (): any[] => {
-      //   if (accommodationData) {
-      //     const accommodationDataArr: any[] = [];
-      //     accommodationData.map((item) => {
-      //       accommodationDataArr.push({
-      //         id: item.id,
-      //         name: item.name,
-      //         estimatedCost: item.estimated_cost, // Mapping snake_case to camelCase
-      //         imageUrl: item.image_url, // Mapping snake_case to camelCase
-      //         itineraryId: item.itinerary_id, // Mapping snake_case to camelCase
-      //       });
-      //     });
-      //     return accommodationDataArr;
-      //   }
-      //   return [];
-      // };
 
       // Assemble and return the complete itinerary data including all related data
       return {

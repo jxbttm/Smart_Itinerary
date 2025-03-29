@@ -5,9 +5,10 @@ import useHotelStore from "@/store/hotelStore";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { Suspense } from 'react'
 import Swal from "sweetalert2";
 
-export default function HotelDetailPage() {
+const HotelDetailPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -20,7 +21,6 @@ export default function HotelDetailPage() {
   const redirectBacktoItinerary = () => {
     router.push(`/itinerary/${user.id}/${itineraryId}`);
   };
-  console.log("hotelDetails?.id", hotelDetails?.id);
   const deleteHotelFromItinerary = () => {
     Swal.fire({
       background: "#23282e",
@@ -113,10 +113,7 @@ export default function HotelDetailPage() {
               {hotelDetails?.estimatedCost}
             </div>
             <div className="text-center rounded-md border p-2">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industrys standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it.
+              {hotelDetails?.hotelDescription}
             </div>
           </div>
         </div>
@@ -136,5 +133,13 @@ export default function HotelDetailPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function HotelDetailPageWithSuspense() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HotelDetailPage />
+    </Suspense>
   );
 }

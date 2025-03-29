@@ -23,9 +23,10 @@ export const ItinerarySchema = {
                 properties: {
                     name: { type: "string" },
                     estimatedCost: { type: "number" },
-                    imageUrl: { type: "string" }
+                    imageUrl: { type: "string" },
+                    hotelDescription: {type: "string"}
                 },
-                required: ["name", "estimatedCost", "imageUrl"]
+                required: ["name", "estimatedCost", "imageUrl", "hotelDescription"]
             },
         },
         itineraryDays: {

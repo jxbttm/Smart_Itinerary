@@ -1,7 +1,7 @@
 import { ItineraryService } from "@/services/ItineraryService";
 import { ItineraryTimelineProps } from "./ItineraryTimelineProps";
 import { supabase } from "@/lib/supabase/client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FlightLeg from "@/components/flights/FlightDisplayCard";
@@ -19,21 +19,8 @@ export default function ItineraryTimeline({
   flightDisplayDetails,
 }: ItineraryTimelineProps) {
   const [loading, setLoading] = useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const router = useRouter();
   const setHotelDetails = useHotelStore((state) => state.setHotelDetails);
-
-  // Fetch the current user session to get the logged-in user ID
-  useEffect(() => {
-    const fetchUser = async () => {
-      const session = await supabase.auth.getUser();
-      if (session.data.user) {
-        setCurrentUser(session.data.user.id);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
@@ -62,9 +49,8 @@ export default function ItineraryTimeline({
 
   const hotelCols =
     itinerary.accommodation.length < 4
-      ? `grid-cols-${itinerary.accommodation.length} ${
-          itinerary.accommodation.length === 3 ? "grid-flow-col" : ""
-        }`
+      ? `grid-cols-${itinerary.accommodation.length} ${itinerary.accommodation.length === 3 ? "grid-flow-col" : ""
+      }`
       : "grid-cols-4";
 
   return (
@@ -123,23 +109,26 @@ export default function ItineraryTimeline({
 
           <div className="divider divider-neutral font-bold">Accommodation</div>
           <div className={`grid ${hotelCols} items-center gap-8`}>
-            {itinerary &&
-              itinerary.accommodation &&
-              itinerary.accommodation.map((item, idx) => {
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => redirectToHotelDetailPage(item)}
-                  >
-                    <div className="text-md font-black">{item.name}</div>
+            {itinerary && itinerary.accommodation && itinerary.accommodation.map((item, idx) => {
+              return (
+                <div
+                  key={idx}
+                  onClick={() => redirectToHotelDetailPage(item)}
+                  className="card bg-base-200 shadow-lg m-6 text-center"
+                >
+                  <span className=" text-md font-bold p-2">{item.name}</span>
+                  <figure>
                     <Image
                       width={360}
                       height={360}
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sydney_%28AU%29%2C_Bondi_Beach_--_2019_--_2354.jpg/640px-Sydney_%28AU%29%2C_Bondi_Beach_--_2019_--_2354.jpg"
+                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/PNY_Exterior_with_Rolls_Royce.jpg/800px-PNY_Exterior_with_Rolls_Royce.jpg"
                       alt={item.name}
                       style={{ width: "auto", height: "auto" }}
                     />
-                    <div className="text-md flex items-center justify-center mt-4">
+                  </figure>
+                  <div className="card-body">
+                    <div className="text-md ">{item.hotelDescription}</div>
+                    <div className="text-md flex items-center justify-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -153,12 +142,16 @@ export default function ItineraryTimeline({
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="font-bold mr-2">Estimated Price: </span>{" "}
-                      ${item.estimatedCost} {itinerary.demographics.currency}
+                      <span className="font-bold mr-2">
+                        Estimated Price:{" "}
+                      </span>{" "}
+                      ${item.estimatedCost}{" "}
+                      {itinerary.demographics.currency}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
           </div>
 
           {itinerary && itinerary.id && (
@@ -233,9 +226,8 @@ export default function ItineraryTimeline({
                     </svg>
                   </div>
                   <div
-                    className={`mb-10 ${
-                      dayIndex % 2 === 0 ? "timeline-start" : "timeline-end"
-                    } ${dayIndex % 2 === 0 ? "md:text-end" : "md:text-start"}`}
+                    className={`mb-10 ${dayIndex % 2 === 0 ? "timeline-start" : "timeline-end"
+                      } ${dayIndex % 2 === 0 ? "md:text-end" : "md:text-start"}`}
                   >
                     <time className="font-mono italic text-lg">
                       Day {dayIndex + 1} - {day.date}
@@ -251,7 +243,7 @@ export default function ItineraryTimeline({
                           <Image
                             width={360}
                             height={180}
-                            src="https://plus.unsplash.com/premium_photo-1733306520547-1ffd55596459?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8c3lkbmV5JTIwaGFyYm91JTIwYnJpZGdlfGVufDB8fDB8fHww"
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sydney_%28AU%29%2C_Bondi_Beach_--_2019_--_2354.jpg/640px-Sydney_%28AU%29%2C_Bondi_Beach_--_2019_--_2354.jpg"
                             alt={each.name}
                             style={{ width: "auto", height: "auto" }}
                           />
@@ -356,7 +348,8 @@ export default function ItineraryTimeline({
         </>
       ) : (
         <p>No itinerary available</p>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
