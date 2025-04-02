@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -17,7 +18,9 @@ export default function Profile() {
   const { userId } = useParams(); // Extract userId from URL params
   const [user, setUser] = useState<any>(null);
   const [itineraries, setItineraries] = useState<any[]>([]); // State for itineraries
+
   const [isConfirmed, setIsConfirmed] = useState(false);
+
   const [loading, setLoading] = useState<boolean>(true); // Loading state for fetching data
 
   // Helper function to format date as dd-mm-yyyy
@@ -104,6 +107,24 @@ export default function Profile() {
     }
   }; // Function to handle itinerary deletion
 
+
+      // Get user's itineraries based on the userId
+      const { data: itineraries_data, error: itineraryError } = await supabase
+        .from("itinerary")
+        .select("*")
+        .eq("user_id", userId); // Fetch itineraries for the userId
+
+      if (itineraryError) {
+        console.error("Error fetching itineraries:", itineraryError);
+        return;
+      }
+
+      setItineraries(itineraries_data || []);
+      setLoading(false); // Set loading state to false after fetching data
+    };
+    setProfile();
+  }, [userId]); // Fetch data again when userId changes
+
   if (loading) {
     return (
       <div className="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center z-10">
@@ -131,6 +152,7 @@ export default function Profile() {
   return (
     <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-gray-50">
       {/* Avatar and Edit Button Section */}
+
       {isConfirmed && (
         <div role="alert">
           <div className="bg-green-500 text-white font-bold rounded-t px-4 py-2">
@@ -141,6 +163,7 @@ export default function Profile() {
           </div>
         </div>
       )}
+
       <div className="flex flex-col items-center gap-4">
         {avatar_url && (
           <Image
@@ -243,6 +266,7 @@ export default function Profile() {
                   >
                     Delete
                   </button>
+
                 </div>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import { useEffect, FormEvent, useState } from 'react';
 import { TravelType } from "@/types/TravelType";
 import { logFormData } from '@/utils/logger';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 interface ItineraryFormProps {
@@ -11,7 +11,6 @@ interface ItineraryFormProps {
 }
 
 export default function ItineraryForm({ travelType }: ItineraryFormProps) {
-  const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
