@@ -1,10 +1,10 @@
 "use client";
-
 import { supabase } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useParams } from "next/navigation"; // Use useParams to get dynamic route parameters
+import { useParams, useRouter } from "next/navigation"; // Use useParams to get dynamic route parameters
+import { ItineraryService } from "@/services/ItineraryService";
 import {
   FaUserAlt,
   FaEnvelope,
@@ -12,12 +12,15 @@ import {
   FaMoneyBillAlt,
   FaBullseye,
 } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 export default function Profile() {
   const { userId } = useParams(); // Extract userId from URL params
   const [user, setUser] = useState<any>(null);
   const [itineraries, setItineraries] = useState<any[]>([]); // State for itineraries
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const [loading, setLoading] = useState<boolean>(true); // Loading state for fetching data
+  const router = useRouter(); // Initialize router for navigation
 
   // Helper function to format date as dd-mm-yyyy
   const formatDate = (date: string) => {
@@ -36,6 +39,8 @@ export default function Profile() {
   useEffect(() => {
     const setProfile = async () => {
       if (!userId) return; // Ensure userId is available
+
+      // const supabase = await createClient();
 
       // Fetch user data based on the userId in the URL
       const { data: user_record, error: userError } = await supabase
@@ -68,6 +73,62 @@ export default function Profile() {
     setProfile();
   }, [userId]); // Fetch data again when userId changes
 
+  //#region Function to handle itinerary deletion
+  const redirectBacktoProfile = () => {
+    router.push(`/profile/${userId}`);
+  };
+
+  const handleDelete = async (itineraryId: string) => {
+    Swal.fire({
+      background: "#23282e",
+      color: "#FFFFFF",
+      title: "Confirmation",
+      icon: "question",
+      width: "600px",
+      text: `Are you sure you want to delete this your itinerary?`,
+      cancelButtonText: "No",
+      showCancelButton: true,
+      cancelButtonColor: "gray",
+      confirmButtonColor: "red",
+      confirmButtonText: "Yes!",
+      showLoaderOnConfirm: true,
+      preConfirm: async () => {
+        try {
+          await ItineraryService.deleteItinerary(itineraryId); // Call the delete function from ItineraryService
+          setItineraries((prevItineraries) =>
+            prevItineraries.filter((itinerary) => itinerary.id !== itineraryId)
+          );
+          setIsConfirmed(true); // Set confirmation state to true
+        } catch (error) {
+          Swal.showValidationMessage(`Error deleting itinerary: ${error}`);
+          console.error("Error deleting itinerary:", error);
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        /*
+        Swal.fire({
+          timer: 3000,
+          background: "#23282e",
+          color: "#FFFFFF",
+          title: `Success`,
+          showConfirmButton: false,
+          text: "You have successfully deleted your Itinerary! Redirecting you back to itinerary details page...",
+          icon: "success",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then(() => {
+          redirectBacktoProfile();
+        });
+        */
+        redirectBacktoProfile();
+      }
+    });
+  };
+
+  //#endregion
+
   if (loading) {
     return (
       <div className="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center z-10">
@@ -95,6 +156,16 @@ export default function Profile() {
   return (
     <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-gray-50">
       {/* Avatar and Edit Button Section */}
+      {isConfirmed && (
+        <div role="alert">
+          <div className="bg-green-500 text-white font-bold rounded-t px-4 py-2">
+            Success!
+          </div>
+          <div className="border border-t-0 border-green-400 rounded-b bg-green-100 px-4 py-3 text-green-700">
+            <p>You have successfully deleted your itinerary.</p>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col items-center gap-4">
         {avatar_url && (
           <Image
@@ -190,6 +261,12 @@ export default function Profile() {
                     onClick={() => handleViewDetails(user.id, itinerary.id)}
                   >
                     View Details
+                  </button>
+                  <button
+                    className="btn bg-red-500 text-white px-6 py-2 rounded-lg transition-all hover:bg-red-600"
+                    onClick={() => handleDelete(itinerary.id)}
+                  >
+                    Delete
                   </button>
                 </div>
               </div>
