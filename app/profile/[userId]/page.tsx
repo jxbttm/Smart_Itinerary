@@ -1,11 +1,10 @@
 "use client";
-
-// import { createClient } from "@/lib/supabase/client";
 import { supabase } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useParams } from "next/navigation"; // Use useParams to get dynamic route parameters
+import { useParams, useRouter } from "next/navigation"; // Use useParams to get dynamic route parameters
+import { ItineraryService } from "@/services/ItineraryService";
 import {
   FaUserAlt,
   FaEnvelope,
@@ -13,15 +12,15 @@ import {
   FaMoneyBillAlt,
   FaBullseye,
 } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 export default function Profile() {
   const { userId } = useParams(); // Extract userId from URL params
   const [user, setUser] = useState<any>(null);
   const [itineraries, setItineraries] = useState<any[]>([]); // State for itineraries
-
   const [isConfirmed, setIsConfirmed] = useState(false);
-
   const [loading, setLoading] = useState<boolean>(true); // Loading state for fetching data
+  const router = useRouter(); // Initialize router for navigation
 
   // Helper function to format date as dd-mm-yyyy
   const formatDate = (date: string) => {
@@ -74,38 +73,61 @@ export default function Profile() {
     setProfile();
   }, [userId]); // Fetch data again when userId changes
 
+  //#region Function to handle itinerary deletion
+  const redirectBacktoProfile = () => {
+    router.push(`/profile/${userId}`);
+  };
+
   const handleDelete = async (itineraryId: string) => {
-    const deleteConfirmation = window.confirm(
-      "Are you sure you want to delete this itinerary? This action cannot be undone."
-    );
-
-    if (!deleteConfirmation) return;
-
-    try {
-      // const supabase = createClient();
-
-      const { data, error } = await supabase
-        .from("itinerary")
-        .delete()
-        .eq("id", itineraryId);
-
-      if (error) {
-        console.error("Error deleting itinerary:", error.message);
-      } else {
-        setIsConfirmed(true);
-        setItineraries((prev) =>
-          prev.filter((item) => item.id !== itineraryId)
-        );
-        // Set a timeout to hide the confirmation message
-        setTimeout(() => {
-          setIsConfirmed(false);
-        }, 2000);
-        console.log("Itinerary deleted successfully:", data);
+    Swal.fire({
+      background: "#23282e",
+      color: "#FFFFFF",
+      title: "Confirmation",
+      icon: "question",
+      width: "600px",
+      text: `Are you sure you want to delete this your itinerary?`,
+      cancelButtonText: "No",
+      showCancelButton: true,
+      cancelButtonColor: "gray",
+      confirmButtonColor: "red",
+      confirmButtonText: "Yes!",
+      showLoaderOnConfirm: true,
+      preConfirm: async () => {
+        try {
+          await ItineraryService.deleteItinerary(itineraryId); // Call the delete function from ItineraryService
+          setItineraries((prevItineraries) =>
+            prevItineraries.filter((itinerary) => itinerary.id !== itineraryId)
+          );
+          setIsConfirmed(true); // Set confirmation state to true
+        } catch (error) {
+          Swal.showValidationMessage(`Error deleting itinerary: ${error}`);
+          console.error("Error deleting itinerary:", error);
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        /*
+        Swal.fire({
+          timer: 3000,
+          background: "#23282e",
+          color: "#FFFFFF",
+          title: `Success`,
+          showConfirmButton: false,
+          text: "You have successfully deleted your Itinerary! Redirecting you back to itinerary details page...",
+          icon: "success",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then(() => {
+          redirectBacktoProfile();
+        });
+        */
+        redirectBacktoProfile();
       }
-    } catch (err) {
-      console.error("Unexpected error:", err);
-    }
-  }; // Function to handle itinerary deletion
+    });
+  };
+
+  //#endregion
 
   if (loading) {
     return (
