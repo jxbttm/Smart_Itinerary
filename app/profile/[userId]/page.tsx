@@ -85,7 +85,7 @@ export default function Profile() {
       title: "Confirmation",
       icon: "question",
       width: "600px",
-      text: `Are you sure you want to delete this your itinerary?`,
+      text: `Are you sure you want to delete this itinerary?`,
       cancelButtonText: "No",
       showCancelButton: true,
       cancelButtonColor: "gray",

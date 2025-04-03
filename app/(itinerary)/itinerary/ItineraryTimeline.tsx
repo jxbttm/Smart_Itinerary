@@ -115,6 +115,7 @@ export default function ItineraryTimeline({
                   key={idx}
                   onClick={() => redirectToHotelDetailPage(item)}
                   className="card bg-base-200 shadow-lg m-6 text-center"
+                  style ={{ cursor: "pointer" }}
                 >
                   <span className=" text-md font-bold p-2">{item.name}</span>
                   <figure>
