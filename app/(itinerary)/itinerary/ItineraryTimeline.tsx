@@ -166,31 +166,31 @@ export default function ItineraryTimeline({
         <>
           {/* Destination */}
           <div className="mb-6 space-y-4 text-center">
-  {/* Destination + Flag */}
-  <h1 className="text-4xl font-extrabold text-gray-800 flex justify-center items-center gap-2">
-    {getFlagEmoji(itinerary.destination)} {itinerary.destination || "Destination not available"}
-  </h1>
+            {/* Destination + Flag */}
+            <h1 className="text-4xl font-extrabold text-gray-800 flex justify-center items-center gap-2">
+              {getFlagEmoji(itinerary.destination)} {itinerary.destination || "Destination not available"}
+            </h1>
 
-  {/* Dates with Icon */}
-  <p className="text-lg text-gray-600 flex justify-center items-center gap-2">
-    <FaCalendarAlt className="text-primary" />
-    {itinerary.startDate && itinerary.endDate
-      ? `${itinerary.startDate} to ${itinerary.endDate}`
-      : "Dates not available"}
-  </p>
+            {/* Dates with Icon */}
+            <p className="text-lg text-gray-600 flex justify-center items-center gap-2">
+              <FaCalendarAlt className="text-primary" />
+              {itinerary.startDate && itinerary.endDate
+                ? `${itinerary.startDate} to ${itinerary.endDate}`
+                : "Dates not available"}
+            </p>
 
-  {/* Traveler Type with Badge */}
-  <div className="flex justify-center items-center gap-2 text-sm">
-    <FaUserFriends className="text-secondary" />
-    {itinerary.demographics?.travelerType || itinerary.travelerType ? (
-      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
-        {itinerary.demographics?.travelerType || itinerary.travelerType}
-      </span>
-    ) : (
-      <span className="text-gray-400 italic">Traveler type not available</span>
-    )}
-  </div>
-</div>
+            {/* Traveler Type with Badge */}
+            <div className="flex justify-center items-center gap-2 text-sm">
+              <FaUserFriends className="text-secondary" />
+              {itinerary.demographics?.travelerType || itinerary.travelerType ? (
+                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
+                  {itinerary.demographics?.travelerType || itinerary.travelerType}
+                </span>
+              ) : (
+                <span className="text-gray-400 italic">Traveler type not available</span>
+              )}
+            </div>
+          </div>
 
           <div className="divider divider-neutral font-bold">
             Weather Forecast
@@ -325,7 +325,7 @@ export default function ItineraryTimeline({
             <div className="flex items-center gap-2 mb-4 text-sm text-gray-600 bg-base-200 px-4 py-2 rounded-lg shadow-sm border border-dashed border-gray-300">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5 text-primary"
+                className="w-5 h-5 text-primary animate-bounce"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -337,7 +337,7 @@ export default function ItineraryTimeline({
                   d="M4 10h16M4 14h16"
                 />
               </svg>
-              You can drag and drop the activity cards within a day to reorder them!
+              You can drag and drop the activity cards within a day to reorder them! Remember to save your changes by clicking the "Update Itinerary" button at the bottom.
             </div>
 
             <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
