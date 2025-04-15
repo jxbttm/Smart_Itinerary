@@ -66,12 +66,11 @@ export default function ItineraryTimeline({
     }
   }, [itinerary]);
 
-  function SortableActivity({ activity, id, children }: {activity: any; id: string; children: React.ReactNode}) {
+  function SortableActivity({ activity, id, children }: { activity: any; id: string; children: React.ReactNode }) {
     const {
       attributes,
       listeners,
       setNodeRef,
-      setActivatorNodeRef, // important for custom handle
       transform,
       transition,
       isDragging
@@ -80,28 +79,20 @@ export default function ItineraryTimeline({
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
-      zIndex: isDragging ? 50 : "auto", // Optional: bring to front while dragging
+      zIndex: isDragging ? 50 : "auto",
+      cursor: isDragging ? "grabbing" : "grab", // Add grab cursor
     };
   
-    const handleRef = useRef(null);
-  
-    useEffect(() => {
-      if (handleRef.current) {
-        setActivatorNodeRef(handleRef.current);
-      }
-    }, [handleRef]);
-  
     return (
-      <div ref={setNodeRef} style={style} className="relative">
-        <div
-          ref={handleRef}
-          {...attributes}
-          {...listeners}
-          className={`absolute top-2 right-2 z-10 ${
-            isDragging ? "cursor-grabbing" : "cursor-grab"
-          } hover:text-primary`}
-        >
-          {/* Drag Icon */}
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+        className="relative"
+      >
+        
+        { <div className="absolute top-2 right-2 text-gray-500 hover:text-primary">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-5 h-5"
@@ -111,14 +102,8 @@ export default function ItineraryTimeline({
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 10h16M4 14h16" />
           </svg>
-        </div>
-
-        {/* Tooltip */}
-        <div className="absolute right-6 top-1 scale-0 group-hover:scale-100 transition-transform bg-black text-white text-xs px-2 py-1 rounded shadow-md">
-          Drag to reorder
-        </div>
+        </div> }
   
-        {/* Activity Card Content */}
         {children}
       </div>
     );
