@@ -14,6 +14,9 @@ import {DndContext,closestCenter,PointerSensor,useSensor,useSensors, DragEndEven
 import {SortableContext,arrayMove,useSortable,verticalListSortingStrategy,} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
+import { FaCalendarAlt, FaUserFriends } from "react-icons/fa"; // Calendar icon
+import { getFlagEmoji } from "@/utils/flagUtils"; // Utility to get flag from country name/code
+
 export default function ItineraryTimeline({
   itinerary,
   weatherForecast,
@@ -162,28 +165,32 @@ export default function ItineraryTimeline({
       {itinerary ? (
         <>
           {/* Destination */}
-          {itinerary.destination ? (
-            <h1 className="text-4xl font-bold">{itinerary.destination}</h1>
-          ) : (
-            <h1>Destination not available</h1>
-          )}
+          <div className="mb-6 space-y-4 text-center">
+  {/* Destination + Flag */}
+  <h1 className="text-4xl font-extrabold text-gray-800 flex justify-center items-center gap-2">
+    {getFlagEmoji(itinerary.destination)} {itinerary.destination || "Destination not available"}
+  </h1>
 
-          {/* Dates */}
-          {itinerary.startDate && itinerary.endDate ? (
-            <p>
-              {itinerary.startDate} to {itinerary.endDate}
-            </p>
-          ) : (
-            <p>Dates not available</p>
-          )}
+  {/* Dates with Icon */}
+  <p className="text-lg text-gray-600 flex justify-center items-center gap-2">
+    <FaCalendarAlt className="text-primary" />
+    {itinerary.startDate && itinerary.endDate
+      ? `${itinerary.startDate} to ${itinerary.endDate}`
+      : "Dates not available"}
+  </p>
 
-          {itinerary.demographics.travelerType ? (
-            <p>({itinerary.demographics.travelerType})</p>
-          ) : itinerary.travelerType ? (
-            <p>({itinerary.travelerType})</p>
-          ) : (
-            <p>Traveler Type not available</p>
-          )}
+  {/* Traveler Type with Badge */}
+  <div className="flex justify-center items-center gap-2 text-sm">
+    <FaUserFriends className="text-secondary" />
+    {itinerary.demographics?.travelerType || itinerary.travelerType ? (
+      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
+        {itinerary.demographics?.travelerType || itinerary.travelerType}
+      </span>
+    ) : (
+      <span className="text-gray-400 italic">Traveler type not available</span>
+    )}
+  </div>
+</div>
 
           <div className="divider divider-neutral font-bold">
             Weather Forecast
