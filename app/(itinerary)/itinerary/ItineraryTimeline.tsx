@@ -320,6 +320,26 @@ export default function ItineraryTimeline({
 
           {/* Itinerary Days */}
           {itinerary.itineraryDays && itinerary.itineraryDays.length > 0 ? (
+          <div>
+            {/* Drag and Drop Note */}
+            <div className="flex items-center gap-2 mb-4 text-sm text-gray-600 bg-base-200 px-4 py-2 rounded-lg shadow-sm border border-dashed border-gray-300">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5 text-primary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 10h16M4 14h16"
+                />
+              </svg>
+              You can drag and drop the activity cards within a day to reorder them!
+            </div>
+
             <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
               {itinerary.itineraryDays.map((day, dayIndex) => (
                 <li key={dayIndex}>
@@ -427,6 +447,7 @@ export default function ItineraryTimeline({
                 </li>
               ))}
             </ul>
+          </div>
           ) : (
             <p>No itinerary days available</p>
           )}
