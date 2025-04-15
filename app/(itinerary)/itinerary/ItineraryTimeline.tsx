@@ -1,7 +1,7 @@
 import { ItineraryService } from "@/services/ItineraryService";
 import { ItineraryTimelineProps } from "./ItineraryTimelineProps";
 import { supabase } from "@/lib/supabase/client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FlightLeg from "@/components/flights/FlightDisplayCard";
@@ -10,6 +10,9 @@ import "simplebar-react/dist/simplebar.min.css";
 import DailyWeatherItem from "./DailyWeatherItem";
 import useHotelStore from "@/store/hotelStore";
 import { ItineraryAccommodation } from "@/types/ItineraryAccommodation";
+import {DndContext,closestCenter,PointerSensor,useSensor,useSensors, DragEndEvent} from "@dnd-kit/core";
+import {SortableContext,arrayMove,useSortable,verticalListSortingStrategy,} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function ItineraryTimeline({
   itinerary,
@@ -18,9 +21,18 @@ export default function ItineraryTimeline({
   itineraryId,
   flightDisplayDetails,
 }: ItineraryTimelineProps) {
+
+  const isNewItinerary = !itinerary?.id;
+
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const setHotelDetails = useHotelStore((state) => state.setHotelDetails);
+
+  const [itineraryDetails, setItineraryDetails] = useState(itinerary);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const [originalItinerary, setOriginalItinerary] = useState(itinerary);
+
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
@@ -32,6 +44,113 @@ export default function ItineraryTimeline({
       setLoading(false);
       router.push(`/profile/${id}`);
     }
+  }
+
+  async function UpdateItinerary(): Promise<void> {
+    setLoading(true);
+    const session = await supabase.auth.getUser();
+    if (session.data.user) {
+      const { id } = session.data.user;
+      console.log("saving weather forecast", weatherForecast);
+      console.log("updating itinerary", itineraryDetails);
+      const itinerary = itineraryDetails;
+      await ItineraryService.updateItinerary(id, itinerary, weatherForecast);
+      setLoading(false);
+      router.push(`/profile/${id}`);
+    }
+  }
+
+  useEffect(() => {
+    if (itinerary) {
+      setOriginalItinerary(JSON.parse(JSON.stringify(itinerary)));
+    }
+  }, [itinerary]);
+
+  function SortableActivity({ activity, id, children }: {activity: any; id: string; children: React.ReactNode}) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      setActivatorNodeRef, // important for custom handle
+      transform,
+      transition,
+      isDragging
+    } = useSortable({ id });
+  
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      zIndex: isDragging ? 50 : "auto", // Optional: bring to front while dragging
+    };
+  
+    const handleRef = useRef(null);
+  
+    useEffect(() => {
+      if (handleRef.current) {
+        setActivatorNodeRef(handleRef.current);
+      }
+    }, [handleRef]);
+  
+    return (
+      <div ref={setNodeRef} style={style} className="relative">
+        <div
+          ref={handleRef}
+          {...attributes}
+          {...listeners}
+          className={`absolute top-2 right-2 z-10 ${
+            isDragging ? "cursor-grabbing" : "cursor-grab"
+          } hover:text-primary`}
+        >
+          {/* Drag Icon */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 10h16M4 14h16" />
+          </svg>
+        </div>
+
+        {/* Tooltip */}
+        <div className="absolute right-6 top-1 scale-0 group-hover:scale-100 transition-transform bg-black text-white text-xs px-2 py-1 rounded shadow-md">
+          Drag to reorder
+        </div>
+  
+        {/* Activity Card Content */}
+        {children}
+      </div>
+    );
+  }
+
+  function handleDragEnd(event: DragEndEvent, dayIndex: number) {
+    const { active, over } = event;
+  
+    if (!over || active.id === over.id) return;
+  
+    const oldIndex = typeof active.id === "string" ? parseInt(active.id.split("-")[1]) : 0;
+    const newIndex = typeof over.id === "string" ? parseInt(over.id.split("-")[1]) : 0;
+  
+    const updatedItinerary = { ...itinerary };
+    const originalDay = originalItinerary?.itineraryDays[dayIndex];
+    const originalTimings = originalDay?.activities.map((a) => a.timing) || [];
+
+    const currentActivities = updatedItinerary.itineraryDays[dayIndex].activities;
+    const reorderedActivities = arrayMove(currentActivities, oldIndex, newIndex);
+
+    // 🍰 Assign original timings by index
+    const updatedActivities = reorderedActivities.map((activity, index) => ({
+      ...activity,
+      timing: originalTimings[index] || activity.timing, // fallback if out of bounds
+    }));
+
+    updatedItinerary.itineraryDays[dayIndex].activities = updatedActivities;
+
+    console.log("Updated itinerary after drag and drop:", updatedItinerary);
+
+    setItineraryDetails(updatedItinerary);
+    setHasChanges(true);
   }
 
   const redirectToHotelPage = () => {
@@ -234,7 +353,24 @@ export default function ItineraryTimeline({
                       Day {dayIndex + 1} - {day.date}
                     </time>
                     <div className="text-md font-black">{day.description}</div>
-                    {day.activities.map((each, activityIndex) => (
+
+                    <DndContext
+                      sensors={useSensors(useSensor(PointerSensor))}
+                      collisionDetection={closestCenter}
+                      onDragEnd={(event) => handleDragEnd(event, dayIndex)}
+                    >
+                      <SortableContext
+                        items={day.activities.map((a, i) => `${dayIndex}-${i}`)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        
+                        {day.activities.map((each, activityIndex) => (
+
+                              <SortableActivity
+                              key={`${dayIndex}-${activityIndex}`}
+                              id={`${dayIndex}-${activityIndex}`}
+                              activity={each}
+                              >
                       <div
                         key={activityIndex}
                         className="card bg-base-200 shadow-lg m-6 text-center"
@@ -289,7 +425,11 @@ export default function ItineraryTimeline({
                           </div>
                         </div>
                       </div>
+                      </SortableActivity>
                     ))}
+
+                      </SortableContext>
+                    </DndContext>
                   </div>
                   <hr />
                 </li>
@@ -328,24 +468,34 @@ export default function ItineraryTimeline({
           ) : (
             <p className="text-center">No important notes available</p>
           )}
-          {/* Conditionally render the "Save Itinerary" button */}
-          {!isViewingOwnItinerary && (
-            <div className="mt-6">
-              <button
-                className="btn btn-outline"
-                onClick={() => SaveItinerary()}
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="loading loading-spinner"></span> Saving...
-                  </span>
-                ) : (
-                  "Save Itinerary"
-                )}
-              </button>
-            </div>
-          )}
+          {/* Conditionally render the "Save Itinerary" or "Update Itinerary" button */}
+          <div className="mt-6">
+            <button
+              className="btn btn-outline"
+              onClick={() =>
+                isViewingOwnItinerary
+                  ? UpdateItinerary()
+                  : SaveItinerary()
+              }
+              disabled={
+                loading ||
+                (isViewingOwnItinerary && !hasChanges)
+              }
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="loading loading-spinner"></span>
+                  {isViewingOwnItinerary
+                    ? "Updating..."
+                    : "Saving..."}
+                </span>
+              ) : isViewingOwnItinerary ? (
+                "Update Itinerary"
+              ) : (
+                "Save Itinerary"
+              )}
+            </button>
+          </div>
         </>
       ) : (
         <p>No itinerary available</p>
