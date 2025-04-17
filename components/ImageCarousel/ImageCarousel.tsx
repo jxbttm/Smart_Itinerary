@@ -4,7 +4,7 @@ import Card from "./Card";
 import useMeasure from "react-use-measure";
 import { useEffect } from "react";
 
-export default function TestCarousel() {
+export default function ImageCarousel() {
   const carouselImgSrc = [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg/250px-The_Great_Wall_of_China_at_Jinshanling-edit.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Front_view_of_Statue_of_Liberty_with_pedestal_and_base_2024.jpg/250px-Front_view_of_Statue_of_Liberty_with_pedestal_and_base_2024.jpg",
