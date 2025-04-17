@@ -6,6 +6,7 @@ import Link from "next/link";
 import HomeCarousel from "./HomeCarousel";
 import ImagePopup from "@/components/Modal"; // Adjust import based on your file structure
 import { useAuth } from "@/context/AuthContext";
+import ImageCarousel from "@/components/ImageCarousel/ImageCarousel";
 
 export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -137,7 +138,10 @@ export default function Home() {
             />
           )}
         </div>
-        <HomeCarousel></HomeCarousel>
+        {/* <HomeCarousel></HomeCarousel> */}
+        <div className="w-full flex items-center justify-center mt-4">
+          <ImageCarousel />
+        </div>
       </main>
     </div>
   );

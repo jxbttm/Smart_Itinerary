@@ -160,6 +160,9 @@ export default function ItineraryTimeline({
       }`
       : "grid-cols-4";
 
+    
+  const sensors = useSensors(useSensor(PointerSensor));
+
   return (
     <div className="flex flex-col items-center p-8">
       {itinerary ? (
@@ -337,7 +340,7 @@ export default function ItineraryTimeline({
                   d="M4 10h16M4 14h16"
                 />
               </svg>
-              You can drag and drop the activity cards within a day to reorder them! Remember to save your changes by clicking the "Update Itinerary" button at the bottom.
+              You can drag and drop the activity cards within a day to reorder them! Remember to save your changes by clicking the &quot;Update Itinerary&quot; button at the bottom.
             </div>
 
             <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
@@ -367,7 +370,7 @@ export default function ItineraryTimeline({
                     <div className="text-md font-black">{day.description}</div>
 
                     <DndContext
-                      sensors={useSensors(useSensor(PointerSensor))}
+                      sensors={sensors}
                       collisionDetection={closestCenter}
                       onDragEnd={(event) => handleDragEnd(event, dayIndex)}
                     >
