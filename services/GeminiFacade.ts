@@ -17,10 +17,10 @@ export class GeminiFacade {
 
     public async generateContent(prompt: string, schema: Record<string, any>) {
         const generationConfig = {
-            temperature: 1, //More creative & less determinnistic
-            topP: 0.95,
-            topK: 40,
-            maxOutputTokens: 8192,
+            temperature: 1, //More creative & less deterministic
+            topP: 0.95, // Reduce nonsencial tokens being generate
+            topK: 40, // Reduce randomness
+            maxOutputTokens: 8192, 
             responseMimeType: "application/json",
             response_schema: schema
         };

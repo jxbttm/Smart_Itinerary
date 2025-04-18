@@ -1,16 +1,11 @@
-// components/Header.tsx
 import Image from "next/image";
 import AuthForm from "@/components/forms/AuthForm";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
-interface HeaderProps {
-  user: any;
-  onLogout: () => void;
-}
-
 export const Header = () => {
-  const { user, loading, signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  
   return (
     <div className="navbar bg-base-100 border-b border-gray-300">
       <div className="flex-1">
@@ -32,9 +27,9 @@ export const Header = () => {
               className="btn btn-ghost btn-circle avatar"
             >
               <div className="w-10 rounded-full">
-                {user?.user_metadata?.avatar_url ? (
+                {user?.avatarUrl ? (
                   <Image
-                    src={user?.user_metadata?.avatar_url}
+                    src={user?.avatarUrl}
                     alt="User Avatar"
                     className="w-10 rounded-full"
                     width={10}
@@ -43,7 +38,7 @@ export const Header = () => {
                   />
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                    {user ? user.user_metadata?.name[0] : "U"}
+                    {user ? user.name : "U"}
                   </div>
                 )}
               </div>

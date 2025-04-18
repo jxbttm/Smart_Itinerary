@@ -1,10 +1,10 @@
 "use client";
 
-import { supabase } from "@/lib/supabase/client";
+import { UserService } from "@/services/UserService";
 import { useEffect, useState } from "react";
+import { User } from "@/types/User";
 import Link from "next/link";
-import HomeCarousel from "./HomeCarousel";
-import ImagePopup from "@/components/Modal"; // Adjust import based on your file structure
+import ImagePopup from "@/components/Modal";
 import { useAuth } from "@/context/AuthContext";
 import ImageCarousel from "@/components/ImageCarousel/ImageCarousel";
 
@@ -21,43 +21,24 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // This runs on the client-side when the component mounts
     const fetchUser = async () => {
       // Get the user session
-      const session = await supabase.auth.getUser();
-      if (session.data.user) {
-        const { user_metadata, email, id } = session.data.user;
-        const { name, avatar_url } = user_metadata;
+      const currentUser = await UserService.getUserSession();
 
-        // Check if the user already exists in the 'users' table
-        const { data, error } = await supabase
-          .from("users")
-          .select("*")
-          .eq("email", email);
-
-        // If user does not exist in the users table, insert user data
-        if (data && data.length === 0) {
-          const { error: insertError } = await supabase.from("users").insert([
-            {
-              id,
-              name,
-              email,
-              avatar_url,
-              // Add any other columns as required in the 'users' table
-            },
-          ]);
-
-          if (insertError) {
-            console.error(
-              "Error inserting user into 'users' table:",
-              insertError
-            );
+      if (currentUser && currentUser.id) {
+        const userExistsInDb = await UserService.checkUserExists(currentUser.id);
+        //If user does not exist in the users table, insert user data
+        if (!userExistsInDb) {
+          const user: User = {
+            id: currentUser.id,
+            email: currentUser.email,
+            name: currentUser.name,
+            avatarUrl: currentUser.avatarUrl
           }
+          await UserService.createUser(user)
         }
-
-        // Set the user data to display their profile
-        updateUser(session.data.user);
       }
+      if (currentUser) updateUser(currentUser); // Set the user data to display their profile
     };
 
     fetchUser();
@@ -100,12 +81,6 @@ export default function Home() {
       </div>
     );
   }
-
-  // Destructure user metadata and app metadata
-  const { user_metadata, app_metadata } = user;
-  const { name, email, avatar_url } = user_metadata;
-
-  const userName = name ? `@${name}` : "User Name Not Set";
 
   return (
     <div>

@@ -1,5 +1,5 @@
 "use client";
-import { supabase } from "@/lib/supabase/client";
+import { UserService } from "@/services/UserService";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,10 +13,11 @@ import {
   FaBullseye,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { User } from "@/types/User";
 
 export default function Profile() {
   const { userId } = useParams(); // Extract userId from URL params
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User>();
   const [itineraries, setItineraries] = useState<any[]>([]); // State for itineraries
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [loading, setLoading] = useState<boolean>(true); // Loading state for fetching data
@@ -38,36 +39,17 @@ export default function Profile() {
 
   useEffect(() => {
     const setProfile = async () => {
-      if (!userId) return; // Ensure userId is available
+      if (!userId) return;
 
-      // const supabase = await createClient();
-
-      // Fetch user data based on the userId in the URL
-      const { data: user_record, error: userError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", userId) // Use userId from the URL
-        .single();
-
-      if (userError) {
-        console.error("Error fetching user data:", userError);
-        return;
+      if (typeof userId === 'string') {
+        const userData = await UserService.getUserById(userId)
+        if (userData) {
+          setUser(userData);
+        }
+        const userItineraries = await ItineraryService.getUserItineraries(userId)
+        setItineraries(userItineraries || []);
       }
 
-      setUser(user_record);
-
-      // Get user's itineraries based on the userId
-      const { data: itineraries_data, error: itineraryError } = await supabase
-        .from("itinerary")
-        .select("*")
-        .eq("user_id", userId); // Fetch itineraries for the userId
-
-      if (itineraryError) {
-        console.error("Error fetching itineraries:", itineraryError);
-        return;
-      }
-
-      setItineraries(itineraries_data || []);
       setLoading(false); // Set loading state to false after fetching data
     };
     setProfile();
@@ -106,22 +88,6 @@ export default function Profile() {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        /*
-        Swal.fire({
-          timer: 3000,
-          background: "#23282e",
-          color: "#FFFFFF",
-          title: `Success`,
-          showConfirmButton: false,
-          text: "You have successfully deleted your Itinerary! Redirecting you back to itinerary details page...",
-          icon: "success",
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        }).then(() => {
-          redirectBacktoProfile();
-        });
-        */
         redirectBacktoProfile();
       }
     });
@@ -141,17 +107,7 @@ export default function Profile() {
     return <p>User not found</p>;
   }
 
-  const {
-    name,
-    email,
-    avatar_url,
-    travel_group,
-    min_budget,
-    max_budget,
-    purpose,
-  } = user;
-
-  const cleanedPurpose = purpose.replace(/[\[\]"]+/g, "");
+  console.log("user",user)
 
   return (
     <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-gray-50">
@@ -166,28 +122,30 @@ export default function Profile() {
           </div>
         </div>
       )}
-      <div className="flex flex-col items-center gap-4">
-        {avatar_url && (
-          <Image
-            src={avatar_url}
-            alt={name}
-            width={200}
-            height={200}
-            className="rounded-full border-4 border-gray-500 shadow-lg"
-            quality={100}
-          />
-        )}
-        <Link href={`/profile/${userId}/edit-profile`}>
-          <button className="btn btn-accent text-white py-2 px-6 rounded-lg transition-all hover:bg-accent-focus">
-            Edit Profile
-          </button>
-        </Link>
-      </div>
+      {user && (
+        <>
+          <div className="flex flex-col items-center gap-4">
+            {user.avatarUrl && (
+              <Image
+                src={user.avatarUrl}
+                alt={user.name}
+                width={200}
+                height={200}
+                className="rounded-full border-4 border-gray-500 shadow-lg"
+                quality={100}
+              />
+            )}
+            <Link href={`/profile/${userId}/edit-profile`}>
+              <button className="btn btn-accent text-white py-2 px-6 rounded-lg transition-all hover:bg-accent-focus">
+                Edit Profile
+              </button>
+            </Link>
+          </div>
+          <h1 className="text-4xl font-semibold text-black">{user.name}</h1>
+        </>
+      )}
 
-      {/* Name Section */}
-      <h1 className="text-4xl font-semibold text-black">{name}</h1>
 
-      {/* User Info */}
       <div className="card bg-white shadow-md w-full max-w-md mt-6 p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           User Information
@@ -197,87 +155,92 @@ export default function Profile() {
             <FaUserAlt className="text-gray-500 mr-3" />
             <p>
               <span className="font-semibold text-gray-900">User Name:</span>{" "}
-              {name}
+              {user.name}
             </p>
           </div>
           <div className="flex items-center">
             <FaEnvelope className="text-gray-500 mr-3" />
             <p>
               <span className="font-semibold text-gray-900">Email:</span>{" "}
-              {email}
+              {user.email}
             </p>
           </div>
-          <div className="flex items-center">
-            <FaSuitcase className="text-gray-500 mr-3" />
-            <p>
-              <span className="font-semibold text-gray-900">Travel Type:</span>{" "}
-              {travel_group}
-            </p>
-          </div>
-          <div className="flex items-center">
-            <FaMoneyBillAlt className="text-gray-500 mr-3" />
-            <p>
-              <span className="font-semibold text-gray-900">Budget:</span> $
-              {min_budget} - ${max_budget}
-            </p>
-          </div>
-          <div className="flex items-center">
-            <FaBullseye className="text-gray-500 mr-3" />
-            <p>
-              <span className="font-semibold text-gray-900">Preference:</span>{" "}
-              {cleanedPurpose}
-            </p>
-          </div>
+          {user.userDemographics && (
+            <>
+              <div className="flex items-center">
+                <FaSuitcase className="text-gray-500 mr-3" />
+                <p>
+                  <span className="font-semibold text-gray-900">Travel Type:</span>{" "}
+                  {user.userDemographics?.travelType}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <FaMoneyBillAlt className="text-gray-500 mr-3" />
+                <p>
+                  <span className="font-semibold text-gray-900">Budget:</span> $
+                  {user.userDemographics?.minBudget} - ${user.userDemographics?.maxBudget}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <FaBullseye className="text-gray-500 mr-3" />
+                <p>
+                  <span className="font-semibold text-gray-900">Preference:</span>{" "}
+                  {user.userDemographics?.purpose}
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
-
       {/* Itinerary Section */}
-      {itineraries.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          {itineraries.map((itinerary: any) => (
-            <div
-              key={itinerary.id}
-              className="card bg-base-100 shadow-lg hover:shadow-xl transition-all"
-            >
-              <figure>
-                <img
-                  src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-                  alt="Itinerary"
-                  className="object-cover w-full h-56 rounded-t-lg"
-                />
-              </figure>
-              <div className="card-body p-4">
-                <h2 className="card-title text-xl font-bold text-gray-900">
-                  {itinerary.destination}
-                </h2>
-                <p className="text-gray-700">
-                  Duration: {formatDate(itinerary.start_date)} -{" "}
-                  {formatDate(itinerary.end_date)} <br />
-                  Estimated Cost: ${itinerary.estimated_total_cost}
-                </p>
-                <div className="card-actions justify-end mt-4">
-                  <button
-                    className="btn btn-primary px-6 py-2 rounded-lg transition-all hover:bg-primary-focus"
-                    onClick={() => handleViewDetails(user.id, itinerary.id)}
-                  >
-                    View Details
-                  </button>
-                  <button
-                    className="btn bg-red-500 text-white px-6 py-2 rounded-lg transition-all hover:bg-red-600"
-                    onClick={() => handleDelete(itinerary.id)}
-                  >
-                    Delete
-                  </button>
+      {
+        itineraries.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {itineraries.map((itinerary: any) => (
+              <div
+                key={itinerary.id}
+                className="card bg-base-100 shadow-lg hover:shadow-xl transition-all"
+              >
+                <figure>
+                  <img
+                    src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                    alt="Itinerary"
+                    className="object-cover w-full h-56 rounded-t-lg"
+                  />
+                </figure>
+                <div className="card-body p-4">
+                  <h2 className="card-title text-xl font-bold text-gray-900">
+                    {itinerary.destination}
+                  </h2>
+                  <p className="text-gray-700">
+                    Duration: {formatDate(itinerary.start_date)} -{" "}
+                    {formatDate(itinerary.end_date)} <br />
+                    Estimated Cost: ${itinerary.estimated_total_cost}
+                  </p>
+                  <div className="card-actions justify-end mt-4">
+                    <button
+                      className="btn btn-primary px-6 py-2 rounded-lg transition-all hover:bg-primary-focus"
+                      onClick={() => handleViewDetails(user.id, itinerary.id)}
+                    >
+                      View Details
+                    </button>
+                    <button
+                      className="btn bg-red-500 text-white px-6 py-2 rounded-lg transition-all hover:bg-red-600"
+                      onClick={() => handleDelete(itinerary.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-lg text-center text-gray-600 mt-6">
-          No itineraries available.
-        </p>
-      )}
-    </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-lg text-center text-gray-600 mt-6">
+            No itineraries available.
+          </p>
+        )
+      }
+    </div >
   );
 }

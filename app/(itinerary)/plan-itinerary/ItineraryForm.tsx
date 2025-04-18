@@ -5,7 +5,8 @@ import { Country } from "@/types/Country";
 import { TravelType } from "@/types/TravelType";
 import CountrySearch from "@/app/(itinerary)/plan-itinerary/CountrySearch";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/client";
+import { UserService } from "@/services/UserService";
+import Swal from "sweetalert2";
 
 interface ItineraryFormProps {
   countries: Country[];
@@ -67,33 +68,23 @@ export default function ItineraryForm({
     const checked = event.target.checked;
     setPrefChecked(checked);
     if (checked) {
-      // Get the user session
-      const session = await supabase.auth.getUser();
-      if (session.data.user) {
-        const { id } = session.data.user;
-        const { data, error } = await supabase
-          .from("users")
-          .select("min_budget,max_budget,travel_group,purpose,number_of_people")
-          .eq("id", id)
-          .single();
-        if (
-          data?.min_budget &&
-          data?.max_budget &&
-          data?.travel_group &&
-          data?.purpose &&
-          !error
-        ) {
-          setMinBudget(data.min_budget);
-          setMaxBudget(data.max_budget);
-          const purpose = data.purpose.split(","); //Split string into array
+      const userSession = await UserService.getUserSession()
+      if (userSession && userSession.id) {
+        const userDemographics = await UserService.getUserDemographicsById(userSession.id)
+        if (userDemographics) {
+          setMinBudget(userDemographics.minBudget ? userDemographics.minBudget : 0 );
+          setMaxBudget(userDemographics.maxBudget ? userDemographics.maxBudget : 0 );
+          const purpose = userDemographics.purpose.split(","); //Split string into array
           setPreferences(purpose);
           setTravelGroup({
-            type_name: data.travel_group,
-            number_of_people: data.number_of_people,
-          });
+            type_name: userDemographics.travelType,
+            number_of_people: userDemographics.numberOfPeople,
+          })
         } else {
           setPrefChecked(false);
-          alert("No valid preferences found. Please update your information.");
+          Swal.fire({
+            text: "No valid preferences found. Please update your information.",
+          });
         }
       }
     } else {
@@ -109,7 +100,7 @@ export default function ItineraryForm({
         </div>
         <form onSubmit={onSubmit}>
           <fieldset className="w-full">
-          {countries && countries.length > 0 && (
+            {countries && countries.length > 0 && (
               <CountrySearch
                 countries={countries}
                 onSearchTermChange={(term: string) => setSourceCountry(term)}
