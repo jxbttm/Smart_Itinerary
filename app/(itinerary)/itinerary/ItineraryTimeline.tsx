@@ -1,6 +1,6 @@
 import { ItineraryService } from "@/services/ItineraryService";
 import { ItineraryTimelineProps } from "./ItineraryTimelineProps";
-import { supabase } from "@/lib/supabase/client";
+import { UserService } from "@/services/UserService";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -25,8 +25,6 @@ export default function ItineraryTimeline({
   flightDisplayDetails,
 }: ItineraryTimelineProps) {
 
-  const isNewItinerary = !itinerary?.id;
-
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const setHotelDetails = useHotelStore((state) => state.setHotelDetails);
@@ -39,27 +37,22 @@ export default function ItineraryTimeline({
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
-    const session = await supabase.auth.getUser();
-    if (session.data.user) {
-      const { id } = session.data.user;
-      console.log("saving weather forecast", weatherForecast);
-      await ItineraryService.saveItinerary(id, itinerary, weatherForecast);
+    const userSession = await UserService.getUserSession()
+    if (userSession && userSession.id) {
+      await ItineraryService.saveItinerary(userSession.id, itinerary, weatherForecast);
       setLoading(false);
-      router.push(`/profile/${id}`);
+      router.push(`/profile/${userSession.id}`);
     }
   }
 
   async function UpdateItinerary(): Promise<void> {
     setLoading(true);
-    const session = await supabase.auth.getUser();
-    if (session.data.user) {
-      const { id } = session.data.user;
-      console.log("saving weather forecast", weatherForecast);
-      console.log("updating itinerary", itineraryDetails);
+    const userSession = await UserService.getUserSession()
+    if (userSession && userSession.id) {
       const itinerary = itineraryDetails;
-      await ItineraryService.updateItinerary(id, itinerary, weatherForecast);
+      await ItineraryService.updateItinerary(userSession.id, itinerary, weatherForecast);
       setLoading(false);
-      router.push(`/profile/${id}`);
+      router.push(`/profile/${userSession.id}`);
     }
   }
 

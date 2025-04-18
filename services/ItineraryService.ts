@@ -3,14 +3,8 @@ import { Itinerary } from "@/types/Itinerary";
 import { WeatherForecast } from "@/types/WeatherForecast";
 
 export class ItineraryService {
-  static async saveItinerary(
-    userId: string,
-    itinerary: Itinerary,
-    weatherForecast: WeatherForecast
-  ): Promise<any> {
+  static async saveItinerary(userId: string,itinerary: Itinerary,weatherForecast: WeatherForecast): Promise<any> {
     try {
-      console.log("Saving itinerary:", itinerary);
-      console.log("Weather forecast:", weatherForecast);
       const { data, error } = await supabase
         .from("itinerary")
         .insert({
@@ -88,13 +82,13 @@ export class ItineraryService {
     weatherForecast: WeatherForecast
   ): Promise<void> {
     try {
-      const { id: itineraryId } = itinerary.id? itinerary : {};
-  
+      const { id: itineraryId } = itinerary.id ? itinerary : {};
+
       if (!itineraryId) {
         console.error("Itinerary ID is missing. Cannot update.");
         return;
       }
-  
+
       // 1. Update the main itinerary table
       const { error: itineraryError } = await supabase
         .from("itinerary")
@@ -109,12 +103,12 @@ export class ItineraryService {
           weather_forecast: weatherForecast,
         })
         .eq("id", itineraryId);
-  
+
       if (itineraryError) {
         console.error("Error updating itinerary:", itineraryError);
         return;
       }
-  
+
       // 2. Update demographics
       const { error: demographicsError } = await supabase
         .from("itinerary_demographics")
@@ -126,11 +120,11 @@ export class ItineraryService {
           purpose: itinerary.demographics.purpose,
         })
         .eq("itinerary_id", itineraryId);
-  
+
       if (demographicsError) {
         console.error("Error updating demographics:", demographicsError);
       }
-  
+
       // 3. Update accommodations
       for (const item of itinerary.accommodation) {
         if (item.id) {
@@ -146,7 +140,7 @@ export class ItineraryService {
             .eq("id", item.id);
         }
       }
-      
+
       // 4. Update itinerary days and activities
       for (const day of itinerary.itineraryDays) {
         const { data: dayData, error: dayError } = await supabase
@@ -158,8 +152,8 @@ export class ItineraryService {
             description: day.description,
           })
           .eq("id", day.id);
-          
-        
+
+
         console.log("dayData", dayData);
         console.log("day", day);
         const itineraryDayId = day.id;
@@ -173,18 +167,18 @@ export class ItineraryService {
               image_url: activity.imageUrl,
               timing: activity.timing,
             })
-            .eq("id", activity.id);
+              .eq("id", activity.id);
           }
         }
       }
-  
+
       console.log("Itinerary updated successfully.");
     } catch (error) {
       console.error("Error in updateItinerary:", error);
     }
   }
-  
-  
+
+
 
   static async getUserItineraries(userId: string): Promise<any> {
     try {
@@ -194,9 +188,8 @@ export class ItineraryService {
         .eq("user_id", userId);
       if (data) {
         return data;
-      } else {
-        return error;
       }
+      return error;
     } catch (error) {
       console.error("Error retrieving user itinerary:", error);
     }
@@ -211,9 +204,8 @@ export class ItineraryService {
         .single();
       if (data) {
         return data;
-      } else {
-        return error;
       }
+      return error;
     } catch (error) {
       console.error("Error retrieving user itinerary:", error);
     }
@@ -329,15 +321,15 @@ export class ItineraryService {
       // Transform the accommodation object and nest it under "accommodation"
       const transformedAccommodationData = accommodationData
         ? accommodationData.map((item) => {
-            return {
-              id: item.id,
-              name: item.name,
-              estimatedCost: item.estimated_cost, // Mapping snake_case to camelCase
-              imageUrl: item.image_url ?? "", // Mapping snake_case to camelCase
-              itineraryId: item.itinerary_id, // Mapping snake_case to camelCase
-              hotelDescription: item.hotel_description ?? "",
-            };
-          })
+          return {
+            id: item.id,
+            name: item.name,
+            estimatedCost: item.estimated_cost, // Mapping snake_case to camelCase
+            imageUrl: item.image_url ?? "", // Mapping snake_case to camelCase
+            itineraryId: item.itinerary_id, // Mapping snake_case to camelCase
+            hotelDescription: item.hotel_description ?? "",
+          };
+        })
         : [];
 
       // Assemble and return the complete itinerary data including all related data

@@ -1,5 +1,4 @@
-// import { supabase } from "@/lib/supabase";
-import { supabase } from "@/lib/supabase/client";
+import { UserService } from "@/services/UserService";
 import { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextProps {
@@ -12,8 +11,8 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps>({
   user: null,
   loading: true,
-  updateUser: () => {},
-  signOut: async () => {},
+  updateUser: () => { },
+  signOut: async () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -32,14 +31,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const fetchUser = async () => {
       try {
-        // Initialize Supabase client inside the useEffect
-        const { data } = await supabase.auth.getSession();
-        const session = data?.session;
-        // const { data } = await supabase.auth.getUser();
-
-        // If user data is found, stop the loading and set the user
-        if (session?.user) {
-          setUser(session?.user || null);
+        const user = await UserService.getUserSession()
+        if (user) {
+          setUser(user || null);
           setLoading(false);
         }
       } catch (error) {
@@ -70,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Sign out function
   const signOut = async () => {
     try {
-      await supabase.auth.signOut(); // Sign out the user
+      await UserService.signOutUser()
       setUser(null); // Set the user state to null
       window.location.href = "/"; // Reload the window
     } catch (error) {

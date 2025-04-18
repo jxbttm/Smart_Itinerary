@@ -39,7 +39,7 @@ jobs:
           - name: Cypress run
             uses: cypress-io/github-action@a55856e0e961f64708c68ddcb38fba233d164ed8 # v6
 
-          - run: npm run test:e2e
+          - run: npm run component:headless
 
     SAST:
         needs: [Test]
