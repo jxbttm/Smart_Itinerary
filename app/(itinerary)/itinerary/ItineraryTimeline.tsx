@@ -10,12 +10,16 @@ import "simplebar-react/dist/simplebar.min.css";
 import DailyWeatherItem from "./DailyWeatherItem";
 import useHotelStore from "@/store/hotelStore";
 import { ItineraryAccommodation } from "@/types/ItineraryAccommodation";
-import {DndContext,closestCenter,PointerSensor,useSensor,useSensors, DragEndEvent} from "@dnd-kit/core";
-import {SortableContext,arrayMove,useSortable,verticalListSortingStrategy,} from "@dnd-kit/sortable";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy, } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { FaCalendarAlt, FaUserFriends } from "react-icons/fa"; // Calendar icon
 import { getFlagEmoji } from "@/utils/flagUtils"; // Utility to get flag from country name/code
+
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { signinWithGoogleWithRedirect } from '@/lib/actions'
 
 export default function ItineraryTimeline({
   itinerary,
@@ -34,25 +38,38 @@ export default function ItineraryTimeline({
 
   const [originalItinerary, setOriginalItinerary] = useState(itinerary);
 
+  const userSession = UserService.getUserSession();
+  const [user, setUser] = useState<any>(null);
+
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await userSession;
+      if (currentUser) {
+        setUser(currentUser);
+      }
+    };
+    fetchUser();
+  }, [userSession]);
+
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
-    const userSession = await UserService.getUserSession()
-    if (userSession && userSession.id) {
-      await ItineraryService.saveItinerary(userSession.id, itinerary, weatherForecast);
+    if (user && user.id) {
+      await ItineraryService.saveItinerary(user.id, itinerary, weatherForecast);
       setLoading(false);
-      router.push(`/profile/${userSession.id}`);
+      router.push(`/profile/${user.id}`);
     }
   }
 
   async function UpdateItinerary(): Promise<void> {
     setLoading(true);
-    const userSession = await UserService.getUserSession()
-    if (userSession && userSession.id) {
+    if (user && user.id) {
       const itinerary = itineraryDetails;
-      await ItineraryService.updateItinerary(userSession.id, itinerary, weatherForecast);
+      await ItineraryService.updateItinerary(user.id, itinerary, weatherForecast);
       setLoading(false);
-      router.push(`/profile/${userSession.id}`);
+      router.push(`/profile/${user.id}`);
     }
   }
 
@@ -71,14 +88,14 @@ export default function ItineraryTimeline({
       transition,
       isDragging
     } = useSortable({ id });
-  
+
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
       zIndex: isDragging ? 50 : "auto",
       cursor: isDragging ? "grabbing" : "grab", // Add grab cursor
     };
-  
+
     return (
       <div
         ref={setNodeRef}
@@ -87,8 +104,8 @@ export default function ItineraryTimeline({
         {...listeners}
         className="relative"
       >
-        
-        { <div className="absolute top-2 right-2 text-gray-500 hover:text-primary">
+
+        {<div className="absolute top-2 right-2 text-gray-500 hover:text-primary">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-5 h-5"
@@ -98,8 +115,8 @@ export default function ItineraryTimeline({
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 10h16M4 14h16" />
           </svg>
-        </div> }
-  
+        </div>}
+
         {children}
       </div>
     );
@@ -107,12 +124,12 @@ export default function ItineraryTimeline({
 
   function handleDragEnd(event: DragEndEvent, dayIndex: number) {
     const { active, over } = event;
-  
+
     if (!over || active.id === over.id) return;
-  
+
     const oldIndex = typeof active.id === "string" ? parseInt(active.id.split("-")[1]) : 0;
     const newIndex = typeof over.id === "string" ? parseInt(over.id.split("-")[1]) : 0;
-  
+
     const updatedItinerary = { ...itinerary };
     const originalDay = originalItinerary?.itineraryDays[dayIndex];
     const originalTimings = originalDay?.activities.map((a) => a.timing) || [];
@@ -153,8 +170,34 @@ export default function ItineraryTimeline({
       }`
       : "grid-cols-4";
 
-    
+
   const sensors = useSensors(useSensor(PointerSensor));
+
+  const MySwal = withReactContent(Swal);
+
+  const triggerLoginSwal = () => {
+    const redirectUrl = window.location.href;
+    MySwal.fire({
+      title: "Not Logged In",
+      html: `<p class="mb-4">Please sign in with Google to save your itinerary.</p>
+             <button id="google-login-btn" class="btn btn-outline w-full">
+              <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5 inline-block mr-2" />
+              Continue with Google
+             </button>`,
+      icon: "warning",
+      showConfirmButton: false,
+      didOpen: () => {
+        const btn = document.getElementById("google-login-btn");
+        if (btn) {
+          btn.addEventListener("click", async () => {
+            await signinWithGoogleWithRedirect(redirectUrl);
+            MySwal.close();
+          });
+        }
+      },
+    });
+  };
+
 
   return (
     <div className="flex flex-col items-center p-8">
@@ -222,7 +265,7 @@ export default function ItineraryTimeline({
                   key={idx}
                   onClick={() => redirectToHotelDetailPage(item)}
                   className="card bg-base-200 shadow-lg m-6 text-center"
-                  style ={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer" }}
                 >
                   <span className=" text-md font-bold p-2">{item.name}</span>
                   <figure>
@@ -316,134 +359,134 @@ export default function ItineraryTimeline({
 
           {/* Itinerary Days */}
           {itinerary.itineraryDays && itinerary.itineraryDays.length > 0 ? (
-          <div>
-            {/* Drag and Drop Note */}
-            <div className="flex items-center gap-2 mb-4 text-sm text-gray-600 bg-base-200 px-4 py-2 rounded-lg shadow-sm border border-dashed border-gray-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5 text-primary animate-bounce"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 10h16M4 14h16"
-                />
-              </svg>
-              You can drag and drop the activity cards within a day to reorder them! Remember to save your changes by clicking the &quot;Update Itinerary&quot; button at the bottom.
-            </div>
+            <div>
+              {/* Drag and Drop Note */}
+              <div className="flex items-center gap-2 mb-4 text-sm text-gray-600 bg-base-200 px-4 py-2 rounded-lg shadow-sm border border-dashed border-gray-300">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5 text-primary animate-bounce"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 10h16M4 14h16"
+                  />
+                </svg>
+                You can drag and drop the activity cards within a day to reorder them! Remember to save your changes by clicking the &quot;Update Itinerary&quot; button at the bottom.
+              </div>
 
-            <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
-              {itinerary.itineraryDays.map((day, dayIndex) => (
-                <li key={dayIndex}>
-                  <div className="timeline-middle">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="h-5 w-5"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div
-                    className={`mb-10 ${dayIndex % 2 === 0 ? "timeline-start" : "timeline-end"
-                      } ${dayIndex % 2 === 0 ? "md:text-end" : "md:text-start"}`}
-                  >
-                    <time className="font-mono italic text-lg">
-                      Day {dayIndex + 1} - {day.date}
-                    </time>
-                    <div className="text-md font-black">{day.description}</div>
-
-                    <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragEnd={(event) => handleDragEnd(event, dayIndex)}
-                    >
-                      <SortableContext
-                        items={day.activities.map((a, i) => `${dayIndex}-${i}`)}
-                        strategy={verticalListSortingStrategy}
+              <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
+                {itinerary.itineraryDays.map((day, dayIndex) => (
+                  <li key={dayIndex}>
+                    <div className="timeline-middle">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-5 w-5"
                       >
-                        
-                        {day.activities.map((each, activityIndex) => (
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <div
+                      className={`mb-10 ${dayIndex % 2 === 0 ? "timeline-start" : "timeline-end"
+                        } ${dayIndex % 2 === 0 ? "md:text-end" : "md:text-start"}`}
+                    >
+                      <time className="font-mono italic text-lg">
+                        Day {dayIndex + 1} - {day.date}
+                      </time>
+                      <div className="text-md font-black">{day.description}</div>
 
-                              <SortableActivity
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(event) => handleDragEnd(event, dayIndex)}
+                      >
+                        <SortableContext
+                          items={day.activities.map((a, i) => `${dayIndex}-${i}`)}
+                          strategy={verticalListSortingStrategy}
+                        >
+
+                          {day.activities.map((each, activityIndex) => (
+
+                            <SortableActivity
                               key={`${dayIndex}-${activityIndex}`}
                               id={`${dayIndex}-${activityIndex}`}
                               activity={each}
+                            >
+                              <div
+                                key={activityIndex}
+                                className="card bg-base-200 shadow-lg m-6 text-center"
                               >
-                      <div
-                        key={activityIndex}
-                        className="card bg-base-200 shadow-lg m-6 text-center"
-                      >
-                        <span className="font-bold p-2">{each.name}</span>
-                        <figure>
-                          <Image
-                            width={360}
-                            height={180}
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sydney_%28AU%29%2C_Bondi_Beach_--_2019_--_2354.jpg/640px-Sydney_%28AU%29%2C_Bondi_Beach_--_2019_--_2354.jpg"
-                            alt={each.name}
-                            style={{ width: "auto", height: "auto" }}
-                          />
-                        </figure>
-                        <div className="card-body">
-                          <div className="text-md ">{each.details}</div>
-                          <div className="text-md flex items-center justify-center">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              className="size-6"
-                            >
-                              <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            <span className="font-bold mr-2">
-                              Estimated Price:{" "}
-                            </span>{" "}
-                            ${each.estimatedCost}{" "}
-                            {itinerary.demographics.currency}
-                          </div>
-                          <div className="text-md flex items-center justify-center">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              className="size-6"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            <span className="font-bold mr-2">Timings: </span>{" "}
-                            {each.timing}
-                          </div>
-                        </div>
-                      </div>
-                      </SortableActivity>
-                    ))}
+                                <span className="font-bold p-2">{each.name}</span>
+                                <figure>
+                                  <Image
+                                    width={360}
+                                    height={180}
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sydney_%28AU%29%2C_Bondi_Beach_--_2019_--_2354.jpg/640px-Sydney_%28AU%29%2C_Bondi_Beach_--_2019_--_2354.jpg"
+                                    alt={each.name}
+                                    style={{ width: "auto", height: "auto" }}
+                                  />
+                                </figure>
+                                <div className="card-body">
+                                  <div className="text-md ">{each.details}</div>
+                                  <div className="text-md flex items-center justify-center">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 24 24"
+                                      fill="currentColor"
+                                      className="size-6"
+                                    >
+                                      <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                    <span className="font-bold mr-2">
+                                      Estimated Price:{" "}
+                                    </span>{" "}
+                                    ${each.estimatedCost}{" "}
+                                    {itinerary.demographics.currency}
+                                  </div>
+                                  <div className="text-md flex items-center justify-center">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 24 24"
+                                      fill="currentColor"
+                                      className="size-6"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                    <span className="font-bold mr-2">Timings: </span>{" "}
+                                    {each.timing}
+                                  </div>
+                                </div>
+                              </div>
+                            </SortableActivity>
+                          ))}
 
-                      </SortableContext>
-                    </DndContext>
-                  </div>
-                  <hr />
-                </li>
-              ))}
-            </ul>
-          </div>
+                        </SortableContext>
+                      </DndContext>
+                    </div>
+                    <hr />
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : (
             <p>No itinerary days available</p>
           )}
@@ -481,11 +524,17 @@ export default function ItineraryTimeline({
           <div className="mt-6">
             <button
               className="btn btn-outline"
-              onClick={() =>
-                isViewingOwnItinerary
-                  ? UpdateItinerary()
-                  : SaveItinerary()
-              }
+              onClick={() => {
+                if (!user && !isViewingOwnItinerary) {
+                  triggerLoginSwal();
+                } else {
+                  if (isViewingOwnItinerary) {
+                    UpdateItinerary();
+                  } else {
+                    SaveItinerary();
+                  }
+                }
+              }}
               disabled={
                 loading ||
                 (isViewingOwnItinerary && !hasChanges)
@@ -494,9 +543,7 @@ export default function ItineraryTimeline({
               {loading ? (
                 <span className="flex items-center gap-2">
                   <span className="loading loading-spinner"></span>
-                  {isViewingOwnItinerary
-                    ? "Updating..."
-                    : "Saving..."}
+                  {isViewingOwnItinerary ? "Updating..." : "Saving..."}
                 </span>
               ) : isViewingOwnItinerary ? (
                 "Update Itinerary"
@@ -509,7 +556,10 @@ export default function ItineraryTimeline({
       ) : (
         <p>No itinerary available</p>
       )
+
       }
+
+
     </div >
   );
 }

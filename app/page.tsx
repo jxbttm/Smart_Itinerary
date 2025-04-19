@@ -4,20 +4,30 @@ import { UserService } from "@/services/UserService";
 import { useEffect, useState } from "react";
 import { User } from "@/types/User";
 import Link from "next/link";
-import ImagePopup from "@/components/Modal";
 import { useAuth } from "@/context/AuthContext";
 import ImageCarousel from "@/components/ImageCarousel/ImageCarousel";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 export default function Home() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const { user, loading, updateUser } = useAuth();
 
-  const handleButtonClick = () => {
-    setIsPopupOpen(true); // Open the modal
-  };
+  const MySwal = withReactContent(Swal);
 
-  const handleClosePopup = () => {
-    setIsPopupOpen(false); // Close the modal
+  const handleBuyCoffeeClick = () => {
+    MySwal.fire({
+      title: "Thanks for the coffee! ☕",
+      html: `
+        <img src="/images/paynow.jpg" alt="PayNow QR Code" class="w-96 h-auto mx-auto rounded mb-4" />
+        <p class="text-sm text-gray-600 mt-2">Scan the QR to buy us a coffee 💖</p>
+      `,
+      showCloseButton: true,
+      showConfirmButton: false,
+      width: "auto",
+      customClass: {
+        popup: "p-4 rounded-lg",
+      },
+    });
   };
 
   useEffect(() => {
@@ -48,40 +58,6 @@ export default function Home() {
     return <div>Loading...</div>;
   }
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4">
-        <h1 className="text-3xl font-bold text-center mb-4">
-          Plan Your Dream Trip
-        </h1>
-        <p className="text-center text-lg mb-6">
-          Get started by exploring destinations and planning your next
-          adventure.
-        </p>
-
-        <div className="flex gap-4">
-          <Link href="/plan-itinerary">
-            <button className="btn btn-primary py-2 px-6 text-white">
-              Plan a Trip
-            </button>
-          </Link>
-          <button
-            className="btn btn-neutral py-2 px-6 text-white"
-            onClick={handleButtonClick}
-          >
-            Buy us Coffee
-          </button>
-          {isPopupOpen && (
-            <ImagePopup
-              imageUrl="/images/paynow.jpg" // Image URL to show
-              onClose={handleClosePopup} // Close button functionality
-            />
-          )}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
       {/* Plan Your Trip Section (Always visible) */}
@@ -102,16 +78,10 @@ export default function Home() {
           </Link>
           <button
             className="btn btn-neutral py-2 px-6 text-white"
-            onClick={handleButtonClick}
+            onClick={handleBuyCoffeeClick}
           >
             Buy us Coffee
           </button>
-          {isPopupOpen && (
-            <ImagePopup
-              imageUrl="/images/paynow.jpg" // Image URL to show
-              onClose={handleClosePopup} // Close button functionality
-            />
-          )}
         </div>
         {/* <HomeCarousel></HomeCarousel> */}
         <div className="w-full flex items-center justify-center mt-4">
