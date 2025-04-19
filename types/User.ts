@@ -4,6 +4,6 @@ export interface User {
     id: string;
     name: string | "null";
     email?: string | null;
-    avatarUrl: string | null;
+    avatar_url: string | null;
     userDemographics?: UserDemographics | null;
 }

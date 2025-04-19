@@ -136,9 +136,9 @@ export default function Profile() {
       {user && (
         <>
           <div className="flex flex-col items-center gap-4">
-            {user.avatarUrl && (
+            {user.avatar_url && (
               <Image
-                src={user.avatarUrl}
+                src={user.avatar_url}
                 alt={user.name}
                 width={200}
                 height={200}

@@ -43,7 +43,7 @@ export default function Home() {
             id: currentUser.id,
             email: currentUser.email,
             name: currentUser.name,
-            avatarUrl: currentUser.avatarUrl
+            avatar_url: currentUser.avatar_url
           }
           await UserService.createUser(user)
         }
