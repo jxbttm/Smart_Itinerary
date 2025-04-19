@@ -17,6 +17,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaCalendarAlt, FaUserFriends } from "react-icons/fa"; // Calendar icon
 import { getFlagEmoji } from "@/utils/flagUtils"; // Utility to get flag from country name/code
 
+import LoginModal from "@/components/LoginModal";
+
 export default function ItineraryTimeline({
   itinerary,
   weatherForecast,
@@ -34,25 +36,39 @@ export default function ItineraryTimeline({
 
   const [originalItinerary, setOriginalItinerary] = useState(itinerary);
 
+  const userSession = UserService.getUserSession();
+  const [user, setUser] = useState<any>(null);
+
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await userSession;
+      if (currentUser) {
+        setUser(currentUser);
+      }
+    };
+    fetchUser();
+  }, [userSession]);
+
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
-    const userSession = await UserService.getUserSession()
-    if (userSession && userSession.id) {
-      await ItineraryService.saveItinerary(userSession.id, itinerary, weatherForecast);
+    if (user && user.id) {
+      await ItineraryService.saveItinerary(user.id, itinerary, weatherForecast);
       setLoading(false);
-      router.push(`/profile/${userSession.id}`);
+      router.push(`/profile/${user.id}`);
     }
   }
 
   async function UpdateItinerary(): Promise<void> {
     setLoading(true);
-    const userSession = await UserService.getUserSession()
-    if (userSession && userSession.id) {
+    if (user && user.id) {
       const itinerary = itineraryDetails;
-      await ItineraryService.updateItinerary(userSession.id, itinerary, weatherForecast);
+      await ItineraryService.updateItinerary(user.id, itinerary, weatherForecast);
       setLoading(false);
-      router.push(`/profile/${userSession.id}`);
+      router.push(`/profile/${user.id}`);
     }
   }
 
@@ -481,11 +497,13 @@ export default function ItineraryTimeline({
           <div className="mt-6">
             <button
               className="btn btn-outline"
-              onClick={() =>
-                isViewingOwnItinerary
-                  ? UpdateItinerary()
-                  : SaveItinerary()
-              }
+              onClick={() => {
+                if (!user && !isViewingOwnItinerary) {
+                  setShowLoginModal(true); // Show the login modal
+                } else {
+                  isViewingOwnItinerary ? UpdateItinerary() : SaveItinerary();
+                }
+              }}
               disabled={
                 loading ||
                 (isViewingOwnItinerary && !hasChanges)
@@ -494,9 +512,7 @@ export default function ItineraryTimeline({
               {loading ? (
                 <span className="flex items-center gap-2">
                   <span className="loading loading-spinner"></span>
-                  {isViewingOwnItinerary
-                    ? "Updating..."
-                    : "Saving..."}
+                  {isViewingOwnItinerary ? "Updating..." : "Saving..."}
                 </span>
               ) : isViewingOwnItinerary ? (
                 "Update Itinerary"
@@ -509,7 +525,22 @@ export default function ItineraryTimeline({
       ) : (
         <p>No itinerary available</p>
       )
+
       }
+      {/* Login Modal */}
+      {showLoginModal && (
+        <LoginModal
+          redirectUrl={typeof window !== "undefined" ? window.location.href : "/"}
+          onClose={() => setShowLoginModal(false)}
+          onSuccess={(userData) => {
+            setUser(userData);
+            setShowLoginModal(false);
+            SaveItinerary();
+          }}
+        />
+      )}
+
+      
     </div >
   );
 }
