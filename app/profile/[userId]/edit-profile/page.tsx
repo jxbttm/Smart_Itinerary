@@ -1,11 +1,10 @@
 import { TravelType } from "@/types/TravelType";
-import { useFetchStrategy } from "@/hooks/useFetchStrategy";
+import { fetchDataStrategy } from "@/utils/fetchDataStrategy";
 import dynamic from 'next/dynamic';
 
 const ItineraryForm = dynamic(() => import('@/app/profile/[userId]/edit-profile/EditProfileForm'));
 
 export default async function EditProfile() {
-  const { fetchDataStrategy }  = useFetchStrategy();
   const travelData = await fetchDataStrategy("travel") as TravelType[];
 
   return (

@@ -1,6 +1,6 @@
 import { Country } from "@/types/Country";
-import { useFetchStrategy } from "@/hooks/useFetchStrategy";
 import { TravelType } from "@/types/TravelType";
+import { fetchDataStrategy } from "@/utils/fetchDataStrategy";
 import dynamic from "next/dynamic";
 
 const ItineraryForm = dynamic(() =>
@@ -10,7 +10,6 @@ const ItineraryForm = dynamic(() =>
 );
 
 export default async function PlanItinerary() {
-  const { fetchDataStrategy }  = useFetchStrategy();
   const travelData = await fetchDataStrategy("travel") as TravelType[];
   const countryData = await fetchDataStrategy("country") as Country[];
 
