@@ -95,6 +95,17 @@ export default function Profile() {
 
   //#endregion
 
+  const carouselImgSrc = [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg/250px-The_Great_Wall_of_China_at_Jinshanling-edit.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Sydney_Australia._%2821339175489%29.jpg/250px-Sydney_Australia._%2821339175489%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Mount_Everest_as_seen_from_Drukair2_PLW_edit_Cropped.jpg/288px-Mount_Everest_as_seen_from_Drukair2_PLW_edit_Cropped.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Stonehenge2007_07_30.jpg/220px-Stonehenge2007_07_30.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/India_Gate_on_the_evening_of_77th_Independence_day.jpg/200px-India_Gate_on_the_evening_of_77th_Independence_day.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/250px-Taj_Mahal_%28Edited%29.jpeg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Machu_Picchu%2C_2023_%28012%29.jpg/270px-Machu_Picchu%2C_2023_%28012%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/270px-Colosseo_2020.jpg",
+  ];
+
   if (loading) {
     return (
       <div className="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center z-10">
@@ -196,14 +207,14 @@ export default function Profile() {
       {
         itineraries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            {itineraries.map((itinerary: any) => (
+            {itineraries.map((itinerary: any, index: number) => (
               <div
                 key={itinerary.id}
                 className="card bg-base-100 shadow-lg hover:shadow-xl transition-all"
               >
                 <figure>
                   <img
-                    src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                    src={carouselImgSrc[index % carouselImgSrc.length]}
                     alt="Itinerary"
                     className="object-cover w-full h-56 rounded-t-lg"
                   />
