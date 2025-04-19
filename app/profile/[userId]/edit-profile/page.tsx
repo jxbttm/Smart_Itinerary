@@ -1,14 +1,12 @@
 import { TravelType } from "@/types/TravelType";
-import { CommonDataFetcher } from "@/services/CommonDataFetcher";
-import { TravelTypeFetchStrategy } from "@/services/TravelTypeFetchStrategy";
+import { useFetchStrategy } from "@/hooks/useFetchStrategy";
 import dynamic from 'next/dynamic';
 
 const ItineraryForm = dynamic(() => import('@/app/profile/[userId]/edit-profile/EditProfileForm'));
 
 export default async function EditProfile() {
-  const dataFetcher = new CommonDataFetcher(new TravelTypeFetchStrategy());
-  const travelData = await dataFetcher.fetchData<TravelType[]>() || [];
-
+  const { fetchDataStrategy }  = useFetchStrategy();
+  const travelData = await fetchDataStrategy("travel") as TravelType[];
 
   return (
     <div className="hero min-h-screen">
