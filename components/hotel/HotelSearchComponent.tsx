@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useHotels } from "@/hooks/useHotels";
 import { useRouter } from "next/navigation";
-import { Hotel } from "@/interfaces/Hotel";
+import { Hotel } from "@/types/Hotel";
 import useHotelStore from "@/store/hotelStore";
 
 export default function HotelSearchComponent({

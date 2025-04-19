@@ -1,7 +1,7 @@
 "use client";
 
 import { HotelSchema } from "@/data/HotelSchema";
-import { Hotel } from "@/interfaces/Hotel";
+import { Hotel } from "@/types/Hotel";
 import { GeminiFacade } from "@/services/GeminiFacade";
 
 export const useHotels = () => {

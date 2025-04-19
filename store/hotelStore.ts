@@ -1,4 +1,4 @@
-import { Hotel } from "@/interfaces/Hotel";
+import { Hotel } from "@/types/Hotel";
 import { ItineraryAccommodation } from "@/types/ItineraryAccommodation";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";

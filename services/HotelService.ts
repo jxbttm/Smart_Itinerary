@@ -1,4 +1,4 @@
-import { Hotel } from "@/interfaces/Hotel";
+import { Hotel } from "@/types/Hotel";
 import {supabase} from "@/lib/supabase/client";
 export class HotelService {
   static saveHoteltoItinerary = async (itineraryId: number, hotel: Hotel) => {

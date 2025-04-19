@@ -1,9 +1,9 @@
 
-import { CommonFetchStrategy } from '@/interfaces/CommonFetchStrategy';
+import { IBaseFetchStrategy } from '@/types/IBaseFetchStrategy';
 import { createClientForServer } from '@/lib/supabase/server';
 import { Country } from '@/types/Country';
 
-export class CountryFetchStrategy implements CommonFetchStrategy {
+export class CountryFetchStrategy implements IBaseFetchStrategy {
   async fetchData(): Promise<Country[]> {
     const supabaseServer = await createClientForServer();
     const response  = await supabaseServer.from('country').select('*');

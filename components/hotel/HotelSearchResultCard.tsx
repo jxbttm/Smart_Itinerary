@@ -1,6 +1,6 @@
 import Rating from "@/components/hotel/Rating";
 import { useAuth } from "@/context/AuthContext";
-import { Hotel } from "@/interfaces/Hotel";
+import { Hotel } from "@/types/Hotel";
 import { HotelService } from "@/services/HotelService";
 import useHotelStore from "@/store/hotelStore";
 import itineraryStore from "@/store/itineraryStore";
