@@ -7,6 +7,8 @@ import Link from "next/link";
 import PaynowModal from "@/components/PaynowModal";
 import { useAuth } from "@/context/AuthContext";
 import ImageCarousel from "@/components/ImageCarousel/ImageCarousel";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -18,6 +20,24 @@ export default function Home() {
 
   const handleClosePopup = () => {
     setIsPopupOpen(false); // Close the modal
+  };
+
+  const MySwal = withReactContent(Swal);
+
+  const handleBuyCoffeeClick = () => {
+    MySwal.fire({
+      title: "Thanks for the coffee! ☕",
+      html: `
+        <img src="/images/paynow.jpg" alt="PayNow QR Code" class="w-96 h-auto mx-auto rounded mb-4" />
+        <p class="text-sm text-gray-600 mt-2">Scan the QR to buy us a coffee 💖</p>
+      `,
+      showCloseButton: true,
+      showConfirmButton: false,
+      width: "auto",
+      customClass: {
+        popup: "p-4 rounded-lg",
+      },
+    });
   };
 
   useEffect(() => {
@@ -67,16 +87,10 @@ export default function Home() {
           </Link>
           <button
             className="btn btn-neutral py-2 px-6 text-white"
-            onClick={handleButtonClick}
+            onClick={handleBuyCoffeeClick}
           >
             Buy us Coffee
           </button>
-          {isPopupOpen && (
-            <PaynowModal
-              imageUrl="/images/paynow.jpg" // Image URL to show
-              onClose={handleClosePopup} // Close button functionality
-            />
-          )}
         </div>
       </div>
     );
