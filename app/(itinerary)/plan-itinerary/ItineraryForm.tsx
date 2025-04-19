@@ -1,12 +1,14 @@
 "use client"; // This makes this file run on the client side
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { Country } from "@/types/Country";
 import { TravelType } from "@/types/TravelType";
 import CountrySearch from "@/app/(itinerary)/plan-itinerary/CountrySearch";
 import { useRouter } from "next/navigation";
 import { UserService } from "@/services/UserService";
 import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { signinWithGoogleWithRedirect } from '@/lib/actions'
 
 interface ItineraryFormProps {
   countries: Country[];
@@ -36,7 +38,46 @@ export default function ItineraryForm({
     type_name: "",
     number_of_people: "1",
   });
+
+  const userSession = UserService.getUserSession()
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await userSession;
+      if (currentUser) {
+        setUser(currentUser);
+      }
+    };
+    fetchUser();
+  }, [userSession]);
+
   const [prefChecked, setPrefChecked] = useState(false);
+
+  const MySwal = withReactContent(Swal);
+
+  const triggerLoginSwal = () => {
+    const redirectUrl = `/plan-itinerary`;
+    MySwal.fire({
+      title: "Not Logged In",
+      html: `<p class="mb-4">Please log in to use your preferences.</p>
+             <button id="google-login-btn" class="btn btn-outline w-full">
+              <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5 inline-block mr-2" />
+              Continue with Google
+             </button>`,
+      icon: "warning",
+      showConfirmButton: false,
+      didOpen: () => {
+        const btn = document.getElementById("google-login-btn");
+        if (btn) {
+          btn.addEventListener("click", async () => {
+            await signinWithGoogleWithRedirect(redirectUrl);
+            MySwal.close();
+          });
+        }
+      },
+    });
+  };
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,9 +109,9 @@ export default function ItineraryForm({
     const checked = event.target.checked;
     setPrefChecked(checked);
     if (checked) {
-      const userSession = await UserService.getUserSession()
-      if (userSession && userSession.id) {
-        const userDemographics = await UserService.getUserDemographicsById(userSession.id)
+      console.log("userSession", user)
+      if (user && user.id) {
+        const userDemographics = await UserService.getUserDemographicsById(user.id)
         if (userDemographics) {
           setMinBudget(userDemographics.minBudget ? userDemographics.minBudget : 0 );
           setMaxBudget(userDemographics.maxBudget ? userDemographics.maxBudget : 0 );
@@ -86,10 +127,13 @@ export default function ItineraryForm({
             text: "No valid preferences found. Please update your information.",
           });
         }
+      } 
+
+      else {
+        triggerLoginSwal();
+        setPrefChecked(false);
       }
-    } else {
-      setPrefChecked(false);
-    }
+    } 
   };
 
   return (
