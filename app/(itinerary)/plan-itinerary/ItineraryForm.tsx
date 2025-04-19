@@ -57,7 +57,7 @@ export default function ItineraryForm({
   const MySwal = withReactContent(Swal);
 
   const triggerLoginSwal = () => {
-    const redirectUrl = `/plan-itinerary`;
+    const redirectUrl = window.location.href;
     MySwal.fire({
       title: "Not Logged In",
       html: `<p class="mb-4">Please log in to use your preferences.</p>

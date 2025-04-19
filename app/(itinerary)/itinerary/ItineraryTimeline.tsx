@@ -18,6 +18,9 @@ import { FaCalendarAlt, FaUserFriends } from "react-icons/fa"; // Calendar icon
 import { getFlagEmoji } from "@/utils/flagUtils"; // Utility to get flag from country name/code
 
 import LoginModal from "@/components/LoginModal";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { signinWithGoogleWithRedirect } from '@/lib/actions'
 
 export default function ItineraryTimeline({
   itinerary,
@@ -171,6 +174,32 @@ export default function ItineraryTimeline({
 
     
   const sensors = useSensors(useSensor(PointerSensor));
+    
+  const MySwal = withReactContent(Swal);
+
+  const triggerLoginSwal = () => {
+    const redirectUrl = window.location.href;
+    MySwal.fire({
+      title: "Not Logged In",
+      html: `<p class="mb-4">Please sign in with Google to save your itinerary.</p>
+             <button id="google-login-btn" class="btn btn-outline w-full">
+              <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5 inline-block mr-2" />
+              Continue with Google
+             </button>`,
+      icon: "warning",
+      showConfirmButton: false,
+      didOpen: () => {
+        const btn = document.getElementById("google-login-btn");
+        if (btn) {
+          btn.addEventListener("click", async () => {
+            await signinWithGoogleWithRedirect(redirectUrl);
+            MySwal.close();
+          });
+        }
+      },
+    });
+  };
+
 
   return (
     <div className="flex flex-col items-center p-8">
@@ -499,7 +528,7 @@ export default function ItineraryTimeline({
               className="btn btn-outline"
               onClick={() => {
                 if (!user && !isViewingOwnItinerary) {
-                  setShowLoginModal(true); // Show the login modal
+                  triggerLoginSwal();
                 } else {
                   isViewingOwnItinerary ? UpdateItinerary() : SaveItinerary();
                 }

@@ -38,7 +38,6 @@ const signinWithGoogleWithRedirect = async (redirectUrl?: string): Promise<void>
 
   const currentUrl = `${process.env.SITE_URL}/auth/callback`
   
-  redirectUrl = `${process.env.SITE_URL}${redirectUrl}`;
   console.log('redirectUrl', redirectUrl)
   console.log('currentUrl', currentUrl)
   const { data, error } = await supabase.auth.signInWithOAuth({
