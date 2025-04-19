@@ -17,7 +17,6 @@ import { CSS } from "@dnd-kit/utilities";
 import { FaCalendarAlt, FaUserFriends } from "react-icons/fa"; // Calendar icon
 import { getFlagEmoji } from "@/utils/flagUtils"; // Utility to get flag from country name/code
 
-import LoginModal from "@/components/LoginModal";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { signinWithGoogleWithRedirect } from '@/lib/actions'
@@ -42,7 +41,6 @@ export default function ItineraryTimeline({
   const userSession = UserService.getUserSession();
   const [user, setUser] = useState<any>(null);
 
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
 
   useEffect(() => {
@@ -556,18 +554,6 @@ export default function ItineraryTimeline({
       )
 
       }
-      {/* Login Modal */}
-      {showLoginModal && (
-        <LoginModal
-          redirectUrl={typeof window !== "undefined" ? window.location.href : "/"}
-          onClose={() => setShowLoginModal(false)}
-          onSuccess={(userData) => {
-            setUser(userData);
-            setShowLoginModal(false);
-            SaveItinerary();
-          }}
-        />
-      )}
 
       
     </div >
