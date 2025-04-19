@@ -16,7 +16,7 @@ export class UserService {
                 id: id,
                 email: email,
                 name: name,
-                avatarUrl: avatar_url
+                avatar_url: avatar_url
             }
             return user
         }
@@ -43,7 +43,7 @@ export class UserService {
                 .from(this.USERS_TABLE)
                 .select(`
               *,
-              users_demographics!inner(
+              users_demographics (
                 user_id,
                 min_budget,
                 max_budget,
@@ -66,7 +66,7 @@ export class UserService {
                     id: data.id,
                     name: data.name,
                     email: data.email,
-                    avatarUrl: data.avatar_url,
+                    avatar_url: data.avatar_url,
                     userDemographics: userDemographicsData
                 }
                 return userData;
@@ -79,6 +79,7 @@ export class UserService {
     }
 
     static async createUser(user: User): Promise<void> {
+        console.log("Creating user:", user);
         const { error: insertError } = await supabase
             .from(this.USERS_TABLE)
             .insert([user]);

@@ -27,9 +27,9 @@ export const Header = () => {
               className="btn btn-ghost btn-circle avatar"
             >
               <div className="w-10 rounded-full">
-                {user?.avatarUrl ? (
+                {user?.avatar_url ? (
                   <Image
-                    src={user?.avatarUrl}
+                    src={user?.avatar_url}
                     alt="User Avatar"
                     className="w-10 rounded-full"
                     width={10}
