@@ -1,4 +1,4 @@
-const ImagePopup = ({ imageUrl, onClose }: { imageUrl: string; onClose: () => void }) => {
+const PaynowModal = ({ imageUrl, onClose }: { imageUrl: string; onClose: () => void }) => {
   return (
     <div>
         <dialog open className="modal">
@@ -15,4 +15,4 @@ const ImagePopup = ({ imageUrl, onClose }: { imageUrl: string; onClose: () => vo
   );
 };
 
-export default ImagePopup;
+export default PaynowModal;

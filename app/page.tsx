@@ -4,7 +4,7 @@ import { UserService } from "@/services/UserService";
 import { useEffect, useState } from "react";
 import { User } from "@/types/User";
 import Link from "next/link";
-import ImagePopup from "@/components/Modal";
+import PaynowModal from "@/components/PaynowModal";
 import { useAuth } from "@/context/AuthContext";
 import ImageCarousel from "@/components/ImageCarousel/ImageCarousel";
 
@@ -72,7 +72,7 @@ export default function Home() {
             Buy us Coffee
           </button>
           {isPopupOpen && (
-            <ImagePopup
+            <PaynowModal
               imageUrl="/images/paynow.jpg" // Image URL to show
               onClose={handleClosePopup} // Close button functionality
             />
@@ -107,7 +107,7 @@ export default function Home() {
             Buy us Coffee
           </button>
           {isPopupOpen && (
-            <ImagePopup
+            <PaynowModal
               imageUrl="/images/paynow.jpg" // Image URL to show
               onClose={handleClosePopup} // Close button functionality
             />
