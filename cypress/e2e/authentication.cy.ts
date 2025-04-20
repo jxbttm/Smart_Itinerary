@@ -10,11 +10,14 @@
 //     });
 //     cy.request("/api/test-login");
 
+
 //   });
 
 //   it("does NOT show Swal when user is authenticated", () => {
     
 //     cy.url().should("include", "/plan-itinerary");
+
+//     // cy.contains("span", "Sign in with Google").should("not.exist");
 
 //     cy.get('input[type="checkbox"][name="my_preference"]').check({ force: true });
 
