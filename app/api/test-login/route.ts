@@ -23,12 +23,14 @@ export async function GET() {
     response.cookies.set(`sb-${projectRef}-auth-token.0`, "fake-access-token", {
         path: "/",
         httpOnly: false,
+        secure: false,
         expires: oneHourFromNow,
         });
 
         response.cookies.set(`sb-${projectRef}-auth-token.1`, "fake-refresh-token", {
         path: "/",
         httpOnly: false,
+        secure: false,
         expires: oneHourFromNow,
         });
 
