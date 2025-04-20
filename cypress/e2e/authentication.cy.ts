@@ -13,6 +13,10 @@ describe("Authenticated User", () => {
   });
 
   it("does NOT show Swal when user is authenticated", () => {
+
+    cy.getCookies().then(cookies => {
+      cy.log('Cookies:', cookies);
+    });
     
     cy.url().should("include", "/plan-itinerary");
 
