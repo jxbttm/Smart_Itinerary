@@ -10,6 +10,8 @@ describe("Authenticated User", () => {
     });
     cy.request("/api/test-login");
 
+    cy.wait(3000); // Wait for the login to complete
+
   });
 
   it("does NOT show Swal when user is authenticated", () => {
