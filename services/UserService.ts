@@ -7,6 +7,18 @@ export class UserService {
     private static readonly USERS_DEMOGRAPHICS_TABLE = "users_demographics";
 
     static async getUserSession(): Promise<User | null> {
+
+        // During Cypress tests, return a fake user
+        // If you want to test with a real user, change the id, email, name and avatar_url to your own values in Supabase
+        if (process.env.NEXT_PUBLIC_ENABLE_MOCK_AUTH === "true") {
+            return {
+            id: "test-user-id",
+            email: "testuser@example.com",
+            name: "Test User",
+            avatar_url: "",
+            };
+        }
+
         const session = await supabase.auth.getUser();
         if (session.data.user) {
             // Destruct properties from nested obj
