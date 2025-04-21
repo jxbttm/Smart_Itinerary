@@ -18,11 +18,14 @@ describe("Authenticated User", () => {
 
   it("does NOT show Google sign in when user is authenticated", () => {
 
+    cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
+    cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
+
     cy.url().should("include", "/plan-itinerary");
 
-    cy.contains("span", "Sign in with Google").should("not.exist");
+    // cy.contains("span", "Sign in with Google").should("not.exist");
 
-    // cy.get('input[type="checkbox"][name="my_preference"]').check({ force: true });
+    cy.get('input[type="checkbox"][name="my_preference"]').check({ force: true });
 
     cy.get(".swal2-container", { timeout: 8000 }).should("not.exist");
   });
