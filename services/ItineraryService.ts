@@ -3,14 +3,8 @@ import { Itinerary } from "@/types/Itinerary";
 import { WeatherForecast } from "@/types/WeatherForecast";
 
 export class ItineraryService {
-  static async saveItinerary(
-    userId: string,
-    itinerary: Itinerary,
-    weatherForecast: WeatherForecast
-  ): Promise<any> {
+  static async saveItinerary(userId: string,itinerary: Itinerary,weatherForecast: WeatherForecast): Promise<any> {
     try {
-      console.log("Saving itinerary:", itinerary);
-      console.log("Weather forecast:", weatherForecast);
       const { data, error } = await supabase
         .from("itinerary")
         .insert({
@@ -45,7 +39,7 @@ export class ItineraryService {
               estimated_cost: item.estimatedCost,
               image_url: item.imageUrl,
               itinerary_id: itineraryId,
-              hotel_description: item.hotelDescription
+              hotel_description: item.hotelDescription,
             };
           })
         );
@@ -82,6 +76,110 @@ export class ItineraryService {
     }
   }
 
+  static async updateItinerary(
+    userId: string,
+    itinerary: Itinerary,
+    weatherForecast: WeatherForecast
+  ): Promise<void> {
+    try {
+      const { id: itineraryId } = itinerary.id ? itinerary : {};
+
+      if (!itineraryId) {
+        console.error("Itinerary ID is missing. Cannot update.");
+        return;
+      }
+
+      // 1. Update the main itinerary table
+      const { error: itineraryError } = await supabase
+        .from("itinerary")
+        .update({
+          user_id: userId,
+          source: itinerary.sourceCountry,
+          destination: itinerary.destination,
+          start_date: itinerary.startDate,
+          end_date: itinerary.endDate,
+          estimated_total_cost: itinerary.estimatedTotalCost,
+          notes: itinerary.importantNotes,
+          weather_forecast: weatherForecast,
+        })
+        .eq("id", itineraryId);
+
+      if (itineraryError) {
+        console.error("Error updating itinerary:", itineraryError);
+        return;
+      }
+
+      // 2. Update demographics
+      const { error: demographicsError } = await supabase
+        .from("itinerary_demographics")
+        .update({
+          currency: itinerary.demographics.currency,
+          budget_min: itinerary.demographics.budgetMin,
+          budget_max: itinerary.demographics.budgetMax,
+          travel_type: itinerary.demographics.travelerType,
+          purpose: itinerary.demographics.purpose,
+        })
+        .eq("itinerary_id", itineraryId);
+
+      if (demographicsError) {
+        console.error("Error updating demographics:", demographicsError);
+      }
+
+      // 3. Update accommodations
+      for (const item of itinerary.accommodation) {
+        if (item.id) {
+          await supabase
+            .from("itinerary_accomodation")
+            .update({
+              name: item.name,
+              estimated_cost: item.estimatedCost,
+              image_url: item.imageUrl,
+              itinerary_id: itineraryId,
+              hotel_description: item.hotelDescription,
+            })
+            .eq("id", item.id);
+        }
+      }
+
+      // 4. Update itinerary days and activities
+      for (const day of itinerary.itineraryDays) {
+        const { data: dayData, error: dayError } = await supabase
+          .from("itinerary_day")
+          .update({
+            itinerary_id: itineraryId,
+            date: day.date,
+            location: day.location,
+            description: day.description,
+          })
+          .eq("id", day.id);
+
+
+        console.log("dayData", dayData);
+        console.log("day", day);
+        const itineraryDayId = day.id;
+        if (!dayError && itineraryDayId) {
+          for (const activity of day.activities) {
+            await supabase.from("itinerary_activity").update({
+              itinerary_day_id: itineraryDayId,
+              name: activity.name,
+              details: activity.details,
+              estimated_cost: activity.estimatedCost,
+              image_url: activity.imageUrl,
+              timing: activity.timing,
+            })
+              .eq("id", activity.id);
+          }
+        }
+      }
+
+      console.log("Itinerary updated successfully.");
+    } catch (error) {
+      console.error("Error in updateItinerary:", error);
+    }
+  }
+
+
+
   static async getUserItineraries(userId: string): Promise<any> {
     try {
       const { data, error } = await supabase
@@ -90,9 +188,8 @@ export class ItineraryService {
         .eq("user_id", userId);
       if (data) {
         return data;
-      } else {
-        return error;
       }
+      return error;
     } catch (error) {
       console.error("Error retrieving user itinerary:", error);
     }
@@ -107,9 +204,8 @@ export class ItineraryService {
         .single();
       if (data) {
         return data;
-      } else {
-        return error;
       }
+      return error;
     } catch (error) {
       console.error("Error retrieving user itinerary:", error);
     }
@@ -231,7 +327,7 @@ export class ItineraryService {
             estimatedCost: item.estimated_cost, // Mapping snake_case to camelCase
             imageUrl: item.image_url ?? "", // Mapping snake_case to camelCase
             itineraryId: item.itinerary_id, // Mapping snake_case to camelCase
-            hotelDescription: item.hotel_description ?? ""
+            hotelDescription: item.hotel_description ?? "",
           };
         })
         : [];
@@ -261,6 +357,23 @@ export class ItineraryService {
       }
     } catch (error) {
       console.error("Error deleting accommodation:", error);
+    }
+  }
+
+  static async deleteItinerary(itineraryId: string): Promise<any> {
+    try {
+      const { error } = await supabase
+        .from("itinerary")
+        .delete()
+        .eq("id", itineraryId);
+
+      if (error) {
+        console.error("Error deleting itinerary:", error);
+      } else {
+        console.log("Itinerary deleted successfully");
+      }
+    } catch (error) {
+      console.error("Error deleting itinerary:", error);
     }
   }
 }

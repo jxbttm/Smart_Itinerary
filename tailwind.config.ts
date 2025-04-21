@@ -12,6 +12,9 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      animation: {
+        'bounce-once': 'bounce 0.8s ease-in-out 1',
+      },
     },
   },
   plugins: [require('daisyui'),],

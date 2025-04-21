@@ -33,9 +33,33 @@ const signInWith = (provider: OAuthProvider) => async () => {
 
 const signinWithGoogle = signInWith(OAuthProvider.Google)
 
+const signinWithGoogleWithRedirect = async (redirectUrl?: string): Promise<void> => {
+  const supabase = await createClientForServer()
+
+  const currentUrl = `${process.env.SITE_URL}/auth/callback`
+  
+  console.log('redirectUrl', redirectUrl)
+  console.log('currentUrl', currentUrl)
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: OAuthProvider.Google,
+    options: {
+      redirectTo: redirectUrl || currentUrl,
+    },
+  })
+
+  if (error) {
+    console.log(error)
+  }
+  if (data?.url){
+    redirect(data.url)
+  } else {
+    console.log('No data.url')
+  }
+}
+
 const signOut = async () => {
   const supabase = await createClientForServer()
   await supabase.auth.signOut()
 }
 
-export { signinWithGoogle, signOut }
+export { signinWithGoogle, signinWithGoogleWithRedirect, signOut }

@@ -1,62 +1,54 @@
 "use client";
 
-import { supabase } from "@/lib/supabase/client";
+import { UserService } from "@/services/UserService";
 import { useEffect, useState } from "react";
+import { User } from "@/types/User";
 import Link from "next/link";
-import HomeCarousel from "./HomeCarousel";
-import ImagePopup from "@/components/Modal"; // Adjust import based on your file structure
 import { useAuth } from "@/context/AuthContext";
+import ImageCarousel from "@/components/ImageCarousel/ImageCarousel";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 export default function Home() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const { user, loading, updateUser } = useAuth();
 
-  const handleButtonClick = () => {
-    setIsPopupOpen(true); // Open the modal
-  };
+  const MySwal = withReactContent(Swal);
 
-  const handleClosePopup = () => {
-    setIsPopupOpen(false); // Close the modal
+  const handleBuyCoffeeClick = () => {
+    MySwal.fire({
+      title: "Thanks for the coffee! ☕",
+      html: `
+        <img src="/images/paynow.jpg" alt="PayNow QR Code" class="w-96 h-auto mx-auto rounded mb-4" />
+        <p class="text-sm text-gray-600 mt-2">Scan the QR to buy us a coffee 💖</p>
+      `,
+      showCloseButton: true,
+      showConfirmButton: false,
+      width: "auto",
+      customClass: {
+        popup: "p-4 rounded-lg",
+      },
+    });
   };
 
   useEffect(() => {
-    // This runs on the client-side when the component mounts
     const fetchUser = async () => {
       // Get the user session
-      const session = await supabase.auth.getUser();
-      if (session.data.user) {
-        const { user_metadata, email, id } = session.data.user;
-        const { name, avatar_url } = user_metadata;
+      const currentUser = await UserService.getUserSession();
 
-        // Check if the user already exists in the 'users' table
-        const { data, error } = await supabase
-          .from("users")
-          .select("*")
-          .eq("email", email);
-
-        // If user does not exist in the users table, insert user data
-        if (data && data.length === 0) {
-          const { error: insertError } = await supabase.from("users").insert([
-            {
-              id,
-              name,
-              email,
-              avatar_url,
-              // Add any other columns as required in the 'users' table
-            },
-          ]);
-
-          if (insertError) {
-            console.error(
-              "Error inserting user into 'users' table:",
-              insertError
-            );
+      if (currentUser && currentUser.id) {
+        const userExistsInDb = await UserService.checkUserExists(currentUser.id);
+        //If user does not exist in the users table, insert user data
+        if (!userExistsInDb) {
+          const user: User = {
+            id: currentUser.id,
+            email: currentUser.email,
+            name: currentUser.name,
+            avatar_url: currentUser.avatar_url
           }
+          await UserService.createUser(user)
         }
-
-        // Set the user data to display their profile
-        updateUser(session.data.user);
       }
+      if (currentUser) updateUser(currentUser); // Set the user data to display their profile
     };
 
     fetchUser();
@@ -65,46 +57,6 @@ export default function Home() {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4">
-        <h1 className="text-3xl font-bold text-center mb-4">
-          Plan Your Dream Trip
-        </h1>
-        <p className="text-center text-lg mb-6">
-          Get started by exploring destinations and planning your next
-          adventure.
-        </p>
-
-        <div className="flex gap-4">
-          <Link href="/plan-itinerary">
-            <button className="btn btn-primary py-2 px-6 text-white">
-              Plan a Trip
-            </button>
-          </Link>
-          <button
-            className="btn btn-neutral py-2 px-6 text-white"
-            onClick={handleButtonClick}
-          >
-            Buy us Coffee
-          </button>
-          {isPopupOpen && (
-            <ImagePopup
-              imageUrl="/images/paynow.jpg" // Image URL to show
-              onClose={handleClosePopup} // Close button functionality
-            />
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // Destructure user metadata and app metadata
-  const { user_metadata, app_metadata } = user;
-  const { name, email, avatar_url } = user_metadata;
-
-  const userName = name ? `@${name}` : "User Name Not Set";
 
   return (
     <div>
@@ -126,18 +78,15 @@ export default function Home() {
           </Link>
           <button
             className="btn btn-neutral py-2 px-6 text-white"
-            onClick={handleButtonClick}
+            onClick={handleBuyCoffeeClick}
           >
             Buy us Coffee
           </button>
-          {isPopupOpen && (
-            <ImagePopup
-              imageUrl="/images/paynow.jpg" // Image URL to show
-              onClose={handleClosePopup} // Close button functionality
-            />
-          )}
         </div>
-        <HomeCarousel></HomeCarousel>
+        {/* <HomeCarousel></HomeCarousel> */}
+        <div className="w-full flex items-center justify-center mt-4">
+          <ImageCarousel />
+        </div>
       </main>
     </div>
   );

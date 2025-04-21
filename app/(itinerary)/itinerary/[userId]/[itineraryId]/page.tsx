@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect} from "react";
-import { useParams } from "next/navigation"; // Use useParams from next/navigation
+import { useParams } from "next/navigation";
 import ItineraryTimeline from "../../ItineraryTimeline";
 import { Itinerary } from '@/types/Itinerary';
 import { ItineraryService } from "@/services/ItineraryService";
+import { parse} from 'date-fns';
 
 export default function ItineraryPage()
 {
@@ -12,7 +13,18 @@ export default function ItineraryPage()
     const [weatherForecast, setWeatherForecast] = useState<any | null>(null); // State to store weather forecast
 
     // Use useParams to get dynamic params in Next.js 13+ App Directory
-    const { userId, itineraryId } = useParams(); // Now you get both userId and itineraryId from the URL
+    const { userId, itineraryId } = useParams(); // Get both userId and itineraryId from the URL
+
+
+    function parseTime(timeString: string): Date {
+      // Time format is "9:00 AM - 12:00 PM"
+      // Extract start time from the string and parse it as Date object
+      const startTime = timeString.split(' - ')[0]; // "9:00 AM"
+      
+      // Parse the start time into a Date object
+      return parse(startTime, 'h:mm a', new Date());
+    }
+
 
     useEffect(() => {
         if (!userId || !itineraryId) {
@@ -22,11 +34,31 @@ export default function ItineraryPage()
         setLoading(true);
         try {
 
-            // Fetch itinerary from ItineraryService if id exists
             const result = await ItineraryService.getItinerary(itineraryId as string);
             console.log('result', result);
             if (result) {
-                setItinerary(result);
+
+                // Sort activities based on their timing (earliest to latest)
+                const sortedItineraryDays = result.itineraryDays.map((day: { activities: { timing: string }[] }) => {
+                    const sortedActivities = day.activities.sort((a: { timing: string }, b: { timing: string }) => {
+                    const timeA = parseTime(a.timing); 
+                    const timeB = parseTime(b.timing);
+                    return timeA.getTime() - timeB.getTime(); // Compare times
+                    });
+                    return {
+                    ...day,
+                    activities: sortedActivities,
+                    };
+                });
+
+                // Set sorted itinerary
+                setItinerary({
+                    ...result,
+                    itineraryDays: sortedItineraryDays, // Overwrite the days with sorted activities
+                });
+
+                console.log('itinerary', result);
+
                 setWeatherForecast(result.weather_forecast);
             } else {
                 setItinerary(null);

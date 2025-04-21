@@ -1,8 +1,6 @@
 import { Country } from "@/types/Country";
 import { TravelType } from "@/types/TravelType";
-import { CommonDataFetcher } from "@/services/CommonDataFetcher";
-import { TravelTypeFetchStrategy } from "@/services/TravelTypeFetchStrategy";
-import { CountryFetchStrategy } from "@/services/CountryFetchStrategy";
+import { fetchDataStrategy } from "@/utils/fetchDataStrategy";
 import dynamic from "next/dynamic";
 
 const ItineraryForm = dynamic(() =>
@@ -12,10 +10,8 @@ const ItineraryForm = dynamic(() =>
 );
 
 export default async function PlanItinerary() {
-  const dataFetcher = new CommonDataFetcher(new TravelTypeFetchStrategy());
-  const travelData = (await dataFetcher.fetchData<TravelType[]>()) || [];
-  dataFetcher.setStrategy(new CountryFetchStrategy());
-  const countryData = (await dataFetcher.fetchData<Country[]>()) || [];
+  const travelData = await fetchDataStrategy("travel") as TravelType[];
+  const countryData = await fetchDataStrategy("country") as Country[];
 
   return (
     <div className="flex flex-col items-center p-8">

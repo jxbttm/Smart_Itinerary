@@ -1,11 +1,14 @@
 "use client"; // This makes this file run on the client side
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { Country } from "@/types/Country";
 import { TravelType } from "@/types/TravelType";
 import CountrySearch from "@/app/(itinerary)/plan-itinerary/CountrySearch";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/client";
+import { UserService } from "@/services/UserService";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { signinWithGoogleWithRedirect } from '@/lib/actions'
 
 interface ItineraryFormProps {
   countries: Country[];
@@ -35,7 +38,46 @@ export default function ItineraryForm({
     type_name: "",
     number_of_people: "1",
   });
+
+  const userSession = UserService.getUserSession()
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await userSession;
+      if (currentUser) {
+        setUser(currentUser);
+      }
+    };
+    fetchUser();
+  }, [userSession]);
+
   const [prefChecked, setPrefChecked] = useState(false);
+
+  const MySwal = withReactContent(Swal);
+
+  const triggerLoginSwal = () => {
+    const redirectUrl = window.location.href;
+    MySwal.fire({
+      title: "Not Logged In",
+      html: `<p class="mb-4">Please log in to use your preferences.</p>
+             <button id="google-login-btn" class="btn btn-outline w-full">
+              <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5 inline-block mr-2" />
+              Continue with Google
+             </button>`,
+      icon: "warning",
+      showConfirmButton: false,
+      didOpen: () => {
+        const btn = document.getElementById("google-login-btn");
+        if (btn) {
+          btn.addEventListener("click", async () => {
+            await signinWithGoogleWithRedirect(redirectUrl);
+            MySwal.close();
+          });
+        }
+      },
+    });
+  };
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,38 +109,31 @@ export default function ItineraryForm({
     const checked = event.target.checked;
     setPrefChecked(checked);
     if (checked) {
-      // Get the user session
-      const session = await supabase.auth.getUser();
-      if (session.data.user) {
-        const { id } = session.data.user;
-        const { data, error } = await supabase
-          .from("users")
-          .select("min_budget,max_budget,travel_group,purpose,number_of_people")
-          .eq("id", id)
-          .single();
-        if (
-          data?.min_budget &&
-          data?.max_budget &&
-          data?.travel_group &&
-          data?.purpose &&
-          !error
-        ) {
-          setMinBudget(data.min_budget);
-          setMaxBudget(data.max_budget);
-          const purpose = data.purpose.split(","); //Split string into array
+      console.log("userSession", user)
+      if (user && user.id) {
+        const userDemographics = await UserService.getUserDemographicsById(user.id)
+        if (userDemographics) {
+          setMinBudget(userDemographics.minBudget ? userDemographics.minBudget : 0 );
+          setMaxBudget(userDemographics.maxBudget ? userDemographics.maxBudget : 0 );
+          const purpose = userDemographics.purpose.split(","); //Split string into array
           setPreferences(purpose);
           setTravelGroup({
-            type_name: data.travel_group,
-            number_of_people: data.number_of_people,
-          });
+            type_name: userDemographics.travelType,
+            number_of_people: userDemographics.numberOfPeople,
+          })
         } else {
           setPrefChecked(false);
-          alert("No valid preferences found. Please update your information.");
+          Swal.fire({
+            text: "No valid preferences found. Please update your information.",
+          });
         }
+      } 
+
+      else {
+        triggerLoginSwal();
+        setPrefChecked(false);
       }
-    } else {
-      setPrefChecked(false);
-    }
+    } 
   };
 
   return (
@@ -109,7 +144,7 @@ export default function ItineraryForm({
         </div>
         <form onSubmit={onSubmit}>
           <fieldset className="w-full">
-          {countries && countries.length > 0 && (
+            {countries && countries.length > 0 && (
               <CountrySearch
                 countries={countries}
                 onSearchTermChange={(term: string) => setSourceCountry(term)}

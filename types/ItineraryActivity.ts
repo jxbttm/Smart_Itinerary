@@ -1,4 +1,5 @@
 export interface ItineraryActivity {
+    id: string;
     name: string;
     details: string;
     timing: string;

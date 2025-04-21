@@ -123,7 +123,7 @@ const HotelDetailPage = () => {
           className="btn btn-outline"
           onClick={() => redirectBacktoItinerary()}
         >
-          Go Back
+          Back
         </button>
         <button
           className="btn btn-error"

@@ -1,7 +1,6 @@
 import { FlightSearchCriteria, FlightSearchResponse, Itinerary, FlightEndPoint } from "@/types/Flight";
 import { FlightSegmentDisplay, FlightDisplayDetails, FlightStop} from "@/types/FlightDisplayDetails";
 import axios, { AxiosInstance } from 'axios';
-import { supabase } from "@/lib/supabase/client"
 
 export class FlightsService {
   private readonly axiosInstance: AxiosInstance;
