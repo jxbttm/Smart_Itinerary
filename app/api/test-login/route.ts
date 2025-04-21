@@ -1,40 +1,15 @@
 // /app/api/test-login/route.ts (App Router)
-import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { User } from "@/types/User";
 
-const projectRef = "ofisnfgjitykwijevgwi";
-
-const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
-
-export async function GET() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => { } } }
-  );
-
-  // Set fake cookies to simulate a session for testing.
-  const response = NextResponse.json({ success: true });
-
-  // ✅ Set fake Supabase session cookies
-  // Set both cookies with expiration
-  response.cookies.set(`sb-${projectRef}-auth-token.0`, "fake-access-token", {
-    path: "/",
-    httpOnly: false,
-    secure: false,
-    domain: "http://localhost:3000",
-    expires: oneHourFromNow,
-  });
-
-  response.cookies.set(`sb-${projectRef}-auth-token.1`, "fake-refresh-token", {
-    path: "/",
-    httpOnly: false,
-    secure: false,
-    domain: "http://localhost:3000",
-    expires: oneHourFromNow,
-  });
-
-  return response;
-}
+export async function GET(): Promise<User | null> {
+        // During Cypress tests, return a fake user
+        // If you want to test with a real user, change the id, email, name and avatar_url to your own values in Supabase
+        
+        return {
+            id: "test-user-id",
+            email: "testuser@example.com",
+            name: "Test User",
+            avatar_url: "",
+        };
+            
+    }
