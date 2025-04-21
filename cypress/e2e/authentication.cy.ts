@@ -1,21 +1,11 @@
 describe("Authenticated User", () => {
 
-    const projectRef = "ofisnfgjitykwijevgwi";
-    
-    // beforeEach(() => {
-    //     cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
-    //     cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
-    
-    //     cy.visit("/plan-itinerary", {
-    //       onBeforeLoad(win) {
-    //         win.localStorage.setItem("NEXT_PUBLIC_ENABLE_MOCK_AUTH", "true");
-    //       },
-    //     });
+  const projectRef = "ofisnfgjitykwijevgwi";
 
-    //     cy.request("/api/test-login");
-    //   });
+  beforeEach(() => {
+    cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
+    cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
 
-  it("test Before each", () => {
     cy.visit("/plan-itinerary", {
       onBeforeLoad(win) {
         win.localStorage.setItem("NEXT_PUBLIC_ENABLE_MOCK_AUTH", "true");
@@ -25,14 +15,15 @@ describe("Authenticated User", () => {
     cy.request("/api/test-login");
   });
 
+
   it("does NOT show Google sign in when user is authenticated", () => {
-    
+
     cy.url().should("include", "/plan-itinerary");
 
     cy.contains("span", "Sign in with Google").should("not.exist");
 
     // cy.get('input[type="checkbox"][name="my_preference"]').check({ force: true });
 
-    // cy.get(".swal2-container", { timeout: 8000 }).should("not.exist");
+    cy.get(".swal2-container", { timeout: 8000 }).should("not.exist");
   });
 });
