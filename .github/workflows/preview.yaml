@@ -19,20 +19,20 @@ on:
             - 'README.md'
 
 jobs:
-    # Build:
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #       - uses: actions/checkout@v4
-    #       - uses: actions/setup-node@v4
-    #         with:
-    #           node-version: 20.x
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20.x
     
-    #       - run: npm ci
+          - run: npm ci
     
-    #       - run: npm run build
+          - run: npm run build
 
     Test:
-        # needs: [Build]
+        needs: [Build]
         runs-on: ubuntu-latest
         steps:
           - uses: actions/checkout@v4
