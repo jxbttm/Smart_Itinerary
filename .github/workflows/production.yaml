@@ -43,7 +43,7 @@ jobs:
             uses: cypress-io/github-action@v6 
 
           - name: Run Cypress Component Tests
-          - run: npm run component:headless
+            run: npm run component:headless
 
           - name: Run Cypress E2E tests
             uses: cypress-io/github-action@v6
