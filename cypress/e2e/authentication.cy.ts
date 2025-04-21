@@ -20,10 +20,10 @@ describe("Authenticated User", () => {
   it("does NOT show Google sign in when user is authenticated", () => {
     cy.url().should("include", "/plan-itinerary");
 
-    // cy.contains("span", "Sign in with Google").should("not.exist");
+    cy.contains("span", "Sign in with Google").should("not.exist");
 
-    cy.get('input[type="checkbox"][name="my_preference"]').check({ force: true });
+    // cy.get('input[type="checkbox"][name="my_preference"]').check({ force: true });
 
-    cy.get(".swal2-container", { timeout: 8000 }).should("not.exist");
+    // cy.get(".swal2-container", { timeout: 8000 }).should("not.exist");
   });
 });
