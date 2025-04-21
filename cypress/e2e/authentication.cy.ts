@@ -17,6 +17,8 @@ describe("Authenticated User", () => {
 
 
   it("does NOT show Google sign in when user is authenticated", () => {
+    cy.request("/api/test-login");
+    
     cy.url().should("include", "/plan-itinerary");
 
     // cy.contains("span", "Sign in with Google").should("not.exist");
