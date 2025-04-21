@@ -1,7 +1,7 @@
 
 describe("Authenticated User", () => {
 
-  const projectRef = "ofisnfgjitykwijevgwi";
+  // const projectRef = "ofisnfgjitykwijevgwi";
 
   beforeEach(() => {
     // cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
