@@ -2,31 +2,25 @@ describe("Authenticated User", () => {
 
   const projectRef = "ofisnfgjitykwijevgwi";
 
-  before(() => {
-    cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
-    cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
-  })
+  // before(() => {
+  //   cy.session('supabase-auth', () => {
+  //     cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
+  //     cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
+  //   });
+  // })
 
   beforeEach(() => {
-    cy.session('supabase-auth', () => {
-      cy.visit("/plan-itinerary", {
-        onBeforeLoad(win) {
-          win.localStorage.setItem("NEXT_PUBLIC_ENABLE_MOCK_AUTH", "true");
-        },
-      });
-      cy.request("/api/test-login");
-      // Add assertions here to ensure the login was successful
-      // cy.url().should("include", "/plan-itinerary"); // Or a protected route
+    cy.session('supabase-auth-manual', () => {
+      cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token", { domain: 'http://localhost:3000', path: '/' });
+      cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token", { domain: 'http://localhost:3000', path: '/' });
+    })
 
-      // cy.getCookie(`sb-${projectRef}-auth-token.0`).then(cookie0 => {
-      //   cy.log('Cookie 0:', cookie0);
-      //   expect(cookie0).to.exist;
-      // });
-      // cy.getCookie(`sb-${projectRef}-auth-token.1`).then(cookie1 => {
-      //   cy.log('Cookie 1:', cookie1);
-      //   expect(cookie1).to.exist;
-      // });
+    cy.visit("/plan-itinerary", {
+      onBeforeLoad(win) {
+        win.localStorage.setItem("NEXT_PUBLIC_ENABLE_MOCK_AUTH", "true");
+      },
     });
+
   });
 
   // beforeEach(() => {
