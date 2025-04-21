@@ -9,7 +9,7 @@
     "lint": "next lint",
     "cypress:open": "cypress open",
     "test:e2e": "cypress run",
-    "e2e:headful": "cypress run --e2e --headful --browser chrome",
+    "e2e:headed": "cypress run --e2e --headed --browser chrome",
     "component:headless": "cypress run --component"
   },
   "dependencies": {
