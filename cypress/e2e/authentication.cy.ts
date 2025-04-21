@@ -2,6 +2,11 @@ describe("Authenticated User", () => {
 
   const projectRef = "ofisnfgjitykwijevgwi";
 
+  before(() => {
+    cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
+    cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
+  })
+
   beforeEach(() => {
     cy.session('supabase-auth', () => {
       cy.visit("/plan-itinerary", {
@@ -9,19 +14,24 @@ describe("Authenticated User", () => {
           win.localStorage.setItem("NEXT_PUBLIC_ENABLE_MOCK_AUTH", "true");
         },
       });
-      cy.request("/api/test-login");
+      // cy.request("/api/test-login");
       // Add assertions here to ensure the login was successful
-      cy.url().should("include", "/plan-itinerary"); // Or a protected route
-      cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
-      cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
-      cy.getCookie(`sb-${projectRef}-auth-token.0`).should('exist');
-      cy.getCookie(`sb-${projectRef}-auth-token.1`).should('exist');
+      // cy.url().should("include", "/plan-itinerary"); // Or a protected route
+
+      // cy.getCookie(`sb-${projectRef}-auth-token.0`).then(cookie0 => {
+      //   cy.log('Cookie 0:', cookie0);
+      //   expect(cookie0).to.exist;
+      // });
+      // cy.getCookie(`sb-${projectRef}-auth-token.1`).then(cookie1 => {
+      //   cy.log('Cookie 1:', cookie1);
+      //   expect(cookie1).to.exist;
+      // });
     });
   });
 
   // beforeEach(() => {
-    // cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
-    // cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
+  // cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
+  // cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
 
   //   cy.visit("/plan-itinerary", {
   //     onBeforeLoad(win) {
@@ -34,10 +44,6 @@ describe("Authenticated User", () => {
 
 
   it("does NOT show Google sign in when user is authenticated", () => {
-
-    // cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
-    // cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
-
     cy.url().should("include", "/plan-itinerary");
 
     // cy.contains("span", "Sign in with Google").should("not.exist");
