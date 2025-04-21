@@ -39,11 +39,17 @@ jobs:
         steps:
           - uses: actions/checkout@v4
 
-          - name: Cypress run
-            uses: cypress-io/github-action@v6 
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20.x
+
+          - run: npm ci
 
           - name: Run Cypress Component Tests
             run: npm run component:headless
+
+          - name: Build app
+            run: npm run build
 
           - name: Run Cypress E2E tests
             uses: cypress-io/github-action@v6
