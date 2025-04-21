@@ -2,18 +2,9 @@ describe("Authenticated User", () => {
 
   const projectRef = "ofisnfgjitykwijevgwi";
 
-  // before(() => {
-  //   cy.session('supabase-auth', () => {
-  //     cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
-  //     cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
-  //   });
-  // })
-
   beforeEach(() => {
-    cy.session('supabase-auth-manual', () => {
-      cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token", { domain: 'http://localhost:3000', path: '/' });
-      cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token", { domain: 'http://localhost:3000', path: '/' });
-    })
+    // cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
+    // cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
 
     cy.visit("/plan-itinerary", {
       onBeforeLoad(win) {
@@ -21,20 +12,8 @@ describe("Authenticated User", () => {
       },
     });
 
+    cy.request("/api/test-login");
   });
-
-  // beforeEach(() => {
-  // cy.setCookie(`sb-${projectRef}-auth-token.0`, "fake-access-token");
-  // cy.setCookie(`sb-${projectRef}-auth-token.1`, "fake-refresh-token");
-
-  //   cy.visit("/plan-itinerary", {
-  //     onBeforeLoad(win) {
-  //       win.localStorage.setItem("NEXT_PUBLIC_ENABLE_MOCK_AUTH", "true");
-  //     },
-  //   });
-
-  //   cy.request("/api/test-login");
-  // });
 
 
   it("does NOT show Google sign in when user is authenticated", () => {
