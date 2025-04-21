@@ -24,6 +24,7 @@ export async function GET() {
         path: "/",
         httpOnly: false,
         secure: false,
+        domain: "localhost",
         expires: oneHourFromNow,
         });
 
@@ -31,6 +32,7 @@ export async function GET() {
         path: "/",
         httpOnly: false,
         secure: false,
+        domain: "localhost",
         expires: oneHourFromNow,
         });
 
