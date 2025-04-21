@@ -10,29 +10,29 @@ export class UserService {
 
         // During Cypress tests, return a fake user
         // If you want to test with a real user, change the id, email, name and avatar_url to your own values in Supabase
-        if (process.env.NEXT_PUBLIC_ENABLE_MOCK_AUTH === "true") {
-            return {
+        // if (process.env.NEXT_PUBLIC_ENABLE_MOCK_AUTH === "true") {
+        return {
             id: "test-user-id",
             email: "testuser@example.com",
             name: "Test User",
             avatar_url: "",
-            };
-        }
+        };
+        // }
 
-        const session = await supabase.auth.getUser();
-        if (session.data.user) {
-            // Destruct properties from nested obj
-            const { user_metadata, email, id } = session.data.user;
-            const { name, avatar_url } = user_metadata;
-            const user: User = {
-                id: id,
-                email: email,
-                name: name,
-                avatar_url: avatar_url
-            }
-            return user
-        }
-        return null;
+        // const session = await supabase.auth.getUser();
+        // if (session.data.user) {
+        //     // Destruct properties from nested obj
+        //     const { user_metadata, email, id } = session.data.user;
+        //     const { name, avatar_url } = user_metadata;
+        //     const user: User = {
+        //         id: id,
+        //         email: email,
+        //         name: name,
+        //         avatar_url: avatar_url
+        //     }
+        //     return user
+        // }
+        // return null;
     }
 
     static async checkUserExists(id: string): Promise<boolean> {
