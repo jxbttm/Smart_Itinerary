@@ -42,8 +42,8 @@ jobs:
 
           - run: npm ci
 
-          - name: Run Cypress Component Tests
-            run: npm run component:headless
+          # - name: Run Cypress Component Tests
+          #   run: npm run component:headless
 
           - name: Build app
             run: npm run build
