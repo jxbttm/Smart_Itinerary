@@ -60,7 +60,13 @@ jobs:
               NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
               NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
               NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
-
+          
+          - name: Upload screenshots
+            uses: actions/upload-artifact@v3
+            if: failure()
+            with:
+              name: cypress-screenshots
+              path: cypress/screenshots
 
     SAST:
         needs: [Test]
