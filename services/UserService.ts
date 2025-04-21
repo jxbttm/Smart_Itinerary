@@ -11,12 +11,12 @@ export class UserService {
         // During Cypress tests, return a fake user
         // If you want to test with a real user, change the id, email, name and avatar_url to your own values in Supabase
         if (process.env.NEXT_PUBLIC_ENABLE_MOCK_AUTH === "true") {
-            return {
+        return {
             id: "test-user-id",
             email: "testuser@example.com",
             name: "Test User",
             avatar_url: "",
-            };
+        };
         }
 
         const session = await supabase.auth.getUser();
