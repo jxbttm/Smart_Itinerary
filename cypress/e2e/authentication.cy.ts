@@ -1,3 +1,5 @@
+import { useAuth } from "@/context/AuthContext";
+
 describe("Authenticated User", () => {
 
   const projectRef = "ofisnfgjitykwijevgwi";
@@ -17,6 +19,17 @@ describe("Authenticated User", () => {
 
 
   it("does NOT show Google sign in when user is authenticated", () => {
+    cy.stub('useAuth').returns({
+      user: {
+        id: "test-user-id",
+        email: "testuser@example.com",
+        name: "Test User",
+        avatar_url: "",
+      },
+      loading: false,
+      updateUser: cy.stub(),
+      signOut: cy.stub().as('signOut'),
+    });
     cy.url().should("include", "/plan-itinerary");
 
     // cy.contains("span", "Sign in with Google").should("not.exist");
