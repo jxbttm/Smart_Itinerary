@@ -14,7 +14,7 @@ describe("Authenticated User", () => {
           win.localStorage.setItem("NEXT_PUBLIC_ENABLE_MOCK_AUTH", "true");
         },
       });
-      // cy.request("/api/test-login");
+      cy.request("/api/test-login");
       // Add assertions here to ensure the login was successful
       // cy.url().should("include", "/plan-itinerary"); // Or a protected route
 
