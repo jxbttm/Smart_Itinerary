@@ -13,7 +13,7 @@ describe("Authenticated User", () => {
     //   },
     // });
 
-    // cy.request("/api/test-login");
+    cy.request("/api/test-login");
 
     cy.visit("/plan-itinerary");
   });
