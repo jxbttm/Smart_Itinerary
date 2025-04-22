@@ -48,7 +48,7 @@ export const Header = () => {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
-                <Link href={`/profile/${user.id}`}>Profile</Link>
+                <Link id='profile' href={`/profile/${user.id}`}>Profile</Link>
               </li>
               <li>
                 <a onClick={signOut}>Logout</a>
