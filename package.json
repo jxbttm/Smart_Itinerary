@@ -10,7 +10,8 @@
     "cypress:open": "cypress open",
     "e2e:headless": "cypress run --e2e",
     "e2e:headed": "cypress run --e2e --headed --browser chrome",
-    "component:headless": "cypress run --component"
+    "component:headless": "cypress run --component",
+    "cypress:api-test": "cypress run --e2e --config-file cypress/api/cypress-api.config.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -58,9 +58,17 @@ jobs:
               command: npm run e2e:headless
             env:
               NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
-              NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-              NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
+              NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+              NEXT_PUBLIC_GEMINI_API_KEY: ${{ env.NEXT_PUBLIC_GEMINI_API_KEY }}
+          
+          - name: Run Cypress API tests
+            run: npm run cypress:api-test
+            env:
+              NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
+              NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+              NEXT_PUBLIC_GEMINI_API_KEY: ${{ env.NEXT_PUBLIC_GEMINI_API_KEY }}
           
           - name: Upload screenshots
             uses: actions/upload-artifact@v4

@@ -6,14 +6,7 @@ export default defineConfig({
       NEXT_PUBLIC_ENABLE_MOCK_AUTH: true,
     },
     baseUrl: "http://localhost:3000",
-    testIsolation: false,
+    specPattern: 'cypress/api/**/*spec.ts',
     setupNodeEvents(on, config) { },
-  },
-
-  component: {
-    devServer: {
-      framework: "next",
-      bundler: "webpack",
-    },
   },
 });
