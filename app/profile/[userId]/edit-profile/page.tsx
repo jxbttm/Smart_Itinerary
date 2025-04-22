@@ -1,11 +1,11 @@
 import { TravelType } from "@/types/TravelType";
-import { fetchDataStrategy } from "@/utils/fetchDataStrategy";
+import { CommonService } from "@/services/CommonService";
 import dynamic from 'next/dynamic';
 
 const ItineraryForm = dynamic(() => import('@/app/profile/[userId]/edit-profile/EditProfileForm'));
 
 export default async function EditProfile() {
-  const travelData = await fetchDataStrategy("travel") as TravelType[];
+  const travelData = await CommonService.fetchDataStrategy("travel") as TravelType[];
 
   return (
     <div className="hero min-h-screen">
