@@ -10,6 +10,7 @@ env:
     NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
     NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
     NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
+    TEST_URL: 'http://localhost:3000'
 
 on:
     pull_request:
@@ -41,34 +42,34 @@ jobs:
             with:
               node-version: 20.x
 
-          - run: npm ci
+          # - run: npm ci
 
+          # - name: Build app
+          #   run: npm run build
+          
           - name: Run Cypress Component Tests
             run: npm run component:headless
-
-          - name: Build app
-            run: npm run build
 
           - name: Run Cypress E2E tests
             uses: cypress-io/github-action@v6
             with:
               start: npm run start
-              wait-on: 'http://localhost:3000'
+              wait-on: ${{env.TEST_URL}}
               wait-on-timeout: 60
-              command: npm run e2e:headless
+              command: npm run e2e:headless && npm run cypress:api-test
             env:
               NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
               NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
               NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
               NEXT_PUBLIC_GEMINI_API_KEY: ${{ env.NEXT_PUBLIC_GEMINI_API_KEY }}
           
-          - name: Run Cypress API tests
-            run: npm run cypress:api-test
-            env:
-              NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
-              NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
-              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-              NEXT_PUBLIC_GEMINI_API_KEY: ${{ env.NEXT_PUBLIC_GEMINI_API_KEY }}
+          # - name: Run Cypress API tests
+          #   run: npm run cypress:api-test
+          #   env:
+          #     NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
+          #     NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
+          #     NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          #     NEXT_PUBLIC_GEMINI_API_KEY: ${{ env.NEXT_PUBLIC_GEMINI_API_KEY }}
           
           - name: Upload screenshots
             uses: actions/upload-artifact@v4
