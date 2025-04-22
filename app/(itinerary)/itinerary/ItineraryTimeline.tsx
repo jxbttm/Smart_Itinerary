@@ -10,8 +10,20 @@ import "simplebar-react/dist/simplebar.min.css";
 import DailyWeatherItem from "./DailyWeatherItem";
 import useHotelStore from "@/store/hotelStore";
 import { ItineraryAccommodation } from "@/types/ItineraryAccommodation";
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
-import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy, } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { FaCalendarAlt, FaUserFriends } from "react-icons/fa"; // Calendar icon
@@ -19,7 +31,8 @@ import { getFlagEmoji } from "@/utils/flagUtils"; // Utility to get flag from co
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { signinWithGoogleWithRedirect } from '@/lib/actions'
+import { signinWithGoogleWithRedirect } from "@/lib/actions";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ItineraryTimeline({
   itinerary,
@@ -28,7 +41,6 @@ export default function ItineraryTimeline({
   itineraryId,
   flightDisplayDetails,
 }: ItineraryTimelineProps) {
-
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const setHotelDetails = useHotelStore((state) => state.setHotelDetails);
@@ -37,22 +49,7 @@ export default function ItineraryTimeline({
   const [hasChanges, setHasChanges] = useState(false);
 
   const [originalItinerary, setOriginalItinerary] = useState(itinerary);
-
-  const userSession = UserService.getUserSession();
-  const [user, setUser] = useState<any>(null);
-
-
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const currentUser = await userSession;
-      if (currentUser) {
-        setUser(currentUser);
-      }
-    };
-    fetchUser();
-  }, [userSession]);
-
+  const { user } = useAuth();
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
@@ -67,7 +64,11 @@ export default function ItineraryTimeline({
     setLoading(true);
     if (user && user.id) {
       const itinerary = itineraryDetails;
-      await ItineraryService.updateItinerary(user.id, itinerary, weatherForecast);
+      await ItineraryService.updateItinerary(
+        user.id,
+        itinerary,
+        weatherForecast
+      );
       setLoading(false);
       router.push(`/profile/${user.id}`);
     }
@@ -79,14 +80,22 @@ export default function ItineraryTimeline({
     }
   }, [itinerary]);
 
-  function SortableActivity({ activity, id, children }: { activity: any; id: string; children: React.ReactNode }) {
+  function SortableActivity({
+    activity,
+    id,
+    children,
+  }: {
+    activity: any;
+    id: string;
+    children: React.ReactNode;
+  }) {
     const {
       attributes,
       listeners,
       setNodeRef,
       transform,
       transition,
-      isDragging
+      isDragging,
     } = useSortable({ id });
 
     const style = {
@@ -104,18 +113,24 @@ export default function ItineraryTimeline({
         {...listeners}
         className="relative"
       >
-
-        {<div className="absolute top-2 right-2 text-gray-500 hover:text-primary">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 10h16M4 14h16" />
-          </svg>
-        </div>}
+        {
+          <div className="absolute top-2 right-2 text-gray-500 hover:text-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 10h16M4 14h16"
+              />
+            </svg>
+          </div>
+        }
 
         {children}
       </div>
@@ -127,15 +142,22 @@ export default function ItineraryTimeline({
 
     if (!over || active.id === over.id) return;
 
-    const oldIndex = typeof active.id === "string" ? parseInt(active.id.split("-")[1]) : 0;
-    const newIndex = typeof over.id === "string" ? parseInt(over.id.split("-")[1]) : 0;
+    const oldIndex =
+      typeof active.id === "string" ? parseInt(active.id.split("-")[1]) : 0;
+    const newIndex =
+      typeof over.id === "string" ? parseInt(over.id.split("-")[1]) : 0;
 
     const updatedItinerary = { ...itinerary };
     const originalDay = originalItinerary?.itineraryDays[dayIndex];
     const originalTimings = originalDay?.activities.map((a) => a.timing) || [];
 
-    const currentActivities = updatedItinerary.itineraryDays[dayIndex].activities;
-    const reorderedActivities = arrayMove(currentActivities, oldIndex, newIndex);
+    const currentActivities =
+      updatedItinerary.itineraryDays[dayIndex].activities;
+    const reorderedActivities = arrayMove(
+      currentActivities,
+      oldIndex,
+      newIndex
+    );
 
     // 🍰 Assign original timings by index
     const updatedActivities = reorderedActivities.map((activity, index) => ({
@@ -164,12 +186,12 @@ export default function ItineraryTimeline({
   const isViewingOwnItinerary =
     userId === "not null" && itineraryId === "not null";
 
-  const hotelCols =
-    itinerary.accommodation.length < 4
-      ? `grid-cols-${itinerary.accommodation.length} ${itinerary.accommodation.length === 3 ? "grid-flow-col" : ""
-      }`
-      : "grid-cols-4";
-
+  const colClass =
+    {
+      1: "grid-cols-1",
+      2: "grid-cols-2",
+      3: "grid-cols-3",
+    }[itinerary.accommodation.length] || "grid-cols-4";
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -198,7 +220,6 @@ export default function ItineraryTimeline({
     });
   };
 
-
   return (
     <div className="flex flex-col items-center p-8">
       {itinerary ? (
@@ -207,7 +228,8 @@ export default function ItineraryTimeline({
           <div className="mb-6 space-y-4 text-center">
             {/* Destination + Flag */}
             <h1 className="text-4xl font-extrabold text-gray-800 flex justify-center items-center gap-2">
-              {getFlagEmoji(itinerary.destination)} {itinerary.destination || "Destination not available"}
+              {getFlagEmoji(itinerary.destination)}{" "}
+              {itinerary.destination || "Destination not available"}
             </h1>
 
             {/* Dates with Icon */}
@@ -221,12 +243,16 @@ export default function ItineraryTimeline({
             {/* Traveler Type with Badge */}
             <div className="flex justify-center items-center gap-2 text-sm">
               <FaUserFriends className="text-secondary" />
-              {itinerary.demographics?.travelerType || itinerary.travelerType ? (
+              {itinerary.demographics?.travelerType ||
+              itinerary.travelerType ? (
                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
-                  {itinerary.demographics?.travelerType || itinerary.travelerType}
+                  {itinerary.demographics?.travelerType ||
+                    itinerary.travelerType}
                 </span>
               ) : (
-                <span className="text-gray-400 italic">Traveler type not available</span>
+                <span className="text-gray-400 italic">
+                  Traveler type not available
+                </span>
               )}
             </div>
           </div>
@@ -258,51 +284,54 @@ export default function ItineraryTimeline({
           )}
 
           <div className="divider divider-neutral font-bold">Accommodation</div>
-          <div className={`grid ${hotelCols} items-center gap-8`}>
-            {itinerary && itinerary.accommodation && itinerary.accommodation.map((item, idx) => {
-              return (
-                <div
-                  key={idx}
-                  onClick={() => redirectToHotelDetailPage(item)}
-                  className="card bg-base-200 shadow-lg m-6 text-center"
-                  style={{ cursor: "pointer" }}
-                >
-                  <span className=" text-md font-bold p-2">{item.name}</span>
-                  <figure>
-                    <Image
-                      width={360}
-                      height={360}
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/PNY_Exterior_with_Rolls_Royce.jpg/800px-PNY_Exterior_with_Rolls_Royce.jpg"
-                      alt={item.name}
-                      style={{ width: "auto", height: "auto" }}
-                    />
-                  </figure>
-                  <div className="card-body">
-                    <div className="text-md ">{item.hotelDescription}</div>
-                    <div className="text-md flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="size-6"
-                      >
-                        <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
-                        <path
-                          fillRule="evenodd"
-                          d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span className="font-bold mr-2">
-                        Estimated Price:{" "}
-                      </span>{" "}
-                      ${item.estimatedCost}{" "}
-                      {itinerary.demographics.currency}
+          <div className={`grid ${colClass} items-center gap-8`}>
+            {itinerary &&
+              itinerary.accommodation &&
+              itinerary.accommodation.map((item, idx) => {
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => redirectToHotelDetailPage(item)}
+                    className="card bg-base-200 shadow-lg m-6 text-center"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span className=" text-md font-bold p-2">{item.name}</span>
+                    <figure>
+                      <Image
+                        width={360}
+                        height={360}
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/PNY_Exterior_with_Rolls_Royce.jpg/800px-PNY_Exterior_with_Rolls_Royce.jpg"
+                        alt={item.name}
+                        style={{ width: "auto", height: "auto" }}
+                      />
+                    </figure>
+                    <div className="card-body">
+                      <div className="text-md truncate">
+                        {item.hotelDescription}
+                      </div>
+                      <div className="text-md flex items-center justify-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="size-6"
+                        >
+                          <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
+                          <path
+                            fillRule="evenodd"
+                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="font-bold mr-2">
+                          Estimated Price:{" "}
+                        </span>{" "}
+                        ${item.estimatedCost} {itinerary.demographics.currency}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
 
           {itinerary && itinerary.id && (
@@ -376,7 +405,9 @@ export default function ItineraryTimeline({
                     d="M4 10h16M4 14h16"
                   />
                 </svg>
-                You can drag and drop the activity cards within a day to reorder them! Remember to save your changes by clicking the &quot;Update Itinerary&quot; button at the bottom.
+                You can drag and drop the activity cards within a day to reorder
+                them! Remember to save your changes by clicking the &quot;Update
+                Itinerary&quot; button at the bottom.
               </div>
 
               <ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
@@ -397,13 +428,18 @@ export default function ItineraryTimeline({
                       </svg>
                     </div>
                     <div
-                      className={`mb-10 ${dayIndex % 2 === 0 ? "timeline-start" : "timeline-end"
-                        } ${dayIndex % 2 === 0 ? "md:text-end" : "md:text-start"}`}
+                      className={`mb-10 ${
+                        dayIndex % 2 === 0 ? "timeline-start" : "timeline-end"
+                      } ${
+                        dayIndex % 2 === 0 ? "md:text-end" : "md:text-start"
+                      }`}
                     >
                       <time className="font-mono italic text-lg">
                         Day {dayIndex + 1} - {day.date}
                       </time>
-                      <div className="text-md font-black">{day.description}</div>
+                      <div className="text-md font-black">
+                        {day.description}
+                      </div>
 
                       <DndContext
                         sensors={sensors}
@@ -411,12 +447,12 @@ export default function ItineraryTimeline({
                         onDragEnd={(event) => handleDragEnd(event, dayIndex)}
                       >
                         <SortableContext
-                          items={day.activities.map((a, i) => `${dayIndex}-${i}`)}
+                          items={day.activities.map(
+                            (a, i) => `${dayIndex}-${i}`
+                          )}
                           strategy={verticalListSortingStrategy}
                         >
-
                           {day.activities.map((each, activityIndex) => (
-
                             <SortableActivity
                               key={`${dayIndex}-${activityIndex}`}
                               id={`${dayIndex}-${activityIndex}`}
@@ -426,7 +462,9 @@ export default function ItineraryTimeline({
                                 key={activityIndex}
                                 className="card bg-base-200 shadow-lg m-6 text-center"
                               >
-                                <span className="font-bold p-2">{each.name}</span>
+                                <span className="font-bold p-2">
+                                  {each.name}
+                                </span>
                                 <figure>
                                   <Image
                                     width={360}
@@ -471,14 +509,15 @@ export default function ItineraryTimeline({
                                         clipRule="evenodd"
                                       />
                                     </svg>
-                                    <span className="font-bold mr-2">Timings: </span>{" "}
+                                    <span className="font-bold mr-2">
+                                      Timings:{" "}
+                                    </span>{" "}
                                     {each.timing}
                                   </div>
                                 </div>
                               </div>
                             </SortableActivity>
                           ))}
-
                         </SortableContext>
                       </DndContext>
                     </div>
@@ -535,10 +574,7 @@ export default function ItineraryTimeline({
                   }
                 }
               }}
-              disabled={
-                loading ||
-                (isViewingOwnItinerary && !hasChanges)
-              }
+              disabled={loading || (isViewingOwnItinerary && !hasChanges)}
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -555,11 +591,7 @@ export default function ItineraryTimeline({
         </>
       ) : (
         <p>No itinerary available</p>
-      )
-
-      }
-
-
-    </div >
+      )}
+    </div>
   );
 }
