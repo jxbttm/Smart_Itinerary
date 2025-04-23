@@ -72,7 +72,7 @@ export default function Home() {
 
         <div className="flex gap-4">
           <Link href="/plan-itinerary">
-            <button className="btn btn-primary py-2 px-6 text-white">
+            <button id='plan-itinerary' className="btn btn-primary py-2 px-6 text-white">
               Plan a Trip
             </button>
           </Link>

@@ -12,10 +12,10 @@ export class UserService {
         // If you want to test with a real user, change the id, email, name and avatar_url to your own values in Supabase
         if (process.env.NEXT_PUBLIC_ENABLE_MOCK_AUTH === "true") {
             return {
-            id: "test-user-id",
-            email: "testuser@example.com",
-            name: "Test User",
-            avatar_url: "",
+                id: "1b9472e1-a85e-43bf-9898-6f44e2b20809",
+                email: "testuser@example.com",
+                name: "Test User",
+                avatar_url: "",
             };
         }
 

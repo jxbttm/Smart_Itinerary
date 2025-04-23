@@ -3,7 +3,7 @@ import { Itinerary } from "@/types/Itinerary";
 import { WeatherForecast } from "@/types/WeatherForecast";
 
 export class ItineraryService {
-  static async saveItinerary(userId: string,itinerary: Itinerary,weatherForecast: WeatherForecast): Promise<any> {
+  static async saveItinerary(userId: string, itinerary: Itinerary, weatherForecast: WeatherForecast): Promise<string | null> {
     try {
       const { data, error } = await supabase
         .from("itinerary")
@@ -71,8 +71,10 @@ export class ItineraryService {
           }
         }
       }
+      return itineraryId;
     } catch (error) {
       console.error("Error saving itinerary:", error);
+      return null;
     }
   }
 
@@ -178,30 +180,12 @@ export class ItineraryService {
     }
   }
 
-
-
   static async getUserItineraries(userId: string): Promise<any> {
     try {
       const { data, error } = await supabase
         .from("itinerary")
         .select("*")
         .eq("user_id", userId);
-      if (data) {
-        return data;
-      }
-      return error;
-    } catch (error) {
-      console.error("Error retrieving user itinerary:", error);
-    }
-  }
-
-  static async getUserItinerary(userId: string): Promise<any> {
-    try {
-      const { data, error } = await supabase
-        .from("itinerary")
-        .select("*")
-        .eq("user_id", userId)
-        .single();
       if (data) {
         return data;
       }
@@ -360,8 +344,14 @@ export class ItineraryService {
     }
   }
 
-  static async deleteItinerary(itineraryId: string): Promise<any> {
+  static async deleteItinerary(itineraryId: string): Promise<string> {
     try {
+      const exists = await ItineraryService.checkItineraryExists(itineraryId);
+
+      if (!exists) {
+        return `Itinerary with ID ${itineraryId} not found, cannot delete.`
+      }
+
       const { error } = await supabase
         .from("itinerary")
         .delete()
@@ -369,11 +359,28 @@ export class ItineraryService {
 
       if (error) {
         console.error("Error deleting itinerary:", error);
-      } else {
-        console.log("Itinerary deleted successfully");
+        return `Failed to delete itinerary with ID ${itineraryId}: ${error.message}`;
       }
+      console.log("Itinerary deleted successfully");
+      return "Itinerary deleted successfully";
     } catch (error) {
       console.error("Error deleting itinerary:", error);
+      return `Failed to delete itinerary with ID ${itineraryId}: ${error}`;
     }
   }
+
+  static async checkItineraryExists(id: string): Promise<boolean> {
+    const { error, count } = await supabase
+      .from("itinerary")
+      .select("*", { count: 'exact', head: true }) // Select all (for count), but only fetch head
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error checking itinerary existence:", error);
+      return false;
+    }
+
+    return count !== null && count > 0;
+  }
+
 }
