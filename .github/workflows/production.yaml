@@ -10,7 +10,7 @@ env:
     NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
     NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
     NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
-
+    TEST_URL: 'http://localhost:3000'
 on:
     push:
         branches:
@@ -58,27 +58,21 @@ jobs:
             uses: cypress-io/github-action@v6
             with:
               start: npm run start
-              wait-on: 'http://localhost:3000'
+              wait-on: ${{env.TEST_URL}}
               wait-on-timeout: 60
               command: npm run e2e:headless
             env:
               NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
-              NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-              NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
-
-          - name: Run Cypress E2E tests
-            uses: cypress-io/github-action@v6
+              NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+              NEXT_PUBLIC_GEMINI_API_KEY: ${{ env.NEXT_PUBLIC_GEMINI_API_KEY }}
+          
+          - name: Upload screenshots
+            uses: actions/upload-artifact@v4
+            if: failure()
             with:
-              start: npm run start
-              wait-on: 'http://localhost:3000'
-              wait-on-timeout: 60
-              command: npm run e2e:headless
-            env:
-              NEXT_PUBLIC_ENABLE_MOCK_AUTH: true
-              NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-              NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
+              name: cypress-screenshots
+              path: cypress/screenshots
 
     SAST:
         needs: [Test]
@@ -90,7 +84,7 @@ jobs:
         - name: Detect new vulnerabilities
           uses: AikidoSec/github-actions-workflow@v1.0.13
           with:
-              secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
+              secret-key: ${{ env.AIKIDO_CI_KEY }}
               fail-on-timeout: true
               fail-on-dependency-scan: true
               fail-on-sast-scan: false
@@ -99,7 +93,7 @@ jobs:
               timeout-seconds: 180
               post-scan-status-comment: 'off'
               post-sast-review-comments: 'off'
-              github-token: ${{ secrets.GH_SMART_TOKEN }}
+              github-token: ${{ env.GH_KEY }}
 
     Deploy-Production:
         needs: [SAST]
@@ -113,10 +107,10 @@ jobs:
               run: npm install --global vercel
 
             - name: Pull Vercel Environment Information
-              run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
 
             - name: Build Project Artifacts
-              run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel build --prod --token=${{ env.VERCEL_TOKEN }}
 
             - name: Deploy Project Artifacts
-              run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }}
