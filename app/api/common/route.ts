@@ -5,8 +5,6 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const type = searchParams.get('type') as string;
 
-    console.log(type)
-
     try {
         if (type) {
             const data = await CommonService.fetchDataStrategy(type);
