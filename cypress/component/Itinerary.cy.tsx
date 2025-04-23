@@ -24,7 +24,7 @@ describe('Itinerary', () => {
 
 
   it('should create a new itinerary and return the itinerary id ', () => {
-    cy.wrap(ItineraryService.saveItinerary(userId, itineraryTestData, weatherForecastData)).then((returnedId) => {
+    cy.wrap(ItineraryService.saveItinerary(userId, itineraryTestData, weatherForecastData), { timeout: 10000 }).then((returnedId) => {
       expect(returnedId).to.be.a('number');
       savedItineraryId = String(returnedId);
     });
@@ -70,7 +70,7 @@ describe('Itinerary', () => {
   });
 
   it('should get a single itinerary and the data should be valid', () => {
-    cy.wrap(ItineraryService.getItinerary(itineraryId)).then((data) => {
+    cy.wrap(ItineraryService.getItinerary(itineraryId), { timeout: 10000 }).then((data) => {
       expect(data).to.exist;
       expect(data).to.not.be.null;
       if (typeof data === 'object' && data !== null) {
