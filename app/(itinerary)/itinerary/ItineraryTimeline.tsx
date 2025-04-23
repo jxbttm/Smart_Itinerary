@@ -40,6 +40,7 @@ export default function ItineraryTimeline({
   userId,
   itineraryId,
   flightDisplayDetails,
+  isGeneratedItinerary,
 }: ItineraryTimelineProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -291,9 +292,14 @@ export default function ItineraryTimeline({
                 return (
                   <div
                     key={idx}
-                    onClick={() => redirectToHotelDetailPage(item)}
-                    className="card bg-base-200 shadow-lg m-6 text-center"
-                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      if (!isGeneratedItinerary) {
+                        redirectToHotelDetailPage(item);
+                      }
+                    }}
+                    className={`${
+                      isGeneratedItinerary ? "cursor-default" : "cursor-pointer"
+                    } card bg-base-200 shadow-lg m-6 text-center`}
                   >
                     <span className=" text-md font-bold p-2">{item.name}</span>
                     <figure>

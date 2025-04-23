@@ -20,6 +20,7 @@ export default function ItineraryPage({
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [flightDetails, setFlightDetails] = useState<FlightDisplayDetails[] | []>([]);
   const [weatherForecast, setWeatherForecast] = useState<any | null>(null); // State to store weather forecast
+  const [isGeneratedItinerary, setIsGeneratedItinerary] = useState<boolean>(false);
 
   const { data } = use(searchParams)
   const flightsService = new FlightsService();
@@ -42,6 +43,7 @@ export default function ItineraryPage({
       setLoading(true);
       try {
         if (data) {
+          setIsGeneratedItinerary(true);
           const parsedData = JSON.parse(decodeURIComponent(data));
           const result = await GenerateItinerary(parsedData);
           if (result) {
@@ -101,7 +103,7 @@ export default function ItineraryPage({
       <div>
         {itinerary ? (
           <div>
-            <ItineraryTimeline itinerary={itinerary} weatherForecast={weatherForecast} userId="null" itineraryId="null" flightDisplayDetails={flightDetails}/>
+            <ItineraryTimeline isGeneratedItinerary={isGeneratedItinerary} itinerary={itinerary} weatherForecast={weatherForecast} userId="null" itineraryId="null" flightDisplayDetails={flightDetails}/>
           </div>
         ) : (
           <div>Error generating itinerary. Please try again later.</div>
