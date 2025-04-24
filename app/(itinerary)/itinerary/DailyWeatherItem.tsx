@@ -34,15 +34,15 @@ const DailyWeatherItem = ({ item }: { item: WeatherForecast}) => {
           />
         </div>
         <div className="card-body p-4">
-          <h2 className="card-title mx-auto text-center font-bold text-xl">
+          <h2 className="card-title mx-auto text-center font-bold text-xl text-black">
             {new Date(item.date).toLocaleDateString("en-US", {
               weekday: "long",
               month: "short",
               day: "numeric",
             })}
           </h2>
-          <p className="mx-auto text-center">{item.condition}</p>
-          <p className="font-semibold text-2xl mx-auto text-center">
+          <p className="mx-auto text-center text-black">{item.condition}</p>
+          <p className="font-semibold text-2xl mx-auto text-center text-black">
             {item.temperature_celsius}°C
           </p>
         </div>
