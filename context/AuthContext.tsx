@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextProps>({
   signOut: async () => { },
 });
 
-export const useAuth = () => useContext(AuthContext);
+
 
 const COUNTDOWN_SECONDS = 5; // Timeout duration
 
@@ -27,39 +27,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [timer, setTimer] = useState(COUNTDOWN_SECONDS);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-
     const fetchUser = async () => {
       try {
-        const user = await UserService.getUserSession()
-        if (user) {
-          setUser(user || null);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
+        const sessionUser = await UserService.getUserSession(); // wraps supabase.auth.getSession() or similar
+        setUser(sessionUser ?? null);
+      } catch (err) {
+        console.error("Error fetching user session:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (loading) {
-      fetchUser();
-
-      // Start the countdown timer
-      interval = setInterval(() => {
-        setTimer((prev) => {
-          if (prev <= 1) {
-            // Stop loading when timer reaches 0
-            setLoading(false);
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => clearInterval(interval);
-  }, [loading]);
+    fetchUser(); // ⬅️ only once on mount
+  }, []);
 
   // Sign out function
   const signOut = async () => {
@@ -82,3 +62,5 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);
