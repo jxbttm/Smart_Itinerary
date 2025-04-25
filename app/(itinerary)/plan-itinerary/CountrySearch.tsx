@@ -5,7 +5,7 @@ import { Country } from "@/types/Country";
 
 interface CountrySearchProps {
   countries: Country[];
-  onSearchTermChange: (term: string) => void;
+  onSearchTermChange: (term: string, airport_code:string) => void;
   type: string;
 }
 
@@ -21,13 +21,13 @@ export default function CountrySearch({
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    onSearchTermChange(e.target.value);
+    onSearchTermChange(e.target.value,"");
   };
 
   const handleCountrySelect = (country: Country) => {
     setSearchTerm(country.country_name);
     setDropdownOpen(false); // Close the dropdown when a country is selected
-    onSearchTermChange(country.country_name);
+    onSearchTermChange(country.country_name, country.airport.airport_code);
   };
 
   const filterCountries = () => {

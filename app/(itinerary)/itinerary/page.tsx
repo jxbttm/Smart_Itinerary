@@ -25,16 +25,6 @@ export default function ItineraryPage({
   const { data } = use(searchParams)
   const flightsService = new FlightsService();
 
-  // Test search criteria
-  const searchCriteria = {
-    origin_country: 'PAR',        // Singapore
-    destination_country: 'ICN',    // Seoul
-    departure_date: '2025-08-01',  // Future date
-    return_date: '2025-08-15',     // Future date
-    pax: 2,                        // Number of passengers
-    number_of_results: 8           // Max number of results
-  };
-
   useEffect(() => {
     if (!data || itinerary) {
       return;
@@ -45,7 +35,19 @@ export default function ItineraryPage({
         if (data) {
           setIsGeneratedItinerary(true);
           const parsedData = JSON.parse(decodeURIComponent(data));
+          //console.log('parsedData',parsedData)
           const result = await GenerateItinerary(parsedData);
+
+          const searchCriteria = {
+            origin_country: parsedData.sourceAirportCode || '',                     
+            destination_country: parsedData.destinationAirportCode || '',           
+            departure_date: parsedData.startDate || '',                  
+            return_date: parsedData.endDate || '',                       
+            pax: parseInt(parsedData.numberPeople) || 1,                 
+            number_of_results: 8                                         
+          };
+          //console.log('searchCriteria',searchCriteria)
+
           if (result) {
             const itineraryData: Itinerary = JSON.parse(result);
             console.log('itineraryData', itineraryData);

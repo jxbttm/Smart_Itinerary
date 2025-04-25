@@ -1,7 +1,7 @@
 import { ItineraryService } from "@/services/ItineraryService";
 import { ItineraryTimelineProps } from "./ItineraryTimelineProps";
 import { UserService } from "@/services/UserService";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FlightLeg from "@/components/flights/FlightDisplayCard";
@@ -33,6 +33,9 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { signinWithGoogleWithRedirect } from "@/lib/actions";
 import { useAuth } from "@/context/AuthContext";
+import { FlightDisplayDetails } from '@/types/FlightDisplayDetails'
+
+
 
 export default function ItineraryTimeline({
   itinerary,
@@ -51,6 +54,117 @@ export default function ItineraryTimeline({
 
   const [originalItinerary, setOriginalItinerary] = useState(itinerary);
   const { user } = useAuth();
+
+  const userSession = UserService.getUserSession();
+  const [sortOption, setSortOption] = useState('price-asc');
+
+  const handleSortChange = (option:string) => {
+    setSortOption(option);
+  };
+
+  // Helper function to calculate total duration (outbound + return)
+const calculateTotalDuration = (flight:FlightDisplayDetails) => {
+  let totalMinutes = 0;
+  // Parse outbound duration (format: PT34H10M)
+  if (flight.outbound?.totalDuration) {
+    const outboundMatch = flight.outbound.totalDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+    if (outboundMatch) {
+      const hours = outboundMatch[1] ? parseInt(outboundMatch[1]) : 0;
+      const minutes = outboundMatch[2] ? parseInt(outboundMatch[2]) : 0;
+      totalMinutes += hours * 60 + minutes;
+    }
+  }
+  
+  // Parse return duration if exists
+  if (flight.return?.totalDuration) {
+    const returnMatch = flight.return.totalDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+    if (returnMatch) {
+      const hours = returnMatch[1] ? parseInt(returnMatch[1]) : 0;
+      const minutes = returnMatch[2] ? parseInt(returnMatch[2]) : 0;
+      totalMinutes += hours * 60 + minutes;
+    }
+  }
+  
+  // Format to readable duration
+  const hours = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  return `${hours}h ${mins}m`;
+};
+
+// Use useMemo to sort the flights based on the selected option
+const sortedFlightDetails = useMemo(() => {
+  if (!flightDisplayDetails) return [];
+  
+  const flights = [...flightDisplayDetails];
+  
+  switch (sortOption) {
+    case 'price-asc':
+      return flights.sort((a, b) => parseFloat(a.price.amount) - parseFloat(b.price.amount));
+    case 'price-desc':
+      return flights.sort((a, b) => parseFloat(b.price.amount) - parseFloat(a.price.amount));
+    case 'duration-asc':
+      return flights.sort((a, b) => {
+        // Extract durations in minutes
+        const getDurationMinutes = (flight:FlightDisplayDetails) => {
+          let totalMinutes = 0;
+          if (flight.outbound?.totalDuration) {
+            const match = flight.outbound.totalDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+            if (match) {
+              const hours = match[1] ? parseInt(match[1]) : 0;
+              const minutes = match[2] ? parseInt(match[2]) : 0;
+              totalMinutes += hours * 60 + minutes;
+            }
+          }
+          if (flight.return?.totalDuration) {
+            const match = flight.return.totalDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+            if (match) {
+              const hours = match[1] ? parseInt(match[1]) : 0;
+              const minutes = match[2] ? parseInt(match[2]) : 0;
+              totalMinutes += hours * 60 + minutes;
+            }
+          }
+          return totalMinutes;
+        };
+        
+        return getDurationMinutes(a) - getDurationMinutes(b);
+      });
+    case 'duration-desc':
+      return flights.sort((a, b) => {
+        // Similar logic as above, but reversed order
+        const getDurationMinutes = (flight:FlightDisplayDetails) => {
+          let totalMinutes = 0;
+          if (flight.outbound?.totalDuration) {
+            const match = flight.outbound.totalDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+            if (match) {
+              const hours = match[1] ? parseInt(match[1]) : 0;
+              const minutes = match[2] ? parseInt(match[2]) : 0;
+              totalMinutes += hours * 60 + minutes;
+            }
+          }
+          if (flight.return?.totalDuration) {
+            const match = flight.return.totalDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+            if (match) {
+              const hours = match[1] ? parseInt(match[1]) : 0;
+              const minutes = match[2] ? parseInt(match[2]) : 0;
+              totalMinutes += hours * 60 + minutes;
+            }
+          }
+          return totalMinutes;
+        };
+        
+        return getDurationMinutes(b) - getDurationMinutes(a);
+      });
+      case 'stops-asc':
+        return flights.sort((a, b) => {
+          const aStops = (a.outbound?.totalStops || 0) + (a.return?.totalStops || 0);
+          const bStops = (b.outbound?.totalStops || 0) + (b.return?.totalStops || 0);
+          return aStops - bStops;
+        });
+      default:
+        return flights;
+    }
+  }, [flightDisplayDetails, sortOption]);
+
 
   async function SaveItinerary(): Promise<void> {
     setLoading(true);
@@ -350,45 +464,71 @@ export default function ItineraryTimeline({
           )}
 
           {/* Flights */}
-          <div className="divider divider-neutral font-bold">
-            Flights Options
+<div className="divider divider-neutral font-bold">
+  Flights Options
+</div>
+{flightDisplayDetails && flightDisplayDetails.length > 0 ? (
+  <div className="w-full">
+    {/* Sorting Controls */}
+    <div className="flex flex-wrap items-center justify-between mb-4 px-4">
+      <div className="text-sm text-gray-600 mb-2 md:mb-0">
+        Found {flightDisplayDetails.length} flight options
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-medium">Sort by:</span>
+        <select 
+          className="select select-bordered select-sm w-auto"
+          onChange={(e) => handleSortChange(e.target.value)}
+        >
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="duration-asc">Duration: Shortest First</option>
+          <option value="duration-desc">Duration: Longest First</option>
+          <option value="stops-asc">Stops: Fewest First</option>
+        </select>
+      </div>
+    </div>
+    
+    {/* Flight Cards */}
+    <div className="w-full overflow-x-auto">
+      <div
+        className="inline-flex gap-6 pb-4 px-4"
+        style={{ minWidth: "max-content" }}
+      >
+        {sortedFlightDetails.map((flight, flightIndex) => (
+          <div
+            key={flightIndex}
+            className="w-[400px] p-6 bg-base-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="text-sm text-gray-600 mb-4">
+              Flight Option {flightIndex + 1}
+            </div>
+
+            <div className="space-y-4">
+              <FlightLeg flightData={flight.outbound} />
+
+              {flight.return && (
+                <FlightLeg flightData={flight.return} isReturn={true} />
+              )}
+            </div>
+
+            <div className="mt-4 flex justify-between items-end">
+              <div className="text-sm text-gray-600">
+                Total Duration: {calculateTotalDuration(flight)}
+              </div>
+              <div className="text-xl font-bold text-gray-900">
+                {flight.price.amount} {flight.price.currency}
+              </div>
+            </div>
           </div>
-          {flightDisplayDetails && flightDisplayDetails.length > 0 ? (
-            <div className="w-full overflow-x-auto">
-              <div
-                className="inline-flex gap-6 pb-4 px-4"
-                style={{ minWidth: "max-content" }}
-              >
-                {flightDisplayDetails.map((flight, flightIndex) => (
-                  <div
-                    key={flightIndex}
-                    className="w-[400px] p-6 bg-base-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div className="text-sm text-gray-600 mb-4">
-                      Flight Option {flightIndex + 1}
-                    </div>
-
-                    <div className="space-y-4">
-                      <FlightLeg flightData={flight.outbound} />
-
-                      {flight.return && (
-                        <FlightLeg flightData={flight.return} isReturn={true} />
-                      )}
-                    </div>
-
-                    <div className="mt-4 flex justify-end">
-                      <div className="text-xl font-bold text-gray-900">
-                        {flight.price.amount} {flight.price.currency}
-                      </div>
-                    </div>
-                  </div>
                 ))}
               </div>
             </div>
-          ) : (
-            <p>No Available Flights</p>
-          )}
-          {/* Flights End */}
+          </div>
+        ) : (
+          <p>No Available Flights</p>
+        )}
+        {/* Flights End */}
 
           <div className="divider divider-neutral font-bold">Activities</div>
 
