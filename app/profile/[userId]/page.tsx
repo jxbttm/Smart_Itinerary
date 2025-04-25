@@ -121,7 +121,7 @@ export default function Profile() {
   console.log("user",user)
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-gray-50">
+    <div className="font-[family-name:var(--font-geist-sans)] flex flex-col items-center justify-center min-h-screen gap-6 p-4 bg-main-1">
       {/* Avatar and Edit Button Section */}
       {isConfirmed && (
         <div role="alert">
@@ -142,7 +142,7 @@ export default function Profile() {
                 alt={user.name}
                 width={200}
                 height={200}
-                className="rounded-full border-4 border-gray-500 shadow-lg"
+                className="rounded-full border-4 border-main-2 shadow-lg"
                 quality={100}
               />
             )}
@@ -210,7 +210,7 @@ export default function Profile() {
             {itineraries.map((itinerary: any, index: number) => (
               <div
                 key={itinerary.id}
-                className="card bg-base-100 shadow-lg hover:shadow-xl transition-all"
+                className="card bg-main-2 shadow-lg hover:shadow-xl transition-all"
               >
                 <figure>
                   <img
@@ -220,10 +220,10 @@ export default function Profile() {
                   />
                 </figure>
                 <div className="card-body p-4">
-                  <h2 className="card-title text-xl font-bold text-gray-900">
+                  <h2 className="card-title text-xl font-bold text-white">
                     {itinerary.destination}
                   </h2>
-                  <p className="text-gray-700">
+                  <p className="text-white">
                     Duration: {formatDate(itinerary.start_date)} -{" "}
                     {formatDate(itinerary.end_date)} <br />
                     Estimated Cost: ${itinerary.estimated_total_cost}

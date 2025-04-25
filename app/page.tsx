@@ -62,22 +62,22 @@ export default function Home() {
     <div>
       {/* Plan Your Trip Section (Always visible) */}
       <main className="flex flex-col justify-center items-center min-h-screen">
-        <h1 className="text-6xl font-bold text-center mb-4 ring-4 ring-white">
+        <h1 className="text-6xl font-bold text-center mb-4 p-4 text-black">
           Plan Your Dream Trip
         </h1>
-        <p className="text-center text-2xl mb-6 ring-4 ring-white">
+        <p className="text-center text-2xl mb-6 text-black">
           Get started by exploring destinations and planning your next
           adventure.
         </p>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 mb-4">
           <Link href="/plan-itinerary">
             <button id='plan-itinerary' className="btn btn-primary py-2 px-6 text-white">
               Plan a Trip
             </button>
           </Link>
           <button
-            className="btn btn-neutral py-2 px-6 text-white"
+            className="btn bg-main-2 py-2 px-6 text-white"
             onClick={handleBuyCoffeeClick}
           >
             Buy us Coffee

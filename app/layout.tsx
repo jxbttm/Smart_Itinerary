@@ -28,7 +28,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <title>Smart Voyage</title>
       </head>
       <AuthProvider>
-        <body className="flex flex-col min-h-screen">
+        <body className="flex flex-col min-h-screen bg-main-1">
           <div>
             <Header />
           </div>
