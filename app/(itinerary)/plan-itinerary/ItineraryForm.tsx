@@ -147,7 +147,7 @@ export default function ItineraryForm({
   return (
     <>
       <div className="w-full max-w-2xl items-center p-4 sm:p-6 md:p-8 min-h-screen">
-        <div className="divider divider-neutral font-bold">
+        <div className="divider divider-neutral font-bold text-black">
           Destination & Duration
         </div>
         <form onSubmit={onSubmit}>
@@ -174,13 +174,13 @@ export default function ItineraryForm({
             )}
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text text-black font-bold">
                   How long is your Trip?
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="black"
                   className="size-6"
                 >
                   <path
@@ -195,17 +195,17 @@ export default function ItineraryForm({
                   name="start_date"
                   type="date"
                   placeholder="Start Date"
-                  className="input input-bordered flex-grow text-black "
+                  className="input input-bordered flex-grow text-white placeholder-white bg-main-2"
                   required
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                 />
-                <div className="divider divider-horizontal">-----</div>
+                <div className="divider divider-horizontal text-black">-----</div>
                 <input
                   name="end_date"
                   type="date"
                   placeholder="End Date"
-                  className="input input-bordered flex-grow text-black "
+                  className="input input-bordered flex-grow text-white placeholder-white bg-main-2"
                   required
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
@@ -213,19 +213,19 @@ export default function ItineraryForm({
               </div>
             </div>
 
-            <div className="divider divider-neutral font-bold">
+            <div className="divider divider-neutral font-bold text-black">
               Additional Information
             </div>
 
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text font-bold text-black">
                   Use your preferences?
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="black"
                   className="size-6"
                 >
                   <path
@@ -236,7 +236,7 @@ export default function ItineraryForm({
                 </svg>
               </label>
               <label className="label cursor-pointer">
-                <span className="label-text">
+                <span className="label-text text-black">
                   My preference{" "}
                   <span className="text-yellow-700">
                     (Note: Override the fields below based on your preference in
@@ -247,7 +247,7 @@ export default function ItineraryForm({
                   name="my_preference"
                   value="My Preference"
                   type="checkbox"
-                  className="checkbox"
+                  className="checkbox accent-black border border-white"
                   checked={prefChecked}
                   onChange={handlePrefCheckboxChange}
                 />
@@ -256,7 +256,7 @@ export default function ItineraryForm({
 
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text font-bold text-black">
                   What is your Budget limit?
                 </span>
                 <svg
@@ -278,7 +278,7 @@ export default function ItineraryForm({
                   name="min_budget"
                   type="number"
                   placeholder="Min Budget"
-                  className="input input-bordered flex-grow text-black"
+                  className="input input-bordered flex-grow text-white bg-main-2"
                   required
                   step="0.01"
                   min={0}
@@ -291,12 +291,12 @@ export default function ItineraryForm({
                     }
                   }}
                 />
-                <div className="divider divider-horizontal">-----</div>
+                <div className="divider divider-horizontal text-black">-----</div>
                 <input
                   name="max_budget"
                   type="number"
                   placeholder="Max Budget"
-                  className="input input-bordered flex-grow text-black"
+                  className="input input-bordered flex-grow text-white bg-main-2"
                   required
                   step="0.01"
                   min={0}
@@ -314,13 +314,13 @@ export default function ItineraryForm({
 
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text font-bold text-black">
                   What do you like to see more?
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="black"
                   className="size-6"
                 >
                   <path d="M5.223 2.25c-.497 0-.974.198-1.325.55l-1.3 1.298A3.75 3.75 0 0 0 7.5 9.75c.627.47 1.406.75 2.25.75.844 0 1.624-.28 2.25-.75.626.47 1.406.75 2.25.75.844 0 1.623-.28 2.25-.75a3.75 3.75 0 0 0 4.902-5.652l-1.3-1.299a1.875 1.875 0 0 0-1.325-.549H5.223Z" />
@@ -332,36 +332,36 @@ export default function ItineraryForm({
                 </svg>
               </label>
               <label className="label cursor-pointer">
-                <span className="label-text">More attractions</span>
+                <span className="label-text text-black">More attractions</span>
                 <input
                   name="more_attractions"
                   value="More Attractions"
                   type="checkbox"
-                  className="checkbox"
+                  className="checkbox accent-black border border-white"
                   disabled={prefChecked}
                   checked={preferences.includes("More Attractions")}
                   onChange={handleCheckBoxChange}
                 />
               </label>
               <label className="label cursor-pointer">
-                <span className="label-text">More scenery</span>
+                <span className="label-text text-black">More scenery</span>
                 <input
                   name="more_scenery"
                   value="More Scenery"
                   type="checkbox"
-                  className="checkbox"
+                  className="checkbox accent-black border border-white"
                   disabled={prefChecked}
                   checked={preferences.includes("More Scenery")}
                   onChange={handleCheckBoxChange}
                 />
               </label>
               <label className="label cursor-pointer">
-                <span className="label-text">More restaurants</span>
+                <span className="label-text text-black">More restaurants</span>
                 <input
                   name="more-restaurants"
                   value="More Restaurants"
                   type="checkbox"
-                  className="checkbox"
+                  className="checkbox accent-black border border-white"
                   disabled={prefChecked}
                   checked={preferences.includes("More Restaurants")}
                   onChange={handleCheckBoxChange}
@@ -371,13 +371,13 @@ export default function ItineraryForm({
 
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text font-bold text-black">
                   Who are you traveling with?
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="black"
                   className="size-6"
                 >
                   <path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
@@ -390,7 +390,7 @@ export default function ItineraryForm({
                       key={travel.type_code}
                       className="label cursor-pointer"
                     >
-                      <span className="label-text pr-4">
+                      <span className="label-text pr-4 text-black">
                         {travel.type_name} ({travel.number_of_people}{" "}
                         {travel.number_of_people === "1" ? "person" : "people"})
                       </span>
@@ -399,7 +399,7 @@ export default function ItineraryForm({
                         name="travel-group"
                         value={travel.type_name}
                         disabled={prefChecked}
-                        className="radio radio-accent"
+                        className="radio accent-black border border-white"
                         checked={travelGroup.type_name === travel.type_name}
                         onChange={() => {
                           setTravelGroup({
@@ -413,7 +413,7 @@ export default function ItineraryForm({
               </div>
             </div>
             <div className="form-control mt-6">
-              <button className="btn btn-outline" type="submit">
+              <button className="btn bg-main-2 border border-black text-main-1 hover:text-white hover:bg-main-3" type="submit">
                 Generate
               </button>
             </div>

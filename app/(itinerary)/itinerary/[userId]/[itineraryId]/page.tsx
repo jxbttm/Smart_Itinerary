@@ -86,7 +86,7 @@ export default function ItineraryPage()
         <div>
             {itinerary ? (
             <div>
-                <ItineraryTimeline itinerary={itinerary} weatherForecast={weatherForecast} userId="not null" itineraryId="not null" flightDisplayDetails={[]}/>
+                <ItineraryTimeline itinerary={itinerary} weatherForecast={weatherForecast} userId="not null" itineraryId="not null" flightDisplayDetails={[]} isGeneratedItinerary={false}/>
             </div>
             ) : (
             <div>Error viewing itinerary. Please try again later.</div>

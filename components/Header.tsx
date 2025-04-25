@@ -7,7 +7,7 @@ export const Header = () => {
   const { user, signOut } = useAuth();
   
   return (
-    <div className="navbar bg-base-100 border-b border-gray-300">
+    <div className="navbar bg-main-2 border-b border-gray-300">
       <div className="flex-1">
         <Link className="btn btn-ghost text-xl" href="/">
           SmartVoyage
@@ -45,7 +45,7 @@ export const Header = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content bg-main-2 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
                 <Link id='profile' href={`/profile/${user.id}`}>Profile</Link>
