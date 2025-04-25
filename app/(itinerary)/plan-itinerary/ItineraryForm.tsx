@@ -22,6 +22,9 @@ export default function ItineraryForm({
   const router = useRouter();
   const [sourceCountry, setSourceCountry] = useState<string>("");
   const [destinationCountry, setDestinationCountry] = useState<string>("");
+  const [sourceCountryAirportCode, setSourceCountryAirportCode] = useState<string>("");
+  const [destinationCountryAirportCode, setDestinationCountryAirportCode] = useState<string>("");
+
   const [startDate, setStartDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
@@ -80,10 +83,14 @@ export default function ItineraryForm({
   };
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    //Maybe need to add the sourceCountry the airport code
+    //And the destinationCountry the airport code
     event.preventDefault();
     const formData = {
       source: sourceCountry,
       destination: destinationCountry,
+      sourceAirportCode: sourceCountryAirportCode,
+      destinationAirportCode: destinationCountryAirportCode,
       startDate: startDate,
       endDate: endDate,
       minBudget: minBudget,
@@ -92,6 +99,7 @@ export default function ItineraryForm({
       travelGroup: travelGroup.type_name,
       numberPeople: travelGroup.number_of_people,
     };
+    console.log('formdata',formData);
     const serializedData = encodeURIComponent(JSON.stringify(formData));
     router.push(`/itinerary?data=${serializedData}`);
   }
@@ -147,14 +155,20 @@ export default function ItineraryForm({
             {countries && countries.length > 0 && (
               <CountrySearch
                 countries={countries}
-                onSearchTermChange={(term: string) => setSourceCountry(term)}
+                onSearchTermChange={(term: string,airport_code:string) => {
+                  setSourceCountry(term);
+                  setSourceCountryAirportCode(airport_code); 
+                }}
                 type='source'
               />
             )}
             {countries && countries.length > 0 && (
               <CountrySearch
                 countries={countries}
-                onSearchTermChange={(term: string) => setDestinationCountry(term)}
+                onSearchTermChange={(term: string,airport_code:string) => {
+                  setDestinationCountry(term);
+                  setDestinationCountryAirportCode(airport_code); 
+                }}
                 type='destination'
               />
             )}
