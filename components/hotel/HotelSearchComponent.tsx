@@ -74,13 +74,13 @@ export default function HotelSearchComponent({
   }, []);
   return (
     <div className="relative" ref={dropdownRef}>
-      <label className="">
+      <label className="bg-main-3">
         <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-4" />
 
         <input
           type="text"
           placeholder="Search for hotels...."
-          className="input input-bordered w-full pl-8"
+          className="input input-bordered bg-main-3 w-full pl-8"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => {
@@ -93,7 +93,7 @@ export default function HotelSearchComponent({
         />
       </label>
       {isOpen && debouncedQuery && (
-        <ul className="absolute z-50 mt-2 bg-base-300 rounded p-2 w-full max-h-48 overflow-y-auto">
+        <ul className="relative z-50 mt-1 bg-main-4 rounded p-1 w-full max-h-48 overflow-y-auto">
           <div className="py-2 rounded">
             {isLoading && (
               <div className="w-full flex flex-col justify-center items-center">

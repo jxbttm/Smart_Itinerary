@@ -53,7 +53,7 @@ export default function HotelSuggestion() {
 
   return (
     <>
-      {isLoading && <div className="skeleton h-32 w-full"></div>}
+      {isLoading && <div className="skeleton bg-slate-300 h-32 w-full rounded-lg"></div>}
       {!isLoading && hotelsearchData && hotelsearchData.length > 0 ? (
         <div className="w-full flex flex-col gap-10 py-8">
           <h1 className="text-2xl text-center">

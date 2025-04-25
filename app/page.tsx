@@ -8,6 +8,10 @@ import { useAuth } from "@/context/AuthContext";
 import ImageCarousel from "@/components/ImageCarousel/ImageCarousel";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { FaCoffee } from "react-icons/fa";
+import { GrPlan } from "react-icons/gr";
+
+
 
 export default function Home() {
   const { user, loading, updateUser } = useAuth();
@@ -72,14 +76,16 @@ export default function Home() {
 
         <div className="flex gap-4 mb-4">
           <Link href="/plan-itinerary">
-            <button id='plan-itinerary' className="btn btn-primary py-2 px-6 text-white">
+            <button id='plan-itinerary' className="btn btn-primary border-none bg-btn-primary-base hover:bg-btn-primary-hover py-2 px-6 text-white">
+            <GrPlan></GrPlan>
               Plan a Trip
             </button>
           </Link>
           <button
-            className="btn bg-main-2 py-2 px-6 text-white"
+            className="btn btn-primary border-none bg-amber-500 text-white hover:bg-amber-600 shadow-md"
             onClick={handleBuyCoffeeClick}
           >
+            <FaCoffee></FaCoffee>
             Buy us Coffee
           </button>
         </div>

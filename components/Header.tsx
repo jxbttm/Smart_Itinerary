@@ -7,9 +7,9 @@ export const Header = () => {
   const { user, signOut } = useAuth();
   
   return (
-    <div className="navbar bg-main-2 border-b border-gray-300">
+    <div className="navbar bg-main-4 border-b border-gray-300">
       <div className="flex-1">
-        <Link className="btn btn-ghost text-xl" href="/">
+        <Link className="btn btn-ghost text-colortext-1 font-semibold text-xl" href="/">
           SmartVoyage
         </Link>
       </div>

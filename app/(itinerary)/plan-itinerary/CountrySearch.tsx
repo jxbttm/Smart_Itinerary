@@ -57,7 +57,7 @@ export default function CountrySearch({
         type="text"
         placeholder={type === 'destination' ? 'Select a destination' : 'Select your starting point'}
         name={type === 'destination' ? 'destination' : 'source'}
-        className="input input-bordered w-full text-white placeholder-white bg-main-2"
+        className="input input-bordered w-full text-black placeholder-black bg-main-2"
         value={searchTerm}
         onChange={handleSearch}
         onFocus={() => setDropdownOpen(true)} // Open dropdown when input is focused
@@ -73,7 +73,7 @@ export default function CountrySearch({
                 key={country.country_code}
                 onClick={() => handleCountrySelect(country)}
               >
-                <span className="text-white">{country.country_name}</span>
+                <span className="text-black">{country.country_name}</span>
               </li>
             ))
           ) : (

@@ -73,7 +73,7 @@ export default function Profile() {
       cancelButtonColor: "gray",
       confirmButtonColor: "red",
       confirmButtonText: "Yes!",
-      showLoaderOnConfirm: true,
+      showLoaderOnConfirm: true, 
       preConfirm: async () => {
         try {
           await ItineraryService.deleteItinerary(itineraryId); // Call the delete function from ItineraryService
@@ -147,7 +147,7 @@ export default function Profile() {
               />
             )}
             <Link href={`/profile/${userId}/edit-profile`}>
-              <button id='edit-profile-btn' className="btn btn-accent text-white py-2 px-6 rounded-lg transition-all hover:bg-accent-focus">
+              <button id='edit-profile-btn' className="btn btn-accent text-black py-2 px-6 rounded-lg transition-all hover:bg-accent-focus">
                 Edit Profile
               </button>
             </Link>
@@ -220,23 +220,23 @@ export default function Profile() {
                   />
                 </figure>
                 <div className="card-body p-4">
-                  <h2 className="card-title text-xl font-bold text-white">
+                  <h2 className="card-title text-xl font-bold text-black">
                     {itinerary.destination}
                   </h2>
-                  <p className="text-white">
+                  <p className="text-black">
                     Duration: {formatDate(itinerary.start_date)} -{" "}
                     {formatDate(itinerary.end_date)} <br />
                     Estimated Cost: ${itinerary.estimated_total_cost}
                   </p>
                   <div className="card-actions justify-end mt-4">
                     <button
-                      className="btn btn-primary px-6 py-2 rounded-lg transition-all hover:bg-primary-focus"
+                      className="btn btn-primary border-none px-6 py-2 rounded-lg transition-all hover:bg-primary-focus"
                       onClick={() => handleViewDetails(user.id, itinerary.id)}
                     >
                       View Details
                     </button>
                     <button
-                      className="btn bg-red-500 text-white px-6 py-2 rounded-lg transition-all hover:bg-red-600"
+                      className="btn bg-red-500 border-none text-black px-6 py-2 rounded-lg transition-all hover:bg-red-600"
                       onClick={() => handleDelete(itinerary.id)}
                     >
                       Delete

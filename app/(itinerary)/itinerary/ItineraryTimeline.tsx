@@ -426,7 +426,7 @@ const sortedFlightDetails = useMemo(() => {
                       />
                     </figure>
                     <div className="card-body">
-                      <div className="text-md truncate text-white">
+                      <div className="text-md truncate text-black">
                         {item.hotelDescription}
                       </div>
                       <div className="text-md flex items-center justify-center">
@@ -456,7 +456,7 @@ const sortedFlightDetails = useMemo(() => {
 
           {itinerary && itinerary.id && (
             <button
-              className="btn bg-main-2 border-none text-main-1 hover:text-white hover:bg-main-3"
+              className="btn bg-main-3 border-none text-black hover:text-black hover:bg-main-4"
               onClick={() => redirectToHotelPage()}
             >
               Add a Hotel
@@ -477,7 +477,8 @@ const sortedFlightDetails = useMemo(() => {
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium">Sort by:</span>
         <select 
-          className="select select-bordered select-sm w-auto"
+          className="select select-bordered select-sm w-auto bg-main-3 text-colortext-1 border-main-3
+    focus:outline-none focus:ring-2 focus:ring-primary"
           onChange={(e) => handleSortChange(e.target.value)}
         >
           <option value="price-asc">Price: Low to High</option>
@@ -498,7 +499,7 @@ const sortedFlightDetails = useMemo(() => {
         {sortedFlightDetails.map((flight, flightIndex) => (
           <div
             key={flightIndex}
-            className="w-[400px] p-6 bg-base-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow"
+            className="w-[400px] p-6 bg-main-3 rounded-3xl shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="text-sm text-gray-600 mb-4">
               Flight Option {flightIndex + 1}
@@ -536,7 +537,7 @@ const sortedFlightDetails = useMemo(() => {
           {itinerary.itineraryDays && itinerary.itineraryDays.length > 0 ? (
             <div>
               {/* Drag and Drop Note */}
-              <div className="flex items-center gap-2 mb-4 text-sm text-white text-opacity-40 bg-base-200 px-4 py-2 rounded-lg shadow-sm border border-dashed border-gray-300">
+              <div className="flex items-center gap-2 mb-4 text-sm text-black text-opacity-70 bg-base-2 px-4 py-2 rounded-lg shadow-sm border border-dashed border-gray-500">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-5 h-5 text-primary animate-bounce"
@@ -606,7 +607,7 @@ const sortedFlightDetails = useMemo(() => {
                             >
                               <div
                                 key={activityIndex}
-                                className="card bg-main-2 shadow-lg m-6 text-center"
+                                className="card bg-main-3 shadow-lg m-6 text-center"
                               >
                                 <span className="font-bold p-2">
                                   {each.name}
@@ -708,7 +709,7 @@ const sortedFlightDetails = useMemo(() => {
           {/* Conditionally render the "Save Itinerary" or "Update Itinerary" button */}
           <div className="mt-6 text-black">
             <button
-              className="btn disabled:text-black disabled:text-opacity-40 bg-main-2 border-none text-main-1 hover:text-white hover:bg-main-3"
+              className="btn disabled:text-black disabled:text-opacity-40 bg-blue-600 border-none text-white hover:text-white hover:bg-blue-700 shadow-md hover:shadow-lg transition-all"
               onClick={() => {
                 if (!user && !isViewingOwnItinerary) {
                   triggerLoginSwal();

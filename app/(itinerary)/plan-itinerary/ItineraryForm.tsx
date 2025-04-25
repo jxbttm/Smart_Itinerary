@@ -195,7 +195,7 @@ export default function ItineraryForm({
                   name="start_date"
                   type="date"
                   placeholder="Start Date"
-                  className="input input-bordered flex-grow text-white placeholder-white bg-main-2"
+                  className="input input-bordered flex-grow text-black placeholder-black bg-main-2 [color-scheme:light]"
                   required
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -205,7 +205,7 @@ export default function ItineraryForm({
                   name="end_date"
                   type="date"
                   placeholder="End Date"
-                  className="input input-bordered flex-grow text-white placeholder-white bg-main-2"
+                  className="input input-bordered flex-grow text-black placeholder-black bg-main-2 [color-scheme:light]"
                   required
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
@@ -247,7 +247,7 @@ export default function ItineraryForm({
                   name="my_preference"
                   value="My Preference"
                   type="checkbox"
-                  className="checkbox accent-black border border-white"
+                  className="checkbox accent-black border border-black"
                   checked={prefChecked}
                   onChange={handlePrefCheckboxChange}
                 />
@@ -278,7 +278,7 @@ export default function ItineraryForm({
                   name="min_budget"
                   type="number"
                   placeholder="Min Budget"
-                  className="input input-bordered flex-grow text-white bg-main-2"
+                  className="input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark]"
                   required
                   step="0.01"
                   min={0}
@@ -296,7 +296,7 @@ export default function ItineraryForm({
                   name="max_budget"
                   type="number"
                   placeholder="Max Budget"
-                  className="input input-bordered flex-grow text-white bg-main-2"
+                  className="input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark]"
                   required
                   step="0.01"
                   min={0}
@@ -337,7 +337,7 @@ export default function ItineraryForm({
                   name="more_attractions"
                   value="More Attractions"
                   type="checkbox"
-                  className="checkbox accent-black border border-white"
+                  className="checkbox accent-black border border-black"
                   disabled={prefChecked}
                   checked={preferences.includes("More Attractions")}
                   onChange={handleCheckBoxChange}
@@ -349,7 +349,7 @@ export default function ItineraryForm({
                   name="more_scenery"
                   value="More Scenery"
                   type="checkbox"
-                  className="checkbox accent-black border border-white"
+                  className="checkbox accent-black border border-black"
                   disabled={prefChecked}
                   checked={preferences.includes("More Scenery")}
                   onChange={handleCheckBoxChange}
@@ -361,7 +361,7 @@ export default function ItineraryForm({
                   name="more-restaurants"
                   value="More Restaurants"
                   type="checkbox"
-                  className="checkbox accent-black border border-white"
+                  className="checkbox accent-black border border-black"
                   disabled={prefChecked}
                   checked={preferences.includes("More Restaurants")}
                   onChange={handleCheckBoxChange}
@@ -399,7 +399,7 @@ export default function ItineraryForm({
                         name="travel-group"
                         value={travel.type_name}
                         disabled={prefChecked}
-                        className="radio accent-black border border-white"
+                        className="radio accent-black border border-black"
                         checked={travelGroup.type_name === travel.type_name}
                         onChange={() => {
                           setTravelGroup({
@@ -413,7 +413,7 @@ export default function ItineraryForm({
               </div>
             </div>
             <div className="form-control mt-6">
-              <button className="btn bg-main-2 border border-black text-main-1 hover:text-white hover:bg-main-3" type="submit">
+              <button className="btn bg-main-2 border-none border-black bg-main-3 text-black hover:text-black hover:bg-colortext-3" type="submit">
                 Generate
               </button>
             </div>
