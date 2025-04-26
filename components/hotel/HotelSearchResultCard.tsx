@@ -95,7 +95,7 @@ export default function HotelSearchResultCard({
                 </figure>
                 <div className="flex flex-row w-full">
                   <div className="flex flex-col justify-between w-5/6 border-r p-4">
-                    <h1 className="text-2xl capitalize font-medium">
+                    <h1 className="text-2xl capitalize font-medium" data-testid="hotel-name">
                       {data.name}
                     </h1>
                     <Rating rating={data.rating} />

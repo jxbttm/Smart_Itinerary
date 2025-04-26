@@ -5,7 +5,7 @@ import useHotelStore from "@/store/hotelStore";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { Suspense } from 'react'
+import { Suspense } from "react";
 import Swal from "sweetalert2";
 
 const HotelDetailPage = () => {
@@ -89,13 +89,16 @@ const HotelDetailPage = () => {
             style={{ width: "auto", height: "auto" }}
           />
           <div className="flex-1 flex flex-col gap-8">
-            <div className="flex justify-center w-full rounded-md border bg-main-3 border-2 border-gray-600">
-              <span className="text-xl border-b-2 w-3/4 font-black text-center">
+            <div className="flex justify-center w-full rounded-md bg-main-3 border-2 border-gray-600">
+              <span
+                id="hotelName"
+                className="text-xl border-b-2 w-3/4 font-black text-center"
+              >
                 {hotelDetails?.name}
               </span>
             </div>
 
-            <div className="flex text-md mt-4 justify-center rounded-md border p-2 bg-main-3 border-2 border-gray-600">
+            <div className="flex text-md mt-4 justify-center rounded-md p-2 bg-main-3 border-2 border-gray-600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -110,7 +113,7 @@ const HotelDetailPage = () => {
                 />
               </svg>
               <span className="font-bold mr-2">Estimated Price: </span> ${" "}
-              {hotelDetails?.estimatedCost}
+              <span id="hotelEstimatedCost">{hotelDetails?.estimatedCost}</span>
             </div>
             <div className="text-center rounded-md border p-2 bg-main-3 border-2 border-gray-600">
               {hotelDetails?.hotelDescription}
@@ -134,7 +137,7 @@ const HotelDetailPage = () => {
       </div>
     </div>
   );
-}
+};
 
 export default function HotelDetailPageWithSuspense() {
   return (
