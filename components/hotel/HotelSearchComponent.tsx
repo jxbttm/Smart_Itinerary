@@ -78,6 +78,7 @@ export default function HotelSearchComponent({
         <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-4" />
 
         <input
+        id="search"
           type="text"
           placeholder="Search for hotels...."
           className="input input-bordered bg-main-3 w-full pl-8"
@@ -93,7 +94,10 @@ export default function HotelSearchComponent({
         />
       </label>
       {isOpen && debouncedQuery && (
-        <ul className="relative z-50 mt-1 bg-main-4 rounded p-1 w-full max-h-48 overflow-y-auto">
+        <ul
+          data-testid="search-options"
+          className="relative z-50 mt-1 bg-main-4 rounded p-1 w-full max-h-48 overflow-y-auto"
+        >
           <div className="py-2 rounded">
             {isLoading && (
               <div className="w-full flex flex-col justify-center items-center">
@@ -103,6 +107,7 @@ export default function HotelSearchComponent({
             {!isLoading && tempSearchResult && tempSearchResult.length > 0
               ? tempSearchResult.map((data, index) => (
                   <li
+                    data-testid="search-option"
                     className="hover:bg-gray-400 rounded p-2 cursor-pointer "
                     key={index}
                     onClick={() => {
