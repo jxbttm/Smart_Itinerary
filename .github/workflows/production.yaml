@@ -48,11 +48,11 @@ jobs:
 
           - run: npm ci
 
-          - name: Run Cypress Component Tests
-            run: npm run component:headless
-
           - name: Build app
             run: npm run build
+          
+          - name: Run Cypress Component Tests
+            run: npm run component:headless
 
           - name: Run Cypress E2E tests
             uses: cypress-io/github-action@v6
@@ -73,7 +73,6 @@ jobs:
             with:
               name: cypress-screenshots
               path: cypress/screenshots
-
     SAST:
         needs: [Test]
         runs-on: ubuntu-latest
