@@ -292,8 +292,8 @@ export default function ItineraryForm({
                   name="min_budget"
                   type="number"
                   placeholder="Min Budget"
-                  className="input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark]"
-                  required
+                  className={`input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark] 
+                     disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200`}
                   step="0.01"
                   min={0}
                   value={minBudget}
@@ -315,7 +315,8 @@ export default function ItineraryForm({
                   name="max_budget"
                   type="number"
                   placeholder="Max Budget"
-                  className="input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark]"
+                  className={`input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark] 
+                    disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200`}
                   required
                   step="0.01"
                   min={minBudget ? minBudget : 0}
