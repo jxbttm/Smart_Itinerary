@@ -399,7 +399,7 @@ const sortedFlightDetails = useMemo(() => {
           )}
 
           <div className="divider divider-neutral font-bold text-black">Accommodation</div>
-          <div className={`grid ${colClass} items-center gap-8`}>
+          <div id="accommodation" className={`grid ${colClass} items-center gap-8`}>
             {itinerary &&
               itinerary.accommodation &&
               itinerary.accommodation.map((item, idx) => {
