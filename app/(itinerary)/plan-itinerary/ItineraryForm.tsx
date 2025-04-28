@@ -198,7 +198,20 @@ export default function ItineraryForm({
                   className="input input-bordered flex-grow text-black placeholder-black bg-main-2 [color-scheme:light]"
                   required
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => {
+                    const newStartDate = e.target.value;
+                    setStartDate(newStartDate);
+                
+                    // If endDate is before or same as startDate, update it to +1 day
+                    if (!endDate || new Date(endDate) <= new Date(newStartDate)) {
+                      const nextDay = new Date(newStartDate);
+                      nextDay.setDate(nextDay.getDate() + 1);
+                
+                      // Convert to yyyy-mm-dd format
+                      const formattedNextDay = nextDay.toISOString().split("T")[0];
+                      setEndDate(formattedNextDay);
+                    }
+                  }}
                 />
                 <div className="divider divider-horizontal text-black">-----</div>
                 <input
@@ -208,6 +221,7 @@ export default function ItineraryForm({
                   className="input input-bordered flex-grow text-black placeholder-black bg-main-2 [color-scheme:light]"
                   required
                   value={endDate}
+                  min={startDate ? startDate : undefined}
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </div>
@@ -287,7 +301,12 @@ export default function ItineraryForm({
                   onChange={(e) => {
                     const inputValue = Number(e.target.value);
                     if (!isNaN(inputValue)) {
-                      setMinBudget(parseFloat(inputValue.toFixed(2)));
+                      const newMin = parseFloat(inputValue.toFixed(2));
+                      setMinBudget(newMin);
+                  
+                      if (maxBudget !== null && newMin >= maxBudget) {
+                        setMaxBudget(newMin);
+                      }
                     }
                   }}
                 />
@@ -299,13 +318,23 @@ export default function ItineraryForm({
                   className="input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark]"
                   required
                   step="0.01"
-                  min={0}
+                  min={minBudget ? minBudget : 0}
                   value={maxBudget}
                   disabled={prefChecked}
                   onChange={(e) => {
                     const inputValue = Number(e.target.value);
                     if (!isNaN(inputValue)) {
                       setMaxBudget(parseFloat(inputValue.toFixed(2)));
+                    }
+                  }}
+                  onBlur={() => {
+                    // Validate after user finishes editing
+                    if (maxBudget < minBudget) {
+                      Swal.fire({
+                        icon: "warning",
+                        text: "Max budget cannot be lower than minimum budget!"
+                      });
+                      setMaxBudget(minBudget);
                     }
                   }}
                 />
