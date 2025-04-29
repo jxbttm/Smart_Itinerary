@@ -43,7 +43,7 @@ describe('Weather Forecast Test', () => {
 
 
   it('should fetch the weather forecast for the new itinerary', () => {
-    cy.wrap(geminiService.generateContent(prompt, generationConfig)).then((responseText) => {
+    cy.wrap(geminiService.generateContent(prompt, generationConfig), { timeout: 15000 }).then((responseText) => {
       const forecast = JSON.parse(String(responseText || 'null'));
       expect(forecast).to.exist;
       expect(Array.isArray(forecast)).to.be.true;
