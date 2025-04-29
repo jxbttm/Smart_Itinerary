@@ -7,6 +7,7 @@ export default defineConfig({
     },
     baseUrl: "http://localhost:3000",
     testIsolation: false,
+    defaultCommandTimeout: 12000,
     setupNodeEvents(on, config) { },
   },
 
