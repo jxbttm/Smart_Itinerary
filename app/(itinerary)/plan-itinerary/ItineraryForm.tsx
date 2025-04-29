@@ -22,6 +22,9 @@ export default function ItineraryForm({
   const router = useRouter();
   const [sourceCountry, setSourceCountry] = useState<string>("");
   const [destinationCountry, setDestinationCountry] = useState<string>("");
+  const [sourceCountryAirportCode, setSourceCountryAirportCode] = useState<string>("");
+  const [destinationCountryAirportCode, setDestinationCountryAirportCode] = useState<string>("");
+
   const [startDate, setStartDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
@@ -80,10 +83,14 @@ export default function ItineraryForm({
   };
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    //Maybe need to add the sourceCountry the airport code
+    //And the destinationCountry the airport code
     event.preventDefault();
     const formData = {
       source: sourceCountry,
       destination: destinationCountry,
+      sourceAirportCode: sourceCountryAirportCode,
+      destinationAirportCode: destinationCountryAirportCode,
       startDate: startDate,
       endDate: endDate,
       minBudget: minBudget,
@@ -92,6 +99,7 @@ export default function ItineraryForm({
       travelGroup: travelGroup.type_name,
       numberPeople: travelGroup.number_of_people,
     };
+    console.log('formdata',formData);
     const serializedData = encodeURIComponent(JSON.stringify(formData));
     router.push(`/itinerary?data=${serializedData}`);
   }
@@ -139,7 +147,7 @@ export default function ItineraryForm({
   return (
     <>
       <div className="w-full max-w-2xl items-center p-4 sm:p-6 md:p-8 min-h-screen">
-        <div className="divider divider-neutral font-bold">
+        <div className="divider divider-neutral font-bold text-black">
           Destination & Duration
         </div>
         <form onSubmit={onSubmit}>
@@ -147,26 +155,32 @@ export default function ItineraryForm({
             {countries && countries.length > 0 && (
               <CountrySearch
                 countries={countries}
-                onSearchTermChange={(term: string) => setSourceCountry(term)}
+                onSearchTermChange={(term: string,airport_code:string) => {
+                  setSourceCountry(term);
+                  setSourceCountryAirportCode(airport_code); 
+                }}
                 type='source'
               />
             )}
             {countries && countries.length > 0 && (
               <CountrySearch
                 countries={countries}
-                onSearchTermChange={(term: string) => setDestinationCountry(term)}
+                onSearchTermChange={(term: string,airport_code:string) => {
+                  setDestinationCountry(term);
+                  setDestinationCountryAirportCode(airport_code); 
+                }}
                 type='destination'
               />
             )}
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text text-black font-bold">
                   How long is your Trip?
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="black"
                   className="size-6"
                 >
                   <path
@@ -181,37 +195,51 @@ export default function ItineraryForm({
                   name="start_date"
                   type="date"
                   placeholder="Start Date"
-                  className="input input-bordered flex-grow text-black "
+                  className="input input-bordered flex-grow text-black placeholder-black bg-main-2 [color-scheme:light]"
                   required
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => {
+                    const newStartDate = e.target.value;
+                    setStartDate(newStartDate);
+                
+                    // If endDate is before or same as startDate, update it to +1 day
+                    if (!endDate || new Date(endDate) <= new Date(newStartDate)) {
+                      const nextDay = new Date(newStartDate);
+                      nextDay.setDate(nextDay.getDate() + 1);
+                
+                      // Convert to yyyy-mm-dd format
+                      const formattedNextDay = nextDay.toISOString().split("T")[0];
+                      setEndDate(formattedNextDay);
+                    }
+                  }}
                 />
-                <div className="divider divider-horizontal">-----</div>
+                <div className="divider divider-horizontal text-black">-----</div>
                 <input
                   name="end_date"
                   type="date"
                   placeholder="End Date"
-                  className="input input-bordered flex-grow text-black "
+                  className="input input-bordered flex-grow text-black placeholder-black bg-main-2 [color-scheme:light]"
                   required
                   value={endDate}
+                  min={startDate ? startDate : undefined}
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </div>
             </div>
 
-            <div className="divider divider-neutral font-bold">
+            <div className="divider divider-neutral font-bold text-black">
               Additional Information
             </div>
 
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text font-bold text-black">
                   Use your preferences?
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="black"
                   className="size-6"
                 >
                   <path
@@ -222,7 +250,7 @@ export default function ItineraryForm({
                 </svg>
               </label>
               <label className="label cursor-pointer">
-                <span className="label-text">
+                <span className="label-text text-black">
                   My preference{" "}
                   <span className="text-yellow-700">
                     (Note: Override the fields below based on your preference in
@@ -233,7 +261,7 @@ export default function ItineraryForm({
                   name="my_preference"
                   value="My Preference"
                   type="checkbox"
-                  className="checkbox"
+                  className="checkbox accent-black border border-black"
                   checked={prefChecked}
                   onChange={handlePrefCheckboxChange}
                 />
@@ -242,7 +270,7 @@ export default function ItineraryForm({
 
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text font-bold text-black">
                   What is your Budget limit?
                 </span>
                 <svg
@@ -264,8 +292,8 @@ export default function ItineraryForm({
                   name="min_budget"
                   type="number"
                   placeholder="Min Budget"
-                  className="input input-bordered flex-grow text-black"
-                  required
+                  className={`input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark] 
+                     disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200`}
                   step="0.01"
                   min={0}
                   value={minBudget}
@@ -273,19 +301,25 @@ export default function ItineraryForm({
                   onChange={(e) => {
                     const inputValue = Number(e.target.value);
                     if (!isNaN(inputValue)) {
-                      setMinBudget(parseFloat(inputValue.toFixed(2)));
+                      const newMin = parseFloat(inputValue.toFixed(2));
+                      setMinBudget(newMin);
+                  
+                      if (maxBudget !== null && newMin >= maxBudget) {
+                        setMaxBudget(newMin);
+                      }
                     }
                   }}
                 />
-                <div className="divider divider-horizontal">-----</div>
+                <div className="divider divider-horizontal text-black">-----</div>
                 <input
                   name="max_budget"
                   type="number"
                   placeholder="Max Budget"
-                  className="input input-bordered flex-grow text-black"
+                  className={`input input-bordered flex-grow text-black bg-main-2 [color-scheme:dark] 
+                    disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200`}
                   required
                   step="0.01"
-                  min={0}
+                  min={minBudget ? minBudget : 0}
                   value={maxBudget}
                   disabled={prefChecked}
                   onChange={(e) => {
@@ -294,19 +328,29 @@ export default function ItineraryForm({
                       setMaxBudget(parseFloat(inputValue.toFixed(2)));
                     }
                   }}
+                  onBlur={() => {
+                    // Validate after user finishes editing
+                    if (maxBudget < minBudget) {
+                      Swal.fire({
+                        icon: "warning",
+                        text: "Max budget cannot be lower than minimum budget!"
+                      });
+                      setMaxBudget(minBudget);
+                    }
+                  }}
                 />
               </div>
             </div>
 
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text font-bold text-black">
                   What do you like to see more?
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="black"
                   className="size-6"
                 >
                   <path d="M5.223 2.25c-.497 0-.974.198-1.325.55l-1.3 1.298A3.75 3.75 0 0 0 7.5 9.75c.627.47 1.406.75 2.25.75.844 0 1.624-.28 2.25-.75.626.47 1.406.75 2.25.75.844 0 1.623-.28 2.25-.75a3.75 3.75 0 0 0 4.902-5.652l-1.3-1.299a1.875 1.875 0 0 0-1.325-.549H5.223Z" />
@@ -318,36 +362,36 @@ export default function ItineraryForm({
                 </svg>
               </label>
               <label className="label cursor-pointer">
-                <span className="label-text">More attractions</span>
+                <span className="label-text text-black">More attractions</span>
                 <input
                   name="more_attractions"
                   value="More Attractions"
                   type="checkbox"
-                  className="checkbox"
+                  className="checkbox accent-black border border-black"
                   disabled={prefChecked}
                   checked={preferences.includes("More Attractions")}
                   onChange={handleCheckBoxChange}
                 />
               </label>
               <label className="label cursor-pointer">
-                <span className="label-text">More scenery</span>
+                <span className="label-text text-black">More scenery</span>
                 <input
                   name="more_scenery"
                   value="More Scenery"
                   type="checkbox"
-                  className="checkbox"
+                  className="checkbox accent-black border border-black"
                   disabled={prefChecked}
                   checked={preferences.includes("More Scenery")}
                   onChange={handleCheckBoxChange}
                 />
               </label>
               <label className="label cursor-pointer">
-                <span className="label-text">More restaurants</span>
+                <span className="label-text text-black">More restaurants</span>
                 <input
                   name="more-restaurants"
                   value="More Restaurants"
                   type="checkbox"
-                  className="checkbox"
+                  className="checkbox accent-black border border-black"
                   disabled={prefChecked}
                   checked={preferences.includes("More Restaurants")}
                   onChange={handleCheckBoxChange}
@@ -357,13 +401,13 @@ export default function ItineraryForm({
 
             <div className="form-control mt-6">
               <label className="label">
-                <span className="label-text font-bold">
+                <span className="label-text font-bold text-black">
                   Who are you traveling with?
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="black"
                   className="size-6"
                 >
                   <path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
@@ -376,7 +420,7 @@ export default function ItineraryForm({
                       key={travel.type_code}
                       className="label cursor-pointer"
                     >
-                      <span className="label-text pr-4">
+                      <span className="label-text pr-4 text-black">
                         {travel.type_name} ({travel.number_of_people}{" "}
                         {travel.number_of_people === "1" ? "person" : "people"})
                       </span>
@@ -385,7 +429,7 @@ export default function ItineraryForm({
                         name="travel-group"
                         value={travel.type_name}
                         disabled={prefChecked}
-                        className="radio radio-accent"
+                        className="radio accent-black border border-black"
                         checked={travelGroup.type_name === travel.type_name}
                         onChange={() => {
                           setTravelGroup({
@@ -399,7 +443,7 @@ export default function ItineraryForm({
               </div>
             </div>
             <div className="form-control mt-6">
-              <button className="btn btn-outline" type="submit">
+              <button className="btn bg-main-2 border-none border-black bg-main-3 text-black hover:text-black hover:bg-colortext-3" type="submit">
                 Generate
               </button>
             </div>

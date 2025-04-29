@@ -7,9 +7,9 @@ export const Header = () => {
   const { user, signOut } = useAuth();
   
   return (
-    <div className="navbar bg-base-100 border-b border-gray-300">
+    <div className="navbar bg-main-4 border-b border-gray-300">
       <div className="flex-1">
-        <Link className="btn btn-ghost text-xl" href="/">
+        <Link className="btn btn-ghost text-colortext-1 font-semibold text-xl" href="/">
           SmartVoyage
         </Link>
       </div>
@@ -45,13 +45,13 @@ export const Header = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content bg-main-2 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
-                <Link id='profile' href={`/profile/${user.id}`}>Profile</Link>
+                <Link id='profile' href={`/profile/${user.id}`} className="text-gray-700 hover:text-black active:text-black focus:text-black">Profile</Link>
               </li>
               <li>
-                <a onClick={signOut}>Logout</a>
+                <a onClick={signOut} className="text-gray-700 hover:text-black active:text-black focus:text-black">Logout</a>
               </li>
             </ul>
           </div>

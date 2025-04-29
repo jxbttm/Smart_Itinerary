@@ -76,14 +76,14 @@ export default function HotelSearchResultCard({
   };
 
   return (
-    <div className="flex-1 flex flex-col w-full justify-center items-center py-10">
+    <div className="flex-1 flex flex-col w-full justify-center items-center py-6">
       {hotelSearchData.length > 0 && (
         <ul
           className={`flex flex-col ${isSuggestion ? "w-full" : "w-5/6"} gap-5`}
         >
           {hotelSearchData.map((data, index) => (
             <li key={index}>
-              <div className="card card-side text-white w-full bg-base-100">
+              <div className="card card-side text-black w-full bg-main-3">
                 <figure className="w-1/5">
                   <Image
                     src={"/images/building.jpg"}
@@ -95,7 +95,7 @@ export default function HotelSearchResultCard({
                 </figure>
                 <div className="flex flex-row w-full">
                   <div className="flex flex-col justify-between w-5/6 border-r p-4">
-                    <h1 className="text-2xl capitalize font-medium">
+                    <h1 className="text-2xl capitalize font-medium" data-testid="hotel-name">
                       {data.name}
                     </h1>
                     <Rating rating={data.rating} />
@@ -103,7 +103,7 @@ export default function HotelSearchResultCard({
                       {data.description}
                     </div>
                   </div>
-                  <div className="flex flex-col justify-between w-1/6 p-4">
+                  <div className="flex flex-col justify-between w-1/6 p-4 bg-main-4 rounded-tr-lg rounded-br-lg border-r border-t border-b">
                     <div className="flex flex-col justify-center h-full items-center">
                       <span className="text-2xl font-medium">{data.price}</span>
                       <span className="text-xs">per night</span>
@@ -113,7 +113,7 @@ export default function HotelSearchResultCard({
                         onClick={() => {
                           addHotelToItinerary(itinerary?.id, data);
                         }}
-                        className="btn bg-base-300 w-3/4 hover:bg-gray-400 hover:text-white"
+                        className="btn bg-gray-700 text-white border-none w-3/4 hover:bg-gray-800 hover:text-white"
                       >
                         Add to Itinerary
                       </button>

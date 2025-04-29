@@ -5,7 +5,7 @@ import { Country } from "@/types/Country";
 
 interface CountrySearchProps {
   countries: Country[];
-  onSearchTermChange: (term: string) => void;
+  onSearchTermChange: (term: string, airport_code:string) => void;
   type: string;
 }
 
@@ -21,13 +21,13 @@ export default function CountrySearch({
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    onSearchTermChange(e.target.value);
+    onSearchTermChange(e.target.value,"");
   };
 
   const handleCountrySelect = (country: Country) => {
     setSearchTerm(country.country_name);
     setDropdownOpen(false); // Close the dropdown when a country is selected
-    onSearchTermChange(country.country_name);
+    onSearchTermChange(country.country_name, country.airport.airport_code);
   };
 
   const filterCountries = () => {
@@ -43,9 +43,9 @@ export default function CountrySearch({
   }, [searchTerm, countries]);
 
   return (
-    <div className="form-control mt-6">
+    <div className="form-control mt-6 text-black">
       <label className="label">
-        <span className="label-text font-bold">
+        <span className="label-text font-bold text-black">
           {type === 'destination' ? 'Where do you want to Explore?' : 'Where are you travelling from?'}
         </span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
@@ -57,7 +57,7 @@ export default function CountrySearch({
         type="text"
         placeholder={type === 'destination' ? 'Select a destination' : 'Select your starting point'}
         name={type === 'destination' ? 'destination' : 'source'}
-        className="input input-bordered w-full bg-base-100 text-black"
+        className="input input-bordered w-full text-black placeholder-black bg-main-2"
         value={searchTerm}
         onChange={handleSearch}
         onFocus={() => setDropdownOpen(true)} // Open dropdown when input is focused
@@ -66,7 +66,7 @@ export default function CountrySearch({
       />
       {/* Dropdown list */}
       {dropdownOpen && (
-        <ul className="dropdown-content dropdown-open menu shadow bg-base-100 max-w-lg max-h-64 overflow-y-auto z-10 absolute mt-20">
+        <ul className="dropdown-content dropdown-open menu shadow bg-main-3 max-w-lg max-h-64 overflow-y-auto z-10 absolute mt-20">
           {filteredCountries && filteredCountries.length > 0 ? (
             filteredCountries.map((country) => (
               <li

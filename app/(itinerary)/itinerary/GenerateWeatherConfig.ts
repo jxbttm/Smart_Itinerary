@@ -1,8 +1,7 @@
 import { ItineraryProps } from "./ItineraryProps";
-import { GeminiFacade } from "@/services/GeminiFacade";
+import { GeminiConfigBuilder } from "@/services/GeminiConfigBuilder";
 
-async function generateWeatherForecast(itinerary: ItineraryProps) {
-  const geminiFacade = new GeminiFacade();
+function GenerateWeatherConfig(itinerary: ItineraryProps) {
 
   const prompt = `  Generate a weather forecast for ${itinerary.destination} from ${itinerary.startDate} to ${itinerary.endDate}. 
                     The forecast should include the temperature, and a description of the weather condition for each day. The weather conditions should include one of the following descriptions: clear sky, few clouds, scattered clouds, broken clouds, shower rain, rain, thunderstorm, snow, or mist. 
@@ -11,10 +10,16 @@ async function generateWeatherForecast(itinerary: ItineraryProps) {
                     The forecast should be in JSON format.
                   `;
 
-  const result = await geminiFacade.generateWeatherForecast(prompt);
-  if (result != null) {
-    return result;
-  }
+
+  const generationConfig = new GeminiConfigBuilder()
+    .withTemperature(0.5)
+    .withTopP(0.95)
+    .withTopK(30)
+    .withMaxOutputTokens(4096)
+    .withResponseMimeType("application/json")
+    .build();
+
+  return { prompt, generationConfig };
 }
 
-export default generateWeatherForecast;
+export default GenerateWeatherConfig;

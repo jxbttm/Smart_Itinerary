@@ -7,10 +7,12 @@ export default defineConfig({
     },
     baseUrl: "http://localhost:3000",
     testIsolation: false,
+    defaultCommandTimeout: 12000,
     setupNodeEvents(on, config) { },
   },
 
   component: {
+    defaultCommandTimeout: 12000,
     devServer: {
       framework: "next",
       bundler: "webpack",

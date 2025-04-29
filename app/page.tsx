@@ -8,6 +8,10 @@ import { useAuth } from "@/context/AuthContext";
 import ImageCarousel from "@/components/ImageCarousel/ImageCarousel";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { FaCoffee } from "react-icons/fa";
+import { GrPlan } from "react-icons/gr";
+
+
 
 export default function Home() {
   const { user, loading, updateUser } = useAuth();
@@ -62,24 +66,26 @@ export default function Home() {
     <div>
       {/* Plan Your Trip Section (Always visible) */}
       <main className="flex flex-col justify-center items-center min-h-screen">
-        <h1 className="text-6xl font-bold text-center mb-4 ring-4 ring-white">
+        <h1 className="text-6xl font-bold text-center mb-4 p-4 text-black">
           Plan Your Dream Trip
         </h1>
-        <p className="text-center text-2xl mb-6 ring-4 ring-white">
+        <p className="text-center text-2xl mb-6 text-black">
           Get started by exploring destinations and planning your next
           adventure.
         </p>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 mb-4">
           <Link href="/plan-itinerary">
-            <button id='plan-itinerary' className="btn btn-primary py-2 px-6 text-white">
+            <button id='plan-itinerary' className="btn btn-primary border-none bg-btn-primary-base hover:bg-btn-primary-hover py-2 px-6 text-white">
+            <GrPlan></GrPlan>
               Plan a Trip
             </button>
           </Link>
           <button
-            className="btn btn-neutral py-2 px-6 text-white"
+            className="btn btn-primary border-none bg-amber-500 text-white hover:bg-amber-600 shadow-md"
             onClick={handleBuyCoffeeClick}
           >
+            <FaCoffee></FaCoffee>
             Buy us Coffee
           </button>
         </div>

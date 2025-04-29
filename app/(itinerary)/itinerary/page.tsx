@@ -1,14 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import { use } from 'react'
-import GenerateItinerary from "./GenerateItinerary";
 import ItineraryTimeline from "./ItineraryTimeline";
 import { Itinerary } from '@/types/Itinerary';
-import { FlightsService } from '@/services/FlightsService'
 import { FlightDisplayDetails } from '@/types/FlightDisplayDetails'
-import generateWeatherForecast from "./GenerateWeatherForecast";
-import { WeatherForecast } from '@/types/WeatherForecast'
-
+import { ItineraryPlannerFacade } from "@/services/ItineraryPlannerFacade";
 
 export default function ItineraryPage({
   searchParams,
@@ -20,19 +16,11 @@ export default function ItineraryPage({
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [flightDetails, setFlightDetails] = useState<FlightDisplayDetails[] | []>([]);
   const [weatherForecast, setWeatherForecast] = useState<any | null>(null); // State to store weather forecast
+  const [isGeneratedItinerary, setIsGeneratedItinerary] = useState<boolean>(false);
 
   const { data } = use(searchParams)
-  const flightsService = new FlightsService();
 
-  // Test search criteria
-  const searchCriteria = {
-    origin_country: 'PAR',        // Singapore
-    destination_country: 'ICN',    // Seoul
-    departure_date: '2025-08-01',  // Future date
-    return_date: '2025-08-15',     // Future date
-    pax: 2,                        // Number of passengers
-    number_of_results: 8           // Max number of results
-  };
+  const itineraryPlannerFacade = new ItineraryPlannerFacade();
 
   useEffect(() => {
     if (!data || itinerary) {
@@ -42,42 +30,31 @@ export default function ItineraryPage({
       setLoading(true);
       try {
         if (data) {
+          setIsGeneratedItinerary(true);
           const parsedData = JSON.parse(decodeURIComponent(data));
-          const result = await GenerateItinerary(parsedData);
-          if (result) {
-            const itineraryData: Itinerary = JSON.parse(result);
-            console.log('itineraryData', itineraryData);
-            setItinerary(itineraryData);
+          if (parsedData) {
+            const searchCriteria = {
+              origin_country: parsedData.sourceAirportCode || '',
+              destination_country: parsedData.destinationAirportCode || '',
+              departure_date: parsedData.startDate || '',
+              return_date: parsedData.endDate || '',
+              pax: parseInt(parsedData.numberPeople) || 1,
+              number_of_results: 8
+            };
 
+            const results = await itineraryPlannerFacade.planItinerary(parsedData, searchCriteria)
 
-            // Get Weather Forecast once the itinerary is fetched
-            const weatherResult = await generateWeatherForecast(parsedData);
-            
-            if (weatherResult) {
-              const weatherForecastData: WeatherForecast = JSON.parse(weatherResult);
-              console.log('weatherResult', weatherResult);
-              console.log('weatherResult', weatherForecastData);
-              setWeatherForecast(Array.isArray(weatherForecastData) ? weatherForecastData : [weatherForecastData]);
-              // setWeatherForecast(weatherForecastData);
-            } else {
-              console.error("Error generating weather forecast.");
+            if (results.itineraryData) {
+              setItinerary(results.itineraryData || null);
+            }
+            if (results.weatherData) {
+              setWeatherForecast(Array.isArray(results.weatherData) ? results.weatherData : [results.weatherData]);
             }
 
-          } else {
-            setItinerary(null);
+            if (results.flightDetails) {
+              setFlightDetails(flightDetails || []);
+            }
           }
-
-          // Get Flight Details
-          const flightDetails:FlightDisplayDetails[] = await flightsService.searchFlights(searchCriteria);
-          if (flightDetails){
-            console.log("got flight details from itinerary page")
-            console.log('flight display details: ',flightDetails);
-            setFlightDetails(flightDetails);
-          }
-          else{
-            setFlightDetails([]);
-          }
-          
         }
       } catch (error) {
         console.error("Error generating itinerary:", error);
@@ -101,7 +78,7 @@ export default function ItineraryPage({
       <div>
         {itinerary ? (
           <div>
-            <ItineraryTimeline itinerary={itinerary} weatherForecast={weatherForecast} userId="null" itineraryId="null" flightDisplayDetails={flightDetails}/>
+            <ItineraryTimeline isGeneratedItinerary={isGeneratedItinerary} itinerary={itinerary} weatherForecast={weatherForecast} userId="null" itineraryId="null" flightDisplayDetails={flightDetails} />
           </div>
         ) : (
           <div>Error generating itinerary. Please try again later.</div>
