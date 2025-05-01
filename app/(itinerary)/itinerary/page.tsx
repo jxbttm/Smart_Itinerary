@@ -5,6 +5,7 @@ import ItineraryTimeline from "./ItineraryTimeline";
 import { Itinerary } from '@/types/Itinerary';
 import { FlightDisplayDetails } from '@/types/FlightDisplayDetails'
 import { ItineraryPlannerFacade } from "@/services/ItineraryPlannerFacade";
+import { FlightSearchCriteriaBuilder } from "@/services/FlightSearchCriteriaBuilder";
 
 export default function ItineraryPage({
   searchParams,
@@ -33,16 +34,16 @@ export default function ItineraryPage({
           setIsGeneratedItinerary(true);
           const parsedData = JSON.parse(decodeURIComponent(data));
           if (parsedData) {
-            const searchCriteria = {
-              origin_country: parsedData.sourceAirportCode || '',
-              destination_country: parsedData.destinationAirportCode || '',
-              departure_date: parsedData.startDate || '',
-              return_date: parsedData.endDate || '',
-              pax: parseInt(parsedData.numberPeople) || 1,
-              number_of_results: 8
-            };
-
-            const results = await itineraryPlannerFacade.planItinerary(parsedData, searchCriteria)
+            const searchCriteriaNew = new FlightSearchCriteriaBuilder()
+            .withOriginCountry(parsedData.sourceAirportCode || '')
+            .withDestinationCountry(parsedData.destinationAirportCode || '')
+            .withDepartureDate(parsedData.startDate || '')
+            .withReturnDate(parsedData.endDate || '')
+            .withPax(parseInt(parsedData.numberPeople) || 1)
+            .withNumberOfResults(8)
+            .build();
+            
+            const results = await itineraryPlannerFacade.planItinerary(parsedData, searchCriteriaNew)
 
             if (results.itineraryData) {
               setItinerary(results.itineraryData || null);
