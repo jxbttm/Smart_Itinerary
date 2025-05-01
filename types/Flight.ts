@@ -1,11 +1,10 @@
-
 export type FlightSearchCriteria = {
-  origin_country: string;
-  destination_country: string;
-  departure_date: string; //YYYY-MM-DD, maybe need a layer to convert to proper format
-  return_date: string; //YYYY-MM-DD, maybe need a layer to convert to proper format
-  pax: number;
-  number_of_results: number;
+  origin_country?: string;
+  destination_country?: string;
+  departure_date?: string; //YYYY-MM-DD, maybe need a layer to convert to proper format
+  return_date?: string; //YYYY-MM-DD, maybe need a layer to convert to proper format
+  pax?: number;
+  number_of_results?: number;
 }
 
 // Dictionary Types
