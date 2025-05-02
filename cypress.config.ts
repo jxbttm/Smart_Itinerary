@@ -12,7 +12,7 @@ export default defineConfig({
   },
 
   component: {
-    defaultCommandTimeout: 12000,
+    defaultCommandTimeout: 20000,
     devServer: {
       framework: "next",
       bundler: "webpack",

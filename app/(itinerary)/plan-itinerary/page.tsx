@@ -1,6 +1,7 @@
 import { Country } from "@/types/Country";
 import { TravelType } from "@/types/TravelType";
 import { CommonService } from "@/services/CommonService";
+import {FactoryType } from "@/types/FactoryType";
 import dynamic from "next/dynamic";
 
 const ItineraryForm = dynamic(() =>
@@ -10,8 +11,8 @@ const ItineraryForm = dynamic(() =>
 );
 
 export default async function PlanItinerary() {
-  const travelData = await CommonService.fetchDataStrategy("travel") as TravelType[];
-  const countryData = await CommonService.fetchDataStrategy("country") as Country[];
+  const travelData = await CommonService.fetchDataStrategy(FactoryType.TRAVEL) as TravelType[];
+  const countryData = await CommonService.fetchDataStrategy(FactoryType.COUNTRY) as Country[];
 
   return (
     <div className="flex flex-col items-center p-8">
