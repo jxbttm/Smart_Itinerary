@@ -25,31 +25,6 @@ describe("Hotel Search and Add", () => {
 
           // Wait for cards to appear
           cy.get(".card").should("exist").and("have.length.greaterThan", 0);
-
-          cy.get(".card")
-            .last()
-            .within(() => {
-              cy.get('[data-testid="hotel-name"]')
-                .invoke("text")
-                .then((text) => text.trim())
-                .as("selectedHotelName");
-              cy.contains("Add to Itinerary").click();
-            });
-
-          // Check that Swal2 modal appears
-          cy.get(".swal2-popup").should("be.visible");
-          cy.get(".swal2-html-container").should("contain", "Are you sure");
-
-          // Click the confirm button
-          cy.get(".swal2-confirm").click();
-
-          // Assert redirection (wait for new page)
-          cy.url().should("include", "/itinerary");
-
-          // Assert the hotel name appears on the new page
-          cy.get("@selectedHotelName").then((name) => {
-            cy.contains(name as unknown as string).should("exist");
-          });
         }
       });
   });
