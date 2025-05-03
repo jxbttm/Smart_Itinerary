@@ -12,13 +12,13 @@ describe("Hotel Details Page", () => {
     cy.url().should("include", "/profile");
   });
 
-  it("should navigate to profile page through link click", () => {
+  it("should navigate to itinerary page through link click", () => {
     cy.get("button").contains("View Details").click({ force: true });
 
     cy.url().should("include", "/itinerary");
   });
 
-  it("should navigate to itinerary page through view details button click", () => {
+  it("should navigate to hotel details page through hotel image click", () => {
     cy.get("#accommodation .card").should("exist");
     cy.get("#accommodation .card").eq(0).click();
     cy.url().should("include", "/hotel/detail");
