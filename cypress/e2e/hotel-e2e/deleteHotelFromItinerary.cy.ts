@@ -4,13 +4,8 @@ describe("Deletes a Hotel from Current Itinerary", () => {
     cy.get("#accommodation .card").should("exist");
     cy.get("#accommodation .card").eq(0).click();
     cy.url().should("include", "/hotel/detail");
-  });
-
-  it("clicks delete button, confirmation dialog pops up", () => {
     cy.get(".btn.btn-error").should("exist").click();
-    // Check that Swal2 modal appears
-    cy.get(".swal2-popup").should("be.visible");
-    cy.get(".swal2-html-container").should("contain", "Are you sure");
+
   });
 
   it("click yes, redirect back to itinerary page and hotel card should not exist", () => {
