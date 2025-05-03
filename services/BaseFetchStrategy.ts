@@ -1,3 +1,4 @@
+import { FactoryType } from '@/types/FactoryType';
 import { IBaseFetchStrategy } from '@/types/IBaseFetchStrategy';
 import { IFetchStrategyFactory } from '@/types/IFetchStrategyFactory';
 
@@ -10,8 +11,8 @@ export class BaseFetchStrategy {
     this.factoryStrategy = factoryStrategy;
   }
 
-  setStrategy(dataType: string) {
-    const strategyCreated = this.factoryStrategy.createStrategy(dataType);
+  setStrategy(factoryType: FactoryType) {
+    const strategyCreated = this.factoryStrategy.createStrategy(factoryType);
     this.strategy = strategyCreated;
   }
 
