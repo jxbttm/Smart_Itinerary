@@ -6,14 +6,14 @@ import { IFetchStrategyFactory } from '@/types/IFetchStrategyFactory';
 import { FactoryType } from "@/types/FactoryType";
 
 export class FetchStrategyFactory implements IFetchStrategyFactory {
-  createStrategy(dataType: string): IBaseFetchStrategy {
-    switch (dataType) {
+  createStrategy(factoryType: FactoryType): IBaseFetchStrategy {
+    switch (factoryType) {
       case FactoryType.TRAVEL:
         return new TravelTypeFetchStrategy();
       case FactoryType.COUNTRY:
         return new CountryFetchStrategy();
       default:
-        throw new Error(`Unknown data type: ${dataType}`);
+        throw new Error(`Unknown factory type: ${factoryType}`);
     }
   }
 }

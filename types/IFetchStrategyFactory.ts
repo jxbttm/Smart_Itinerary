@@ -1,5 +1,6 @@
 import { IBaseFetchStrategy } from '@/types/IBaseFetchStrategy';
+import { FactoryType } from '@/types/FactoryType';
 
 export interface IFetchStrategyFactory{
-    createStrategy(dataType: string): IBaseFetchStrategy
+    createStrategy(factoryType: FactoryType): IBaseFetchStrategy
 }
