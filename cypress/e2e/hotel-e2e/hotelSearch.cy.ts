@@ -1,8 +1,8 @@
-describe("Hotel Search and Add", () => {
-  it("search for a hotel place and continues flow to add a hotel to itinerary only if results exist", () => {
+describe("Hotel Search", () => {
+  it("search for a hotel place", () => {
     cy.visit("/hotel?itinerary=26");
 
-    cy.get("#search").type("brazil");
+    cy.get("#search").type("Singapore");
 
     // Wait for the whole list to appear
     cy.get('[data-testid="search-options"]', { timeout: 10000 })
