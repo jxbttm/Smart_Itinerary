@@ -1,9 +1,10 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { CommonService } from '@/services/CommonService'; // Adjust the import path
+import { FactoryType } from '@/types/FactoryType';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
-    const type = searchParams.get('type') as string;
+    const type = searchParams.get('type') as FactoryType;
 
     try {
         if (type) {
