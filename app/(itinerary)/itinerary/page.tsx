@@ -53,7 +53,7 @@ export default function ItineraryPage({
             }
 
             if (results.flightDetails) {
-              setFlightDetails(flightDetails || []);
+              setFlightDetails(results.flightDetails || []);
             }
           }
         }
