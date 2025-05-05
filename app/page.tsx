@@ -82,7 +82,7 @@ export default function Home() {
             </button>
           </Link>
           <button
-            className="btn btn-primary border-none bg-blue-500 text-white hover:bg-amber-600 shadow-md"
+            className="btn btn-primary border-none bg-blue-600 text-white hover:bg-amber-600 shadow-md"
             onClick={handleBuyCoffeeClick}
           >
             <FaCoffee></FaCoffee>
