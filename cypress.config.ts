@@ -8,9 +8,6 @@ export default defineConfig({
     baseUrl: "http://localhost:3000",
     testIsolation: false,
     defaultCommandTimeout: 25000,
-    retries:{
-      runMode:2
-    },
     setupNodeEvents(on, config) { },
   },
 
