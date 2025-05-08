@@ -51,7 +51,7 @@ jobs:
             run: npm run component:headless
 
           - name: Run Cypress E2E tests
-            uses: cypress-io/github-action@v6
+            uses: cypress-io/github-action@a55856e0e961f64708c68ddcb38fba233d164ed8 # v6
             with:
               start: npm run start
               wait-on: ${{env.TEST_URL}}
