@@ -1,6 +1,6 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   /* config options here */
   images: {
     remotePatterns: [
@@ -26,6 +26,26 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  ...(process.env.NEXT_TEST === '1' ? {
+    webpack: (config) => {
+      config.module.rules.push({
+        test: /\.tsx$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ["next/babel"],
+            plugins: [
+              ["istanbul", {
+                exclude: ["**/*.cy.tsx"]
+              }]
+            ]
+          }
+        }
+      })
+      return config
+    }
+  } : {})
 };
 
 export default nextConfig;
